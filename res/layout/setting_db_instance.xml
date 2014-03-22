@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" >
+
+        <TextView
+            android:id="@+id/sign_in_heading"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:gravity="center_horizontal"
+            android:text="Please enter instance details"
+            android:textSize="20dp"
+            android:textStyle="bold" />
+
+        <View
+            android:id="@+id/setting_seprator"
+            android:layout_width="fill_parent"
+            android:layout_height="2dp"
+            android:layout_below="@+id/sign_in_heading"
+            android:background="@android:color/darker_gray" />
+
+        <RelativeLayout
+            android:id="@+id/signin_control_layout"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/sign_in_heading"
+            android:padding="20dp" >
+
+            <EditText
+                android:id="@+id/instance_d_host_name"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:drawablePadding="5dp"
+                android:drawingCacheQuality="auto"
+                android:hint="Hostname/IP"
+                android:imeOptions="actionNext"
+                android:inputType="textImeMultiLine" />
+
+            <EditText
+                android:id="@+id/instance_d_db_name"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/instance_d_host_name"
+                android:drawablePadding="5dp"
+                android:drawingCacheQuality="auto"
+                android:hint="Database name"
+                android:imeOptions="actionNext"
+                android:inputType="textImeMultiLine" />
+
+            <EditText
+                android:id="@+id/instance_d_db_username"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/instance_d_db_name"
+                android:drawablePadding="5dp"
+                android:drawingCacheQuality="auto"
+                android:hint="Database username"
+                android:imeOptions="actionNext"
+                android:inputType="textImeMultiLine" />
+
+            <EditText
+                android:id="@+id/instance_d_db_password"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/instance_d_db_username"
+                android:drawablePadding="5dp"
+                android:drawingCacheQuality="auto"
+                android:hint="Database password"
+                android:imeOptions="actionDone"
+                android:inputType="textPassword" />
+        </RelativeLayout>
+    </RelativeLayout>
+
+</LinearLayout>
