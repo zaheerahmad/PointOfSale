@@ -158,7 +158,8 @@ public class LoginActivity extends Activity
 								{
 
 									// TODO Auto-generated method stub
-									loadingDialog.dismiss();
+									if( loadingDialog != null )
+										loadingDialog.dismiss();
 									Toast.makeText( getApplicationContext(), response.message, Toast.LENGTH_SHORT ).show();
 								}
 
@@ -167,7 +168,8 @@ public class LoginActivity extends Activity
 								{
 
 									// TODO Auto-generated method stub
-									loadingDialog.dismiss();
+									if( loadingDialog != null )
+										loadingDialog.dismiss();
 									Toast.makeText( getApplicationContext(), response.message, Toast.LENGTH_SHORT ).show();
 								}
 
