@@ -1,5 +1,9 @@
 package com.fusepos.wrapper;
 
+/**
+ * @author Zaheer Ahmad
+ *
+ */
 public interface IAsyncTask
 {
 

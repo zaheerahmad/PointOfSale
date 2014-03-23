@@ -16,6 +16,10 @@ import android.os.Build.VERSION_CODES;
 import android.os.StrictMode;
 import android.view.inputmethod.InputMethodManager;
 
+/**
+ * @author Zaheer Ahmad
+ *
+ */
 public class Utils
 {
 	public static void hideSoftKeyboard( Activity activity )

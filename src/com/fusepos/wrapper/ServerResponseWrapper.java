@@ -1,9 +1,33 @@
 package com.fusepos.wrapper;
 
+/**
+ * @author Zaheer Ahmad
+ * 
+ */
 public class ServerResponseWrapper
 {
 	int		code;
 	String	message;
+	String	status;
+
+	/**
+	 * @return the status
+	 */
+	public String getStatus()
+	{
+
+		return status;
+	}
+
+	/**
+	 * @param status
+	 *            the status to set
+	 */
+	public void setStatus( String status )
+	{
+
+		this.status = status;
+	}
 
 	/**
 	 * @param code
@@ -15,6 +39,20 @@ public class ServerResponseWrapper
 		super();
 		this.code = code;
 		this.message = message;
+	}
+
+	/**
+	 * @param code
+	 * @param message
+	 * @param status
+	 */
+	public ServerResponseWrapper( int code, String message, String status )
+	{
+
+		super();
+		this.code = code;
+		this.message = message;
+		this.status = status;
 	}
 
 	/**

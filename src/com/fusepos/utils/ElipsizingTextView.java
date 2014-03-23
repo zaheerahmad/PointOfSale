@@ -12,6 +12,10 @@ import android.text.TextUtils.TruncateAt;
 import android.util.AttributeSet;
 import android.widget.TextView;
 
+/**
+ * @author Zaheer Ahmad
+ *
+ */
 public class ElipsizingTextView extends TextView
 {
 	private static final String	ELLIPSIS	= "...";

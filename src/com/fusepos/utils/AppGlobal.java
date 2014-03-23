@@ -1,9 +1,13 @@
 package com.fusepos.utils;
 
+/**
+ * @author Zaheer Ahmad
+ *
+ */
 public class AppGlobal
 {
 	public static final boolean	isDebugMode											= false;
-	public static final boolean	shouldMaintainLogOfFeeds							= true;
+	public static final boolean	shouldMaintainLogOfFeeds							= false;
 
 	// Response Statuses
 	public static final int		RESPONSE_STATUS_FAIL								= 1;
@@ -18,9 +22,26 @@ public class AppGlobal
 	public static final int		RESPONSE_STATUS_FAIL_RANDOM_EXCEPTION				= 4;
 	public static final String	RESPONSE_STATUS_FAIL_RANDOM_EXCEPTION_MESSAGE		= "Some random error occured, please try again later!";
 
+	public static final int		RESPONSE_STATUS_db_connection_failed				= -201;
+	public static final int		RESPONSE_STATUS_request_success						= 200;
+	public static final int		RESPONSE_STATUS_request_success_but_none_found		= -200;
+
 	/**
 	 * Databases constants
 	 */
+
+	public static final String	DATABASE_NAME										= "POS_DB";
+	public static final int		DATABASE_VERSION									= 1;
+
+	public static final String	TABLE_LOGIN											= "tbl_login";
+	public static final String	LOGIN_ID											= "loginId";
+	public static final String	USER_NAME											= "username";
+	public static final String	EMAIL												= "email";
+	public static final String	PASSWORD											= "password";
+	public static final String	FNAME												= "fname";
+	public static final String	LNAME												= "lname";
+	public static final String	COMPANY												= "company";
+	public static final String	PHONE												= "phone";
 
 	/**
 	 * Databases constants ended
@@ -32,9 +53,11 @@ public class AppGlobal
 	public static final String	TOAST_INTERNET_CONNECTION_FOUND						= "Internet connection on your device found! Uploading your data on server";
 	public static final String	TOAST_DATA_UPLOADED_SUCCESSFULLY					= "Data has been uploaded successfully on server!";
 	public static final String	TOAST_DATA_SAVED									= "Data has been saved successfully!";
+	public static final String	TOAST_PLEASE_WAIT									= "Please wait...";
 
 	// DataFetcher Actions
 	public static final String	DATAFETCHER_ACTION_INSERT_FEEDBACK					= "_insert_feedback_";
+	public static final String	DATAFETCHER_ACTION_LOGIN_USER						= "_login_user_";
 
 	// Broadcast Filters
 	public static final String	BROADCAST_FILTER_INTERNET_CONNECTION_FOUND			= "_internet_connection_found_";
@@ -52,5 +75,17 @@ public class AppGlobal
 	public static final String	APP_PREF_DB_PASSWORD								= "_db_password_";
 	public static final String	APP_PREF_USERNAME									= "_username_";
 	public static final String	APP_PREF_PASSWORD									= "_password_";
+
+	public static final String	SERVER_URL_LOGIN_WEBSERVICE							= "http://fusepos.com/zaheer/AndroidAppWebservices/LoginWebService.php";
+
+	public static final String	PARAM_DB_HOST										= "host";
+	public static final String	PARAM_DB_USER										= "uDB";
+	public static final String	PARAM_DB_PASSWPRD									= "pwddb";
+	public static final String	PARAM_DB_NAME										= "db";
+
+	public static final String	PARAM_DB_HOST_DEFAULT_VALUE							= "localhost";
+
+	public static final String	PARAM_LOGIN_USERNAME								= "un";
+	public static final String	PARAM_LOGIN_PASSWORD								= "pwd";
 
 }

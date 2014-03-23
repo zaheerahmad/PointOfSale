@@ -10,11 +10,8 @@ import android.util.AttributeSet;
 import android.widget.Button;
 
 /**
- * Applies a pressed state color filter or disabled state alpha for the button's
- * background
- * drawable.
- * 
- * @author shiki
+ * @author Zaheer Ahmad
+ *
  */
 public class SAutoBgButton extends Button
 {
