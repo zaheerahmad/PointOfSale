@@ -118,7 +118,8 @@
                             android:layout_alignParentLeft="true"
                             android:background="#C35817"
                             android:text="Login"
-                            android:textColor="#ffffff" />
+                            android:textColor="#ffffff"
+                            android:id="@+id/login_login_btn"/>
 
                         <com.fusepos.utils.SAutoBgButton
                             android:layout_width="50dp"
