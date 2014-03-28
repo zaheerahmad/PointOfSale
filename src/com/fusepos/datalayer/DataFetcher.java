@@ -3,6 +3,7 @@ package com.fusepos.datalayer;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,8 +21,9 @@ import com.fusepos.utils.Utils;
 import com.fusepos.wrapper.IAsyncTask;
 import com.fusepos.wrapper.LoginServiceResponseWrapper;
 import com.fusepos.wrapper.LoginWrapper;
+import com.fusepos.wrapper.ProductServiceResponseWrapper;
+import com.fusepos.wrapper.ProductWrapper;
 import com.fusepos.wrapper.ResponseStatusWrapper;
-import com.fusepos.wrapper.ServerResponseWrapper;
 import com.google.gson.Gson;
 
 /**
@@ -112,7 +114,7 @@ public class DataFetcher extends AsyncTask<String, String, ResponseStatusWrapper
 
 				// LoginServiceResponseWrapper loginResponseWrapper =
 				// gson.fromJson( reader, LoginServiceResponseWrapper.class );
-				ServerResponseWrapper serverResponseWrapper = gson.fromJson( reader, ServerResponseWrapper.class );
+				LoginServiceResponseWrapper serverResponseWrapper = gson.fromJson( reader, LoginServiceResponseWrapper.class );
 				if( serverResponseWrapper != null )
 				{
 
@@ -135,11 +137,10 @@ public class DataFetcher extends AsyncTask<String, String, ResponseStatusWrapper
 
 					else if( serverResponseWrapper.getCode() == AppGlobal.RESPONSE_STATUS_request_success )
 					{
-						reader = new InputStreamReader( inputStream );
-						LoginServiceResponseWrapper loginResponseWrapper = gson.fromJson( reader, LoginServiceResponseWrapper.class );
-						if( loginResponseWrapper != null )
+
+						if( serverResponseWrapper != null )
 						{
-							LoginWrapper loginWrapper = loginResponseWrapper.getResponse();
+							LoginWrapper loginWrapper = serverResponseWrapper.getResponse();
 
 							LoginBO loginBO = new LoginBO( Integer.parseInt( loginWrapper.getId() ), loginWrapper.getUsername(), loginWrapper.getPassword(), loginWrapper.getPassword(), loginWrapper.getFirstName(), loginWrapper.getLastName(), loginWrapper.getCompany(), loginWrapper.getPhone() );
 							DatabaseHandler db = new DatabaseHandler( context, AppGlobal.TABLE_LOGIN );
@@ -148,12 +149,74 @@ public class DataFetcher extends AsyncTask<String, String, ResponseStatusWrapper
 							ResponseStatusWrapper response = new ResponseStatusWrapper();
 
 							response.status = AppGlobal.RESPONSE_STATUS_request_success;
-							response.message = loginResponseWrapper.getMessage();
+							response.message = serverResponseWrapper.getMessage();
 							return response;
 						}
 					}
 				}
 			}
+
+			if( params != null && params[0].equalsIgnoreCase( AppGlobal.DATAFETCHER_ACTION_PRODUCTS_SYNC ) )
+			{
+				DatabaseHandler db = new DatabaseHandler( context, AppGlobal.TABLE_PRODUCT );
+				List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>( 1 );
+				nameValuePairs.add( new BasicNameValuePair( AppGlobal.PARAM_DB_HOST, host ) );
+				nameValuePairs.add( new BasicNameValuePair( AppGlobal.PARAM_DB_NAME, dbName ) );
+				nameValuePairs.add( new BasicNameValuePair( AppGlobal.PARAM_DB_USER, dbUser ) );
+				nameValuePairs.add( new BasicNameValuePair( AppGlobal.PARAM_DB_PASSWPRD, dbPassword ) );
+				nameValuePairs.add( new BasicNameValuePair( AppGlobal.PARAM_GETALLPRODUCTS_ID, String.valueOf( db.getLastInsertedProductId() ) ) );
+
+				inputStream = sh.makeServiceCall( AppGlobal.SERVER_URL_GET_ALL_PRODUCT_WEBSERVICE, nameValuePairs );
+				Reader reader = new InputStreamReader( inputStream );
+
+				// LoginServiceResponseWrapper loginResponseWrapper =
+				// gson.fromJson( reader, LoginServiceResponseWrapper.class );
+				ProductServiceResponseWrapper serverResponseWrapper = gson.fromJson( reader, ProductServiceResponseWrapper.class );
+				if( serverResponseWrapper != null )
+				{
+
+					if( serverResponseWrapper.getCode() == AppGlobal.RESPONSE_STATUS_db_connection_failed )
+					{
+						ResponseStatusWrapper response = new ResponseStatusWrapper();
+
+						response.status = AppGlobal.RESPONSE_STATUS_db_connection_failed;
+						response.message = serverResponseWrapper.getMessage();
+						return response;
+					}
+					else if( serverResponseWrapper.getCode() == AppGlobal.RESPONSE_STATUS_request_success_but_none_found )
+					{
+						ResponseStatusWrapper response = new ResponseStatusWrapper();
+
+						response.status = AppGlobal.RESPONSE_STATUS_request_success_but_none_found;
+						response.message = serverResponseWrapper.getMessage();
+						return response;
+					}
+
+					else if( serverResponseWrapper.getCode() == AppGlobal.RESPONSE_STATUS_request_success )
+					{
+
+						if( serverResponseWrapper != null )
+						{
+							for( ProductWrapper productWrapper : serverResponseWrapper.getResponse() )
+							{
+
+								ProductBO productBO = new ProductBO( Integer.parseInt( ( productWrapper.getId() == null ? "-1" : productWrapper.getId() ) ), productWrapper.getCode(), productWrapper.getName(), productWrapper.getUnit(), productWrapper.getSize(), new BigDecimal( ( productWrapper.getCost() == null ? "-1" : productWrapper.getCost() ) ), new BigDecimal( productWrapper.getPrice() == null ? "-1" : productWrapper.getPrice() ), productWrapper.getAlertQuality(), productWrapper.getImage(), Integer.valueOf( productWrapper.getCategoryId() == null ? "-1" : productWrapper.getCategoryId() ), Integer.valueOf( productWrapper.getSubCategoryId() == null ? "-1" : productWrapper.getSubCategoryId() ), productWrapper.getQuantity(), new BigDecimal( productWrapper.getTaxRate() == null ? "-1" : productWrapper.getTaxRate() ), Integer.valueOf( productWrapper.getTaxQuantity() == null ? "-1" : productWrapper.getTaxQuantity() ), productWrapper.getDetails() );
+								// DatabaseHandler db = new DatabaseHandler(
+								// context, AppGlobal.TABLE_LOGIN );
+								db.addProduct( productBO );
+							}
+							ResponseStatusWrapper response = new ResponseStatusWrapper();
+
+							response.status = AppGlobal.RESPONSE_STATUS_request_success;
+							response.message = serverResponseWrapper.getMessage();
+							return response;
+
+						}
+					}
+				}
+				DataSendService.isServiceRunning = false;
+			}
+
 		}
 		catch ( Exception ex )
 		{

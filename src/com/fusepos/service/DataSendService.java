@@ -81,7 +81,7 @@ public class DataSendService extends Service
 				if( AppGlobal.isDebugMode )
 					Toast.makeText( getApplicationContext(), AppGlobal.TOAST_INTERNET_CONNECTION_FOUND, Toast.LENGTH_LONG ).show();
 			}
-		}, getApplicationContext() ).execute( new String[] { AppGlobal.DATAFETCHER_ACTION_INSERT_FEEDBACK } );
+		}, getApplicationContext() ).execute( new String[] { AppGlobal.DATAFETCHER_ACTION_PRODUCTS_SYNC } );
 		return super.onStartCommand( intent, flags, startId );
 	}
 

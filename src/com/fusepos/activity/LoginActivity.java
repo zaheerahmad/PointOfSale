@@ -1,9 +1,15 @@
 package com.fusepos.activity;
 
+import java.util.Calendar;
+
 import android.app.Activity;
+import android.app.AlarmManager;
 import android.app.AlertDialog;
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -14,6 +20,7 @@ import android.widget.Toast;
 
 import com.fusepos.datalayer.DataFetcher;
 import com.fusepos.datalayer.DatabaseHandler;
+import com.fusepos.service.DataSendService;
 import com.fusepos.utils.AppGlobal;
 import com.fusepos.utils.SAutoBgButton;
 import com.fusepos.utils.Utils;
@@ -129,6 +136,22 @@ public class LoginActivity extends Activity
 						if( dbHandler.validateLogin( txtUsername.getText().toString(), txtPassword.getText().toString() ) )
 						{
 							Toast.makeText( getApplicationContext(), "User validated from SQLLite DB", Toast.LENGTH_SHORT ).show();
+
+							if( !DataSendService.isServiceRunning )
+							{
+								final Calendar TIME = Calendar.getInstance();
+								TIME.set( Calendar.MINUTE, 0 );
+								TIME.set( Calendar.SECOND, 0 );
+								TIME.set( Calendar.MILLISECOND, 0 );
+
+								final AlarmManager m = ( AlarmManager ) getApplicationContext().getSystemService( Context.ALARM_SERVICE );
+								final Intent i = new Intent( getApplicationContext(), DataSendService.class );
+								PendingIntent serviceIntent = PendingIntent.getService( getApplicationContext(), 0, i, PendingIntent.FLAG_CANCEL_CURRENT );
+								m.setRepeating( AlarmManager.RTC, TIME.getTime().getTime(), AppGlobal.SERVICE_DELAY, serviceIntent );
+							}
+
+							Intent saleActivityIntent = new Intent( LoginActivity.this, SaleActivity.class );
+							startActivity( saleActivityIntent );
 						}
 						else
 						{
@@ -161,6 +184,20 @@ public class LoginActivity extends Activity
 									if( loadingDialog != null )
 										loadingDialog.dismiss();
 									Toast.makeText( getApplicationContext(), response.message, Toast.LENGTH_SHORT ).show();
+									if( !DataSendService.isServiceRunning )
+									{
+										final Calendar TIME = Calendar.getInstance();
+										TIME.set( Calendar.MINUTE, 0 );
+										TIME.set( Calendar.SECOND, 0 );
+										TIME.set( Calendar.MILLISECOND, 0 );
+
+										final AlarmManager m = ( AlarmManager ) getApplicationContext().getSystemService( Context.ALARM_SERVICE );
+										final Intent i = new Intent( getApplicationContext(), DataSendService.class );
+										PendingIntent serviceIntent = PendingIntent.getService( getApplicationContext(), 0, i, PendingIntent.FLAG_CANCEL_CURRENT );
+										m.setRepeating( AlarmManager.RTC, TIME.getTime().getTime(), AppGlobal.SERVICE_DELAY, serviceIntent );
+									}
+									Intent saleActivityIntent = new Intent( LoginActivity.this, SaleActivity.class );
+									startActivity( saleActivityIntent );
 								}
 
 								@Override

@@ -1,5 +1,6 @@
 package com.fusepos.datalayer;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,6 +44,9 @@ public class DatabaseHandler extends SQLiteOpenHelper
 
 		String CREATE_FEEDBACK_TABLE = "CREATE TABLE " + AppGlobal.TABLE_LOGIN + "(" + AppGlobal.LOGIN_ID + " INTEGER," + AppGlobal.USER_NAME + " TEXT," + AppGlobal.FNAME + " TEXT," + AppGlobal.LNAME + " TEXT," + AppGlobal.PASSWORD + " TEXT," + AppGlobal.EMAIL + " TEXT," + AppGlobal.COMPANY + " TEXT" + "," + AppGlobal.PHONE + " TEXT" + ")";
 		db.execSQL( CREATE_FEEDBACK_TABLE );
+
+		String CREATE_PRODUCT_TABLE = "CREATE TABLE " + AppGlobal.TABLE_PRODUCT + "(" + AppGlobal.PRODUCT_ID + " INTEGER," + AppGlobal.PRODUCT_CODE + " TEXT," + AppGlobal.PRODUCT_NAME + " TEXT," + AppGlobal.PRODUCT_UNIT + " TEXT," + AppGlobal.PRODUCT_SIZE + " TEXT," + AppGlobal.PRODUCT_COST + " DOUBLE PRECISION," + AppGlobal.PRODUCT_PRICE + " DOUBLE PRECISION" + "," + AppGlobal.PRODUCT_ALERT_QUALITY + " TEXT," + AppGlobal.PRODUCT_IMAGE + " TEXT," + AppGlobal.PRODUCT_CATEGORY_ID + " INTEGER," + AppGlobal.PRODUCT_SUB_CATEGORY_ID + " INTEGER," + AppGlobal.PRODUCT_QUANTITY + " TEXT," + AppGlobal.PRODUCT_TAX_RATE + " DOUBLE PRECISION," + AppGlobal.PRODUCT_TAX_QUANTITY + " INTEGER," + AppGlobal.PRODUCT_DETAILS + " TEXT" + ")";
+		db.execSQL( CREATE_PRODUCT_TABLE );
 	}
 
 	/*
@@ -57,6 +61,8 @@ public class DatabaseHandler extends SQLiteOpenHelper
 
 		// Drop older table if existed
 		db.execSQL( "DROP TABLE IF EXISTS " + AppGlobal.TABLE_LOGIN );
+
+		db.execSQL( "DROP TABLE IF EXISTS " + AppGlobal.TABLE_PRODUCT );
 		// Create tables again
 		onCreate( db );
 
@@ -107,7 +113,7 @@ public class DatabaseHandler extends SQLiteOpenHelper
 	/**
 	 * @return
 	 */
-	public List<LoginBO> getAllFeedbacks()
+	public List<LoginBO> getAllLogins()
 	{
 
 		List<LoginBO> loginList = new ArrayList<LoginBO>();
@@ -159,10 +165,13 @@ public class DatabaseHandler extends SQLiteOpenHelper
 		String countQuery = "SELECT * FROM " + AppGlobal.TABLE_LOGIN + " ORDER BY " + AppGlobal.LOGIN_ID + " DESC LIMIT 1";
 		SQLiteDatabase db = this.getWritableDatabase();
 		Cursor cursor = db.rawQuery( countQuery, null );
-		if( cursor != null )
+		if( cursor != null  && cursor.getCount() > 0)
+		{
 			cursor.moveToFirst();
 
 		return new LoginBO( Integer.parseInt( cursor.getString( 0 ) ), cursor.getString( 1 ), cursor.getString( 2 ), cursor.getString( 3 ), cursor.getString( 4 ), cursor.getString( 5 ), cursor.getString( 6 ), cursor.getString( 7 ) );
+		}
+		return null;
 	}
 
 	/**
@@ -241,4 +250,214 @@ public class DatabaseHandler extends SQLiteOpenHelper
 	/**
 	 * Feedback Table Methods ended
 	 */
+
+	// Feedback Table Methods started
+
+	/**
+	 * 
+	 * 
+	 * @param productBO
+	 */
+
+	public void addProduct( ProductBO productBO )
+	{
+
+		SQLiteDatabase db = this.getWritableDatabase();
+		ContentValues values = new ContentValues();
+
+		values.put( AppGlobal.PRODUCT_ID, productBO.getId() );
+		values.put( AppGlobal.PRODUCT_CODE, productBO.getCode() );
+		values.put( AppGlobal.PRODUCT_NAME, productBO.getName() );
+		values.put( AppGlobal.PRODUCT_UNIT, productBO.getUnit() );
+		values.put( AppGlobal.PRODUCT_SIZE, productBO.getSize() );
+		values.put( AppGlobal.PRODUCT_COST, productBO.getCost().toPlainString() );
+		values.put( AppGlobal.PRODUCT_PRICE, productBO.getPrice().toPlainString() );
+		values.put( AppGlobal.PRODUCT_ALERT_QUALITY, productBO.getAlertQuality() );
+
+		values.put( AppGlobal.PRODUCT_IMAGE, productBO.getImage() );
+		values.put( AppGlobal.PRODUCT_CATEGORY_ID, productBO.getCategoryId() );
+		values.put( AppGlobal.PRODUCT_SUB_CATEGORY_ID, productBO.getSubCategoryId() );
+		values.put( AppGlobal.PRODUCT_QUANTITY, productBO.getQuantity() );
+		values.put( AppGlobal.PRODUCT_TAX_RATE, productBO.getTaxRate().toPlainString() );
+		values.put( AppGlobal.PRODUCT_TAX_QUANTITY, productBO.getTaxQuantity() );
+		values.put( AppGlobal.PRODUCT_DETAILS, productBO.getDetails() );
+
+		db.insert( AppGlobal.TABLE_PRODUCT, null, values );
+		db.close(); // Closing database connection
+	}
+
+	/**
+	 * @param id
+	 * @return
+	 */
+	public ProductBO getProduct( int id )
+	{
+
+		SQLiteDatabase db = this.getReadableDatabase();
+
+		String selectQuery = "SELECT  * FROM " + AppGlobal.TABLE_PRODUCT + " WHERE " + AppGlobal.PRODUCT_ID + " = " + id;
+
+		//SQLiteDatabase db = this.getWritableDatabase();
+		Cursor cursor = db.rawQuery( selectQuery, null );
+		if( cursor != null )
+			cursor.moveToFirst();
+		ProductBO product = new ProductBO( cursor.getInt( 0 ), cursor.getString( 1 ), cursor.getString( 2 ), cursor.getString( 3 ), cursor.getString( 4 ), new BigDecimal( cursor.getString( 5 ) ), new BigDecimal( cursor.getString( 6 ) ), cursor.getString( 7 ), cursor.getString( 8 ), cursor.getInt( 9 ), cursor.getInt( 10 ), cursor.getString( 11 ), new BigDecimal( cursor.getString( 12 ) ), cursor.getInt( 13 ), cursor.getString( 14 ) );
+		return product;
+	}
+
+	/**
+	 * @return
+	 */
+	public List<ProductBO> getAllProducts()
+	{
+
+		List<ProductBO> productList = new ArrayList<ProductBO>();
+		// Select All Query
+		String selectQuery = "SELECT  * FROM " + AppGlobal.TABLE_PRODUCT;
+
+		SQLiteDatabase db = this.getWritableDatabase();
+		Cursor cursor = db.rawQuery( selectQuery, null );
+
+		// looping through all rows and adding to list
+		if( cursor.moveToFirst() )
+		{
+			do
+			{
+				ProductBO product = new ProductBO( cursor.getInt( 0 ), cursor.getString( 1 ), cursor.getString( 2 ), cursor.getString( 3 ), cursor.getString( 4 ), new BigDecimal( cursor.getString( 5 ) ), new BigDecimal( cursor.getString( 6 ) ), cursor.getString( 7 ), cursor.getString( 8 ), cursor.getInt( 9 ), cursor.getInt( 10 ), cursor.getString( 11 ), new BigDecimal( cursor.getString( 12 ) ), cursor.getInt( 13 ), cursor.getString( 14 ) );
+				productList.add( product );
+			}
+			while ( cursor.moveToNext() );
+
+		}
+		return productList;
+	}
+
+	/**
+	 * @author Waqas Ahmed
+	 * @return
+	 */
+	public int getProductCount()
+	{
+
+		String countQuery = "SELECT  * FROM " + AppGlobal.TABLE_PRODUCT;
+		SQLiteDatabase db = this.getReadableDatabase();
+		Cursor cursor = db.rawQuery( countQuery, null );
+
+		int count = -1;
+
+		if( cursor != null && !cursor.isClosed() )
+		{
+			count = cursor.getCount();
+			cursor.close();
+		}
+		return count;
+	}
+
+	/**
+	 * @author Waqas Ahmed
+	 * @return
+	 */
+	public ProductBO getLastInsertedProduct()
+	{
+
+		String countQuery = "SELECT * FROM " + AppGlobal.TABLE_PRODUCT + " ORDER BY " + AppGlobal.PRODUCT_ID + " DESC LIMIT 1";
+		SQLiteDatabase db = this.getWritableDatabase();
+		Cursor cursor = db.rawQuery( countQuery, null );
+		if( cursor != null && cursor.getCount() > 0)
+		{
+			cursor.moveToFirst();
+			return new ProductBO( cursor.getInt( 0 ), cursor.getString( 1 ), cursor.getString( 2 ), cursor.getString( 3 ), cursor.getString( 4 ), new BigDecimal( cursor.getString( 5 ) ), new BigDecimal( cursor.getString( 6 ) ), cursor.getString( 7 ), cursor.getString( 8 ), cursor.getInt( 9 ), cursor.getInt( 10 ), cursor.getString( 11 ), new BigDecimal( cursor.getString( 12 ) ), cursor.getInt( 13 ), cursor.getString( 14 ) );
+		}
+		return null;
+	}
+
+	/**
+	 * @author Waqas Ahmed
+	 * @return
+	 */
+	public int getLastInsertedProductId(){
+		if(this.getLastInsertedProduct() != null)
+			return this.getLastInsertedProduct().getId();
+		return -1;
+	}
+	/**
+	 * @param product
+	 * @return
+	 */
+	public int updateProduct( ProductBO product )
+	{
+
+		SQLiteDatabase db = this.getWritableDatabase();
+
+		ContentValues values = new ContentValues();
+
+		values.put( AppGlobal.PRODUCT_CODE, product.getCode() );
+		values.put( AppGlobal.PRODUCT_NAME, product.getName() );
+		values.put( AppGlobal.PRODUCT_UNIT, product.getUnit() );
+		values.put( AppGlobal.PRODUCT_SIZE, product.getSize() );
+		values.put( AppGlobal.PRODUCT_COST, product.getCost().toPlainString() );
+		values.put( AppGlobal.PRODUCT_PRICE, product.getPrice().toPlainString() );
+		values.put( AppGlobal.PRODUCT_ALERT_QUALITY, product.getAlertQuality() );
+
+		values.put( AppGlobal.PRODUCT_IMAGE, product.getImage() );
+		values.put( AppGlobal.PRODUCT_CATEGORY_ID, product.getCategoryId() );
+		values.put( AppGlobal.PRODUCT_SUB_CATEGORY_ID, product.getSubCategoryId() );
+		values.put( AppGlobal.PRODUCT_QUANTITY, product.getQuantity() );
+		values.put( AppGlobal.PRODUCT_TAX_RATE, product.getTaxRate().toPlainString() );
+		values.put( AppGlobal.PRODUCT_TAX_QUANTITY, product.getTaxQuantity() );
+		values.put( AppGlobal.PRODUCT_DETAILS, product.getDetails() );
+		// updating row
+		return db.update( AppGlobal.TABLE_PRODUCT, values, AppGlobal.PRODUCT_ID + " = ?", new String[] { String.valueOf( product.getId() ) } );
+	}
+
+	/**
+	 * @param product
+	 */
+	public void deleteProduct( ProductBO product )
+	{
+
+		SQLiteDatabase db = this.getWritableDatabase();
+		db.delete( AppGlobal.TABLE_PRODUCT, AppGlobal.PRODUCT_ID + " = ?", new String[] { String.valueOf( product.getId() ) } );
+		db.close();
+	}
+
+	/**
+	 * @param email
+	 * @param password
+	 * @return
+	 *         //
+	 */
+	// public boolean validateLogin( String email, String password )
+	// {
+	//
+	// String selectQuery = "SELECT  * FROM " + AppGlobal.TABLE_LOGIN +
+	// " WHERE " + AppGlobal.EMAIL + " = '" + email + "' AND " +
+	// AppGlobal.PASSWORD + " = '" + password + "'";
+	// SQLiteDatabase db = this.getWritableDatabase();
+	// Cursor cursor = db.rawQuery( selectQuery, null );
+	//
+	// if( cursor != null && !cursor.isClosed() )
+	// {
+	// if( cursor.moveToFirst() )
+	// return true;
+	// }
+	// return false;
+	// }
+
+	/**
+	 * @author Waqas Ahmed
+	 * @param id
+	 * @return {@link Boolean}
+	 */
+	public boolean isProductExist( int id )
+	{
+
+		return ( this.getProduct( id ) != null );
+
+	}
+
+	/**
+	 * Feedback Table Methods ended
+	 */
+
 }
