@@ -1,26 +1,22 @@
 package com.fusepos.activity;
 
-import java.util.Calendar;
+import java.util.List;
 
 import android.app.Activity;
-import android.app.AlarmManager;
 import android.app.AlertDialog;
-import android.app.PendingIntent;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import com.fusepos.datalayer.DataFetcher;
 import com.fusepos.datalayer.DatabaseHandler;
-import com.fusepos.service.DataSendService;
+import com.fusepos.datalayer.LoginBO;
 import com.fusepos.utils.AppGlobal;
 import com.fusepos.utils.SAutoBgButton;
 import com.fusepos.utils.Utils;
@@ -47,6 +43,14 @@ public class LoginActivity extends Activity
 		txtUsername = ( EditText ) findViewById( R.id.login_username_et );
 		txtPassword = ( EditText ) findViewById( R.id.login_password_et );
 
+		SharedPreferences pref = Utils.getSharedPreferences( getApplicationContext() );
+
+		if( pref != null )
+		{
+			txtUsername.setText( pref.getString( AppGlobal.APP_PREF_USERNAME, "" ) );
+			txtPassword.setText( pref.getString( AppGlobal.APP_PREF_PASSWORD, "" ) );
+		}
+
 		SAutoBgButton btnSettings = ( SAutoBgButton ) findViewById( R.id.login_setting_btn );
 		btnSettings.setOnClickListener( new View.OnClickListener()
 		{
@@ -59,6 +63,7 @@ public class LoginActivity extends Activity
 				// ViewGroup viewGroup = ( ViewGroup ) v;
 				LayoutInflater li = LayoutInflater.from( LoginActivity.this );
 				View promptsView = li.inflate( R.layout.setting_db_instance, null );
+				SharedPreferences pref = Utils.getSharedPreferences( getApplicationContext() );
 
 				AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder( LoginActivity.this );
 				alertDialogBuilder.setView( promptsView );
@@ -70,6 +75,14 @@ public class LoginActivity extends Activity
 				final EditText dbUserName = ( EditText ) promptsView.findViewById( R.id.instance_d_db_username );
 
 				final EditText dbPassword = ( EditText ) promptsView.findViewById( R.id.instance_d_db_password );
+
+				if( pref != null )
+				{
+					hostName.setText( pref.getString( AppGlobal.APP_PREF_HOST_NAME, "" ) );
+					dbName.setText( pref.getString( AppGlobal.APP_PREF_DB_NAME, "" ) );
+					dbUserName.setText( pref.getString( AppGlobal.APP_PREF_DB_USERNAME, "" ) );
+					dbPassword.setText( pref.getString( AppGlobal.APP_PREF_DB_PASSWORD, "" ) );
+				}
 
 				alertDialogBuilder.setCancelable( false ).setPositiveButton( "Save", new DialogInterface.OnClickListener()
 				{
@@ -131,25 +144,15 @@ public class LoginActivity extends Activity
 				{
 					// TODO Auto-generated method stub
 					DatabaseHandler dbHandler = new DatabaseHandler( getApplicationContext(), AppGlobal.TABLE_LOGIN );
+					List<LoginBO> logins = dbHandler.getAllLogins();
 					if( dbHandler.isUserExist( txtUsername.getText().toString() ) )
 					{
 						if( dbHandler.validateLogin( txtUsername.getText().toString(), txtPassword.getText().toString() ) )
 						{
 							Toast.makeText( getApplicationContext(), "User validated from SQLLite DB", Toast.LENGTH_SHORT ).show();
-
-							if( !DataSendService.isServiceRunning )
-							{
-								final Calendar TIME = Calendar.getInstance();
-								TIME.set( Calendar.MINUTE, 0 );
-								TIME.set( Calendar.SECOND, 0 );
-								TIME.set( Calendar.MILLISECOND, 0 );
-
-								final AlarmManager m = ( AlarmManager ) getApplicationContext().getSystemService( Context.ALARM_SERVICE );
-								final Intent i = new Intent( getApplicationContext(), DataSendService.class );
-								PendingIntent serviceIntent = PendingIntent.getService( getApplicationContext(), 0, i, PendingIntent.FLAG_CANCEL_CURRENT );
-								m.setRepeating( AlarmManager.RTC, TIME.getTime().getTime(), AppGlobal.SERVICE_DELAY, serviceIntent );
-							}
-
+							SharedPreferences pref = Utils.getSharedPreferences( getApplicationContext() );
+							pref.edit().putString( AppGlobal.APP_PREF_USERNAME, txtUsername.getText().toString() ).commit();
+							pref.edit().putString( AppGlobal.APP_PREF_PASSWORD, txtPassword.getText().toString() ).commit();
 							Intent saleActivityIntent = new Intent( LoginActivity.this, SaleActivity.class );
 							startActivity( saleActivityIntent );
 						}
@@ -184,18 +187,11 @@ public class LoginActivity extends Activity
 									if( loadingDialog != null )
 										loadingDialog.dismiss();
 									Toast.makeText( getApplicationContext(), response.message, Toast.LENGTH_SHORT ).show();
-									if( !DataSendService.isServiceRunning )
-									{
-										final Calendar TIME = Calendar.getInstance();
-										TIME.set( Calendar.MINUTE, 0 );
-										TIME.set( Calendar.SECOND, 0 );
-										TIME.set( Calendar.MILLISECOND, 0 );
 
-										final AlarmManager m = ( AlarmManager ) getApplicationContext().getSystemService( Context.ALARM_SERVICE );
-										final Intent i = new Intent( getApplicationContext(), DataSendService.class );
-										PendingIntent serviceIntent = PendingIntent.getService( getApplicationContext(), 0, i, PendingIntent.FLAG_CANCEL_CURRENT );
-										m.setRepeating( AlarmManager.RTC, TIME.getTime().getTime(), AppGlobal.SERVICE_DELAY, serviceIntent );
-									}
+									SharedPreferences pref = Utils.getSharedPreferences( getApplicationContext() );
+									pref.edit().putString( AppGlobal.APP_PREF_USERNAME, txtUsername.getText().toString() ).commit();
+									pref.edit().putString( AppGlobal.APP_PREF_PASSWORD, txtPassword.getText().toString() ).commit();
+
 									Intent saleActivityIntent = new Intent( LoginActivity.this, SaleActivity.class );
 									startActivity( saleActivityIntent );
 								}
@@ -227,14 +223,4 @@ public class LoginActivity extends Activity
 			}
 		} );
 	}
-
-	@Override
-	public boolean onCreateOptionsMenu( Menu menu )
-	{
-
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate( R.menu.main, menu );
-		return true;
-	}
-
 }

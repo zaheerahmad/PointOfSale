@@ -49,6 +49,12 @@ public class ProductBO
 		this.details = details;
 	}
 
+	public ProductBO()
+	{
+
+		// TODO Auto-generated constructor stub
+	}
+
 	public int getId()
 	{
 
@@ -236,6 +242,20 @@ public class ProductBO
 		{
 			if( list.get( i ).getId() == product.id )
 				return true;
+		}
+		return false;
+	}
+	
+	public boolean deleteProductFromList( int productId, List<ProductBO> list )
+	{
+
+		for( int i = 0 ; i < list.size() ; i++ )
+		{
+			if( list.get( i ).getId() == productId )
+			{
+				list.remove( i );
+				return true;
+			}
 		}
 		return false;
 	}

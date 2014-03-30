@@ -142,7 +142,7 @@ public class DataFetcher extends AsyncTask<String, String, ResponseStatusWrapper
 						{
 							LoginWrapper loginWrapper = serverResponseWrapper.getResponse();
 
-							LoginBO loginBO = new LoginBO( Integer.parseInt( loginWrapper.getId() ), loginWrapper.getUsername(), loginWrapper.getPassword(), loginWrapper.getPassword(), loginWrapper.getFirstName(), loginWrapper.getLastName(), loginWrapper.getCompany(), loginWrapper.getPhone() );
+							LoginBO loginBO = new LoginBO( Integer.parseInt( loginWrapper.getId() ), loginWrapper.getUsername(), loginWrapper.getPassword(), loginWrapper.getEmail(), loginWrapper.getFirstName(), loginWrapper.getLastName(), loginWrapper.getCompany(), loginWrapper.getPhone() );
 							DatabaseHandler db = new DatabaseHandler( context, AppGlobal.TABLE_LOGIN );
 							db.addLogin( loginBO );
 

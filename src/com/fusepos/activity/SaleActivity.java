@@ -4,15 +4,20 @@
 package com.fusepos.activity;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
-import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -20,10 +25,14 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.fusepos.datalayer.DataFetcher;
 import com.fusepos.datalayer.DatabaseHandler;
 import com.fusepos.datalayer.ProductBO;
+import com.fusepos.service.DataSendService;
 import com.fusepos.utils.AppGlobal;
 import com.fusepos.utils.SAutoBgButton;
+import com.fusepos.wrapper.IAsyncTask;
+import com.fusepos.wrapper.ResponseStatusWrapper;
 
 /**
  * @author Zaheer Ahmad
@@ -39,6 +48,21 @@ public class SaleActivity extends Activity
 	GridView		gridProducts;
 	ListView		listProducts;
 
+	ProgressDialog	loadingDialog;
+	TextView		totalPayableTextView;
+	TextView		totalItemsTextView;
+	TextView		taxTextView;
+	TextView		discountTextView;
+	TextView		totalTextView;
+	TextView		vatTextView;
+
+	double			totalPayable	= 0.0;
+	int				totalItem		= 0;
+	double			tax				= 0.0;
+	double			discount		= 0.0;
+	double			total			= 0.0;
+	double			vat				= 0.0;
+
 	@Override
 	protected void onCreate( Bundle savedInstanceState )
 	{
@@ -49,10 +73,77 @@ public class SaleActivity extends Activity
 		super.onCreate( savedInstanceState );
 		setContentView( R.layout.sale_activity );
 
+		gridProducts = ( GridView ) findViewById( R.id.sale_grid );
+
+		listProducts = ( ListView ) findViewById( R.id.sale_listView );
+
+		totalPayableTextView = ( TextView ) findViewById( R.id.sale_totalPayableTextView );
+		totalItemsTextView = ( TextView ) findViewById( R.id.sale_totalItemText );
+		taxTextView = ( TextView ) findViewById( R.id.sale_taxText );
+		discountTextView = ( TextView ) findViewById( R.id.sale_discountText );
+		totalTextView = ( TextView ) findViewById( R.id.sale_totalText );
+		vatTextView = ( TextView ) findViewById( R.id.sale_vatText );
+
+		totalPayableTextView.setText( String.valueOf( totalPayable ) );
+		totalItemsTextView.setText( String.valueOf( totalItem ) );
+		taxTextView.setText( String.valueOf( tax ) );
+		discountTextView.setText( String.valueOf( discount ) );
+		totalTextView.setText( String.valueOf( total ) );
+		vatTextView.setText( String.valueOf( vat ) );
+		// Loading Products First Time.. Manually
+		// Internet should be available here.
+
+		new DataFetcher( new IAsyncTask()
+		{
+
+			@Override
+			public void success( ResponseStatusWrapper response )
+			{
+
+				// TODO Auto-generated method stub
+				if( loadingDialog != null )
+					loadingDialog.dismiss();
+				bindProducts();
+			}
+
+			@Override
+			public void fail( ResponseStatusWrapper response )
+			{
+
+				// TODO Auto-generated method stub
+				if( loadingDialog != null )
+					loadingDialog.dismiss();
+				DatabaseHandler dbHandler = new DatabaseHandler( getApplicationContext(), AppGlobal.TABLE_PRODUCT );
+				_saleListProductForGridView = dbHandler.getAllProducts();
+				if( _saleListProductForGridView.size() > 0 )
+				{
+					bindProducts();
+				}
+				else
+				{
+					Toast.makeText( getApplicationContext(), response.message, Toast.LENGTH_LONG ).show();
+					finish();
+				}
+			}
+
+			@Override
+			public void doWait()
+			{
+
+				// TODO Auto-generated method stub
+				loadingDialog = new ProgressDialog( SaleActivity.this );
+				loadingDialog.setMessage( AppGlobal.TOAST_PLEASE_WAIT );
+				loadingDialog.setCancelable( false );
+				loadingDialog.show();
+			}
+		}, getApplicationContext() ).execute( AppGlobal.DATAFETCHER_ACTION_PRODUCTS_SYNC );
+	}
+
+	public void bindProducts()
+	{
+
 		DatabaseHandler dbHandler = new DatabaseHandler( getApplicationContext(), AppGlobal.TABLE_PRODUCT );
 		_saleListProductForGridView = dbHandler.getAllProducts();
-
-		gridProducts = ( GridView ) findViewById( R.id.sale_grid );
 
 		if( _saleListProductForGridView != null && _saleListProductForGridView.size() > 0 )
 		{
@@ -60,23 +151,24 @@ public class SaleActivity extends Activity
 			gridProducts.setAdapter( _saleGridAdapter );
 		}
 
-		listProducts = ( ListView ) findViewById( R.id.sale_listView );
-
 		if( _saleListProductForListView != null )
 		{
 			_saleListAdapter = new SaleListAdapter( getApplicationContext(), -1, _saleListProductForListView );
 			listProducts.setAdapter( _saleListAdapter );
 		}
 
-	}
+		if( !DataSendService.isServiceRunning )
+		{
+			final Calendar TIME = Calendar.getInstance();
+			TIME.set( Calendar.MINUTE, 0 );
+			TIME.set( Calendar.SECOND, 0 );
+			TIME.set( Calendar.MILLISECOND, 0 );
 
-	@Override
-	public boolean onCreateOptionsMenu( Menu menu )
-	{
-
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate( R.menu.main, menu );
-		return true;
+			final AlarmManager m = ( AlarmManager ) getApplicationContext().getSystemService( Context.ALARM_SERVICE );
+			final Intent i = new Intent( getApplicationContext(), DataSendService.class );
+			PendingIntent serviceIntent = PendingIntent.getService( getApplicationContext(), 0, i, PendingIntent.FLAG_CANCEL_CURRENT );
+			m.setRepeating( AlarmManager.RTC, TIME.getTime().getTime(), AppGlobal.SERVICE_DELAY, serviceIntent );
+		}
 	}
 
 	public class SaleGridAdapter extends ArrayAdapter<ProductBO>
@@ -155,6 +247,15 @@ public class SaleActivity extends Activity
 							}
 							else
 							{
+								// Updated Calculations here..
+								totalItem++;
+								total += productBO.getPrice().doubleValue();
+								totalPayable = total + vat + tax;
+
+								totalItemsTextView.setText( String.valueOf( totalItem ) );
+								totalTextView.setText( String.valueOf( total ) );
+								totalPayableTextView.setText( String.valueOf( totalPayable ) );
+
 								_saleListProductForListView.add( productBO );
 								_saleListAdapter.notifyDataSetChanged();
 							}
@@ -210,11 +311,43 @@ public class SaleActivity extends Activity
 			holder.deleteBtn = ( SAutoBgButton ) view.findViewById( R.id.sale_list_deletebtn );
 			holder.productName = ( TextView ) view.findViewById( R.id.sale_list_productText );
 			holder.ProductPrice = ( TextView ) view.findViewById( R.id.sale_list_productPriceText );
-			holder.productQuantity = ( TextView ) view.findViewById( R.id.sale_list_productQttyText );
+			holder.productQuantity = ( EditText ) view.findViewById( R.id.sale_list_productQttyText );
+			holder.productId = ( TextView ) view.findViewById( R.id.sale_list_hidden_productId );
 
 			holder.productName.setText( this.productList.get( position ).getName().trim() );
 			holder.ProductPrice.setText( String.valueOf( this.productList.get( position ).getPrice() ) );
 			holder.productQuantity.setText( String.valueOf( 1 ) );
+			holder.productId.setText( String.valueOf( this.productList.get( position ).getId() ) );
+			holder.deleteBtn.setOnClickListener( new View.OnClickListener()
+			{
+
+				@Override
+				public void onClick( View v )
+				{
+
+					// TODO Auto-generated method stub
+					LinearLayout ll = ( LinearLayout ) v.getParent();
+					LinearLayout ll1 = ( LinearLayout ) ll.getParent();
+					TextView tvId = ( TextView ) ll1.getChildAt( 0 );
+					ProductBO p = new ProductBO();
+
+					if( p.deleteProductFromList( Integer.parseInt( tvId.getText().toString() ), productList ) )
+					{
+						DatabaseHandler dbHandler = new DatabaseHandler( getApplicationContext(), AppGlobal.TABLE_PRODUCT );
+						ProductBO productBO = dbHandler.getProduct( Integer.parseInt( tvId.getText().toString() ) );
+
+						totalItem--;
+						total -= productBO.getPrice().doubleValue();
+						totalPayable = total + vat + tax;
+
+						totalItemsTextView.setText( String.valueOf( totalItem ) );
+						totalTextView.setText( String.valueOf( total ) );
+						totalPayableTextView.setText( String.valueOf( totalPayable ) );
+
+						_saleListAdapter.notifyDataSetChanged();
+					}
+				}
+			} );
 
 			view.setTag( holder );
 			return view;
@@ -224,8 +357,9 @@ public class SaleActivity extends Activity
 		{
 			SAutoBgButton	deleteBtn;
 			TextView		productName;
-			TextView		productQuantity;
+			EditText		productQuantity;
 			TextView		ProductPrice;
+			TextView		productId;
 		}
 
 	}
