@@ -1,43 +1,34 @@
 <ScrollView xmlns:tools="http://schemas.android.com/tools"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent"
+    android:background="#ff6600" >
 
     <RelativeLayout
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
+        android:layout_height="wrap_content"
         android:paddingBottom="@dimen/activity_vertical_margin"
         android:paddingLeft="@dimen/activity_horizontal_margin"
         android:paddingRight="@dimen/activity_horizontal_margin"
         android:paddingTop="@dimen/activity_vertical_margin"
         tools:context=".LoginActivity1" >
 
-        <ImageView
-            android:id="@+id/login_logo"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:padding="15dp"
-            android:src="@drawable/login_logo" />
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/login_logo"
-            android:orientation="vertical" >
+            android:orientation="vertical"
+            android:layout_centerVertical="true">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="#E5E4E2"
                 android:gravity="center_horizontal" >
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:padding="10dp"
-                    android:text="Login to point of sale"
-                    android:textSize="18sp"
+                    android:text="Point of Sale Login"
+                    android:textColor="#ffffff"
                     android:textStyle="bold" />
             </LinearLayout>
 
@@ -51,7 +42,8 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="center"
-                    android:text="Username" />
+                    android:text="Username"
+                    android:textColor="#ffffff" />
 
                 <EditText
                     android:id="@+id/login_username_et"
@@ -75,7 +67,8 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="center"
-                    android:text="Password" />
+                    android:text="Password"
+                    android:textColor="#ffffff" />
 
                 <EditText
                     android:id="@+id/login_password_et"
@@ -92,7 +85,6 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="#E5E4E2"
                 android:gravity="center_horizontal"
                 android:orientation="horizontal"
                 android:padding="10dp" >
@@ -113,20 +105,22 @@
                         android:layout_height="match_parent" >
 
                         <com.fusepos.utils.SAutoBgButton
+                            android:id="@+id/login_login_btn"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_alignParentLeft="true"
-                            android:background="#C35817"
+                            android:layout_alignParentRight="true"
+                            android:background="#330000"
                             android:text="Login"
-                            android:textColor="#ffffff"
-                            android:id="@+id/login_login_btn"/>
+                            android:textColor="#ffffff" />
 
-                        <com.fusepos.utils.SAutoBgButton
+                        <!--
+                             <com.fusepos.utils.SAutoBgButton
+                            android:id="@+id/login_setting_btn"
                             android:layout_width="50dp"
                             android:layout_height="50dp"
                             android:layout_alignParentRight="true"
-                            android:background="@drawable/setting_icon"
-                            android:id="@+id/login_setting_btn"/>
+                            android:background="@drawable/setting_icon" />
+                        -->
                     </RelativeLayout>
                 </LinearLayout>
             </LinearLayout>
