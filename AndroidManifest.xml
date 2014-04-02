@@ -25,7 +25,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name="com.fusepos.activity.LoginActivity"
+            android:name="com.fusepos.activity.AndroidTabLayoutActivity"
             android:label="@string/app_name"
             android:windowSoftInputMode="adjustPan" >
             <intent-filter>
@@ -40,10 +40,18 @@
             android:screenOrientation="landscape"
             android:windowSoftInputMode="adjustPan" >
         </activity>
+         <!--  Songs Activity -->
+        <activity android:name="com.fusepos.activity.SettingActivity" />
+        
+        <!--  Videos Activity -->
+        <activity android:name="com.fusepos.activity.VideosActivity" />
+        
+        <!--  Photos Activity -->
+        <activity android:name="com.fusepos.activity.LoginActivity" />
 
-        <service
+       <!--  <service
             android:name="com.fusepos.service.DataSendService"
-            android:enabled="true" />
+            android:enabled="true" /> -->
     </application>
 
 </manifest>
