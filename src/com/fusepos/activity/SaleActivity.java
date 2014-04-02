@@ -25,14 +25,11 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.fusepos.datalayer.DataFetcher;
 import com.fusepos.datalayer.DatabaseHandler;
 import com.fusepos.datalayer.ProductBO;
 import com.fusepos.service.DataSendService;
 import com.fusepos.utils.AppGlobal;
 import com.fusepos.utils.SAutoBgButton;
-import com.fusepos.wrapper.IAsyncTask;
-import com.fusepos.wrapper.ResponseStatusWrapper;
 
 /**
  * @author Zaheer Ahmad
@@ -90,53 +87,8 @@ public class SaleActivity extends Activity
 		discountTextView.setText( String.valueOf( discount ) );
 		totalTextView.setText( String.valueOf( total ) );
 		vatTextView.setText( String.valueOf( vat ) );
-		// Loading Products First Time.. Manually
-		// Internet should be available here.
-
-		new DataFetcher( new IAsyncTask()
-		{
-
-			@Override
-			public void success( ResponseStatusWrapper response )
-			{
-
-				// TODO Auto-generated method stub
-				if( loadingDialog != null )
-					loadingDialog.dismiss();
-				bindProducts();
-			}
-
-			@Override
-			public void fail( ResponseStatusWrapper response )
-			{
-
-				// TODO Auto-generated method stub
-				if( loadingDialog != null )
-					loadingDialog.dismiss();
-				DatabaseHandler dbHandler = new DatabaseHandler( getApplicationContext(), AppGlobal.TABLE_PRODUCT );
-				_saleListProductForGridView = dbHandler.getAllProducts();
-				if( _saleListProductForGridView.size() > 0 )
-				{
-					bindProducts();
-				}
-				else
-				{
-					Toast.makeText( getApplicationContext(), response.message, Toast.LENGTH_LONG ).show();
-					finish();
-				}
-			}
-
-			@Override
-			public void doWait()
-			{
-
-				// TODO Auto-generated method stub
-				loadingDialog = new ProgressDialog( SaleActivity.this );
-				loadingDialog.setMessage( AppGlobal.TOAST_PLEASE_WAIT );
-				loadingDialog.setCancelable( false );
-				loadingDialog.show();
-			}
-		}, getApplicationContext() ).execute( AppGlobal.DATAFETCHER_ACTION_PRODUCTS_SYNC );
+		
+		bindProducts();
 	}
 
 	public void bindProducts()
@@ -144,6 +96,7 @@ public class SaleActivity extends Activity
 
 		DatabaseHandler dbHandler = new DatabaseHandler( getApplicationContext(), AppGlobal.TABLE_PRODUCT );
 		_saleListProductForGridView = dbHandler.getAllProducts();
+		dbHandler.close();
 
 		if( _saleListProductForGridView != null && _saleListProductForGridView.size() > 0 )
 		{
@@ -238,6 +191,7 @@ public class SaleActivity extends Activity
 
 						DatabaseHandler dbHandler = new DatabaseHandler( getApplicationContext(), AppGlobal.TABLE_PRODUCT );
 						ProductBO productBO = dbHandler.getProduct( productId );
+						dbHandler.close();
 						if( productBO != null )
 						{
 							if( productBO.isListHasProduct( productBO, _saleListProductForListView ) )
@@ -336,6 +290,7 @@ public class SaleActivity extends Activity
 						DatabaseHandler dbHandler = new DatabaseHandler( getApplicationContext(), AppGlobal.TABLE_PRODUCT );
 						ProductBO productBO = dbHandler.getProduct( Integer.parseInt( tvId.getText().toString() ) );
 
+						dbHandler.close();
 						totalItem--;
 						total -= productBO.getPrice().doubleValue();
 						totalPayable = total + vat + tax;

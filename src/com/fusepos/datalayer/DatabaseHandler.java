@@ -271,29 +271,26 @@ public class DatabaseHandler extends SQLiteOpenHelper
 		SQLiteDatabase db = this.getWritableDatabase();
 		ContentValues values = new ContentValues();
 
-		if( this.getProduct( productBO.getId() ) == null )
-		{
+		values.put( AppGlobal.PRODUCT_ID, productBO.getId() );
+		values.put( AppGlobal.PRODUCT_CODE, productBO.getCode() );
+		values.put( AppGlobal.PRODUCT_NAME, productBO.getName() );
+		values.put( AppGlobal.PRODUCT_UNIT, productBO.getUnit() );
+		values.put( AppGlobal.PRODUCT_SIZE, productBO.getSize() );
+		values.put( AppGlobal.PRODUCT_COST, productBO.getCost().toPlainString() );
+		values.put( AppGlobal.PRODUCT_PRICE, productBO.getPrice().toPlainString() );
+		values.put( AppGlobal.PRODUCT_ALERT_QUALITY, productBO.getAlertQuality() );
 
-			values.put( AppGlobal.PRODUCT_ID, productBO.getId() );
-			values.put( AppGlobal.PRODUCT_CODE, productBO.getCode() );
-			values.put( AppGlobal.PRODUCT_NAME, productBO.getName() );
-			values.put( AppGlobal.PRODUCT_UNIT, productBO.getUnit() );
-			values.put( AppGlobal.PRODUCT_SIZE, productBO.getSize() );
-			values.put( AppGlobal.PRODUCT_COST, productBO.getCost().toPlainString() );
-			values.put( AppGlobal.PRODUCT_PRICE, productBO.getPrice().toPlainString() );
-			values.put( AppGlobal.PRODUCT_ALERT_QUALITY, productBO.getAlertQuality() );
+		values.put( AppGlobal.PRODUCT_IMAGE, productBO.getImage() );
+		values.put( AppGlobal.PRODUCT_CATEGORY_ID, productBO.getCategoryId() );
+		values.put( AppGlobal.PRODUCT_SUB_CATEGORY_ID, productBO.getSubCategoryId() );
+		values.put( AppGlobal.PRODUCT_QUANTITY, productBO.getQuantity() );
+		values.put( AppGlobal.PRODUCT_TAX_RATE, productBO.getTaxRate().toPlainString() );
+		values.put( AppGlobal.PRODUCT_TAX_QUANTITY, productBO.getTaxQuantity() );
+		values.put( AppGlobal.PRODUCT_DETAILS, productBO.getDetails() );
 
-			values.put( AppGlobal.PRODUCT_IMAGE, productBO.getImage() );
-			values.put( AppGlobal.PRODUCT_CATEGORY_ID, productBO.getCategoryId() );
-			values.put( AppGlobal.PRODUCT_SUB_CATEGORY_ID, productBO.getSubCategoryId() );
-			values.put( AppGlobal.PRODUCT_QUANTITY, productBO.getQuantity() );
-			values.put( AppGlobal.PRODUCT_TAX_RATE, productBO.getTaxRate().toPlainString() );
-			values.put( AppGlobal.PRODUCT_TAX_QUANTITY, productBO.getTaxQuantity() );
-			values.put( AppGlobal.PRODUCT_DETAILS, productBO.getDetails() );
+		db.insert( AppGlobal.TABLE_PRODUCT, null, values );
+		db.close(); // Closing database connection
 
-			db.insert( AppGlobal.TABLE_PRODUCT, null, values );
-			db.close(); // Closing database connection
-		}
 	}
 
 	/**
@@ -309,9 +306,12 @@ public class DatabaseHandler extends SQLiteOpenHelper
 
 		// SQLiteDatabase db = this.getWritableDatabase();
 		Cursor cursor = db.rawQuery( selectQuery, null );
-		if( cursor != null )
+		ProductBO product = null;
+		if( cursor != null && cursor.getCount() > 0 )
+		{
 			cursor.moveToFirst();
-		ProductBO product = new ProductBO( cursor.getInt( 0 ), cursor.getString( 1 ), cursor.getString( 2 ), cursor.getString( 3 ), cursor.getString( 4 ), new BigDecimal( cursor.getString( 5 ) ), new BigDecimal( cursor.getString( 6 ) ), cursor.getString( 7 ), cursor.getString( 8 ), cursor.getInt( 9 ), cursor.getInt( 10 ), cursor.getString( 11 ), new BigDecimal( cursor.getString( 12 ) ), cursor.getInt( 13 ), cursor.getString( 14 ) );
+			product = new ProductBO( cursor.getInt( 0 ), cursor.getString( 1 ), cursor.getString( 2 ), cursor.getString( 3 ), cursor.getString( 4 ), new BigDecimal( cursor.getString( 5 ) ), new BigDecimal( cursor.getString( 6 ) ), cursor.getString( 7 ), cursor.getString( 8 ), cursor.getInt( 9 ), cursor.getInt( 10 ), cursor.getString( 11 ), new BigDecimal( cursor.getString( 12 ) ), cursor.getInt( 13 ), cursor.getString( 14 ) );
+		}
 		db.close();
 		return product;
 	}

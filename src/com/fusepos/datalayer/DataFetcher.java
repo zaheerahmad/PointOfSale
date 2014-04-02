@@ -145,6 +145,7 @@ public class DataFetcher extends AsyncTask<String, String, ResponseStatusWrapper
 							LoginBO loginBO = new LoginBO( Integer.parseInt( loginWrapper.getId() ), loginWrapper.getUsername(), loginWrapper.getPassword(), loginWrapper.getEmail(), loginWrapper.getFirstName(), loginWrapper.getLastName(), loginWrapper.getCompany(), loginWrapper.getPhone() );
 							DatabaseHandler db = new DatabaseHandler( context, AppGlobal.TABLE_LOGIN );
 							db.addLogin( loginBO );
+							db.close();
 
 							ResponseStatusWrapper response = new ResponseStatusWrapper();
 
@@ -181,6 +182,7 @@ public class DataFetcher extends AsyncTask<String, String, ResponseStatusWrapper
 
 						response.status = AppGlobal.RESPONSE_STATUS_db_connection_failed;
 						response.message = serverResponseWrapper.getMessage();
+						db.close();
 						return response;
 					}
 					else if( serverResponseWrapper.getCode() == AppGlobal.RESPONSE_STATUS_request_success_but_none_found )
@@ -189,6 +191,7 @@ public class DataFetcher extends AsyncTask<String, String, ResponseStatusWrapper
 
 						response.status = AppGlobal.RESPONSE_STATUS_request_success_but_none_found;
 						response.message = serverResponseWrapper.getMessage();
+						db.close();
 						return response;
 					}
 
@@ -203,18 +206,21 @@ public class DataFetcher extends AsyncTask<String, String, ResponseStatusWrapper
 								ProductBO productBO = new ProductBO( Integer.parseInt( ( productWrapper.getId() == null ? "-1" : productWrapper.getId() ) ), productWrapper.getCode(), productWrapper.getName(), productWrapper.getUnit(), productWrapper.getSize(), new BigDecimal( ( productWrapper.getCost() == null ? "-1" : productWrapper.getCost() ) ), new BigDecimal( productWrapper.getPrice() == null ? "-1" : productWrapper.getPrice() ), productWrapper.getAlertQuality(), productWrapper.getImage(), Integer.valueOf( productWrapper.getCategoryId() == null ? "-1" : productWrapper.getCategoryId() ), Integer.valueOf( productWrapper.getSubCategoryId() == null ? "-1" : productWrapper.getSubCategoryId() ), productWrapper.getQuantity(), new BigDecimal( productWrapper.getTaxRate() == null ? "-1" : productWrapper.getTaxRate() ), Integer.valueOf( productWrapper.getTaxQuantity() == null ? "-1" : productWrapper.getTaxQuantity() ), productWrapper.getDetails() );
 								// DatabaseHandler db = new DatabaseHandler(
 								// context, AppGlobal.TABLE_LOGIN );
-								db.addProduct( productBO );
+								if( db.getProduct( productBO.getId() ) == null )
+									db.addProduct( productBO );
 							}
 							ResponseStatusWrapper response = new ResponseStatusWrapper();
 
 							response.status = AppGlobal.RESPONSE_STATUS_request_success;
 							response.message = serverResponseWrapper.getMessage();
+							db.close();
 							return response;
 
 						}
 					}
 				}
-				DataSendService.isServiceRunning = false;
+
+				db.close();
 			}
 
 		}
