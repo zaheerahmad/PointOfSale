@@ -2,12 +2,34 @@ package com.fusepos.activity;
 
 import android.app.TabActivity;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.TabHost;
+import android.widget.TabHost.OnTabChangeListener;
 import android.widget.TabHost.TabSpec;
 
 public class AndroidTabLayoutActivity extends TabActivity
 {
+	String	orangeColor	= "#ff6600";
+	String	greyColor	= "#808069";
+
+	public void setTabColor( TabHost tabhost )
+	{
+
+		for( int i = 0 ; i < tabhost.getTabWidget().getChildCount() ; i++ )
+			tabhost.getTabWidget().getChildAt( i ).setBackgroundColor( Color.parseColor( greyColor ) ); // unselected
+
+		if( tabhost.getCurrentTab() == 0 )
+			tabhost.getTabWidget().getChildAt( tabhost.getCurrentTab() ).setBackgroundColor( Color.parseColor( orangeColor ) ); // 1st
+		// tab
+		// selected
+		else
+			tabhost.getTabWidget().getChildAt( tabhost.getCurrentTab() ).setBackgroundColor( Color.parseColor( orangeColor ) ); // 2nd
+		// tab
+		// selected
+	}
+
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate( Bundle savedInstanceState )
@@ -17,7 +39,24 @@ public class AndroidTabLayoutActivity extends TabActivity
 		setContentView( R.layout.main );
 
 		TabHost tabHost = getTabHost();
+		final TabHost tH = tabHost;
+		tabHost.setOnTabChangedListener( new OnTabChangeListener()
+		{
 
+			@Override
+			public void onTabChanged( String arg0 )
+			{
+
+				setTabColor( tH );
+				/*
+				 * View v;
+				 * v = tH.getCurrentTabView();
+				 * v.setBackgroundColor( Color.GRAY );
+				 */
+			}
+		} );
+		// setTabColor( tabHost );
+		//tabHost.getCurrentTabView().setBackgroundColor( Color.parseColor( orangeColor ) );
 		// Tab for Photos
 		TabSpec photospec = tabHost.newTabSpec( "Login" );
 		photospec.setIndicator( "Login", getResources().getDrawable( R.drawable.icon_photos_tab ) );
