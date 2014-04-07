@@ -47,6 +47,9 @@ public class DatabaseHandler extends SQLiteOpenHelper
 
 		String CREATE_PRODUCT_TABLE = "CREATE TABLE " + AppGlobal.TABLE_PRODUCT + "(" + AppGlobal.PRODUCT_ID + " INTEGER," + AppGlobal.PRODUCT_CODE + " TEXT," + AppGlobal.PRODUCT_NAME + " TEXT," + AppGlobal.PRODUCT_UNIT + " TEXT," + AppGlobal.PRODUCT_SIZE + " TEXT," + AppGlobal.PRODUCT_COST + " DOUBLE PRECISION," + AppGlobal.PRODUCT_PRICE + " DOUBLE PRECISION" + "," + AppGlobal.PRODUCT_ALERT_QUALITY + " TEXT," + AppGlobal.PRODUCT_IMAGE + " TEXT," + AppGlobal.PRODUCT_CATEGORY_ID + " INTEGER," + AppGlobal.PRODUCT_SUB_CATEGORY_ID + " INTEGER," + AppGlobal.PRODUCT_QUANTITY + " TEXT," + AppGlobal.PRODUCT_TAX_RATE + " DOUBLE PRECISION," + AppGlobal.PRODUCT_TAX_QUANTITY + " INTEGER," + AppGlobal.PRODUCT_DETAILS + " TEXT" + ")";
 		db.execSQL( CREATE_PRODUCT_TABLE );
+
+		String CREATE_CATEGORY_TABLE = "CREATE TABLE " + AppGlobal.TABLE_CATEGORY + "(" + AppGlobal.CATEGORY_ID + " INTEGER," + AppGlobal.CATEGORY_CODE + " TEXT," + AppGlobal.CATEGORY_NAME + " TEXT)";
+		db.execSQL( CREATE_CATEGORY_TABLE );
 	}
 
 	/*
@@ -63,6 +66,8 @@ public class DatabaseHandler extends SQLiteOpenHelper
 		db.execSQL( "DROP TABLE IF EXISTS " + AppGlobal.TABLE_LOGIN );
 
 		db.execSQL( "DROP TABLE IF EXISTS " + AppGlobal.TABLE_PRODUCT );
+
+		db.execSQL( "DROP TABLE IF EXISTS " + AppGlobal.TABLE_CATEGORY );
 		// Create tables again
 		onCreate( db );
 
@@ -470,6 +475,152 @@ public class DatabaseHandler extends SQLiteOpenHelper
 
 		return ( this.getProduct( id ) != null );
 
+	}
+
+	public void addCategory( CategoryBO categoryBO )
+	{
+
+		SQLiteDatabase db = this.getWritableDatabase();
+		ContentValues values = new ContentValues();
+
+		values.put( AppGlobal.CATEGORY_ID, categoryBO.getId() );
+		values.put( AppGlobal.CATEGORY_CODE, categoryBO.getCode() );
+		values.put( AppGlobal.CATEGORY_NAME, categoryBO.getName() );
+
+		db.insert( AppGlobal.TABLE_CATEGORY, null, values );
+		db.close(); // Closing database connection
+
+	}
+
+	/**
+	 * @param id
+	 * @return
+	 */
+	public CategoryBO getCategory( int id )
+	{
+
+		SQLiteDatabase db = this.getReadableDatabase();
+
+		String selectQuery = "SELECT  * FROM " + AppGlobal.TABLE_CATEGORY + " WHERE " + AppGlobal.CATEGORY_ID + " = " + id;
+
+		// SQLiteDatabase db = this.getWritableDatabase();
+		Cursor cursor = db.rawQuery( selectQuery, null );
+		CategoryBO category = null;
+		if( cursor != null && cursor.getCount() > 0 )
+		{
+			cursor.moveToFirst();
+			category = new CategoryBO( cursor.getInt( 0 ), cursor.getString( 1 ), cursor.getString( 2 ) );
+		}
+		db.close();
+		return category;
+	}
+
+	/**
+	 * @return
+	 */
+	public List<CategoryBO> getAllCategory()
+	{
+
+		List<CategoryBO> categoryList = new ArrayList<CategoryBO>();
+		// Select All Query
+		String selectQuery = "SELECT  * FROM " + AppGlobal.TABLE_CATEGORY;
+
+		SQLiteDatabase db = this.getWritableDatabase();
+		Cursor cursor = db.rawQuery( selectQuery, null );
+
+		// looping through all rows and adding to list
+		if( cursor.moveToFirst() )
+		{
+			do
+			{
+				CategoryBO category = new CategoryBO( cursor.getInt( 0 ), cursor.getString( 1 ), cursor.getString( 2 ) );
+				categoryList.add( category );
+			}
+			while ( cursor.moveToNext() );
+
+		}
+		db.close();
+		return categoryList;
+	}
+
+	/**
+	 * @author Waqas Ahmed
+	 * @return
+	 */
+	public int getCategoryCount()
+	{
+
+		String countQuery = "SELECT  * FROM " + AppGlobal.TABLE_CATEGORY;
+		SQLiteDatabase db = this.getReadableDatabase();
+		Cursor cursor = db.rawQuery( countQuery, null );
+
+		int count = -1;
+
+		if( cursor != null && !cursor.isClosed() )
+		{
+			count = cursor.getCount();
+			cursor.close();
+		}
+		db.close();
+		return count;
+	}
+
+	/**
+	 * @author Waqas Ahmed
+	 * @return
+	 */
+	public CategoryBO getLastInsertedCategory()
+	{
+
+		String countQuery = "SELECT * FROM " + AppGlobal.TABLE_CATEGORY + " ORDER BY " + AppGlobal.CATEGORY_ID + " DESC LIMIT 1";
+		SQLiteDatabase db = this.getWritableDatabase();
+		Cursor cursor = db.rawQuery( countQuery, null );
+		if( cursor != null && cursor.getCount() > 0 )
+		{
+			cursor.moveToFirst();
+			return new CategoryBO( cursor.getInt( 0 ), cursor.getString( 1 ), cursor.getString( 2 ) );
+		}
+		return null;
+	}
+
+	/**
+	 * @author Waqas Ahmed
+	 * @return
+	 */
+	public int getLastInsertedCategoryId()
+	{
+
+		if( this.getLastInsertedCategory() != null )
+			return this.getLastInsertedCategory().getId();
+		return -1;
+	}
+
+	/**
+	 * @param category
+	 * @return
+	 */
+	public int updateCategory( CategoryBO category )
+	{
+
+		SQLiteDatabase db = this.getWritableDatabase();
+
+		ContentValues values = new ContentValues();
+
+		values.put( AppGlobal.CATEGORY_CODE, category.getCode() );
+		values.put( AppGlobal.CATEGORY_NAME, category.getName() );
+		// updating row
+		return db.update( AppGlobal.TABLE_CATEGORY, values, AppGlobal.CATEGORY_ID + " = ?", new String[] { String.valueOf( category.getId() ) } );
+	}
+
+	/**
+	 * @param category
+	 */
+	public void deleteCategory( CategoryBO category )
+	{
+
+		SQLiteDatabase db = this.getWritableDatabase();
+		db.delete( AppGlobal.TABLE_CATEGORY, AppGlobal.CATEGORY_ID + " = ?", new String[] { String.valueOf( category.getId() ) } );
+		db.close();
 	}
 
 	/**

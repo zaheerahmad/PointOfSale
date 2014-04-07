@@ -60,6 +60,12 @@ public class AppGlobal
 	public static final String	PRODUCT_TAX_RATE									= "taxrate";
 	public static final String	PRODUCT_TAX_QUANTITY								= "taxquantity";
 	public static final String	PRODUCT_DETAILS										= "details";
+
+	// for category table
+	public static final String	TABLE_CATEGORY										= "tbl_category";
+	public static final String	CATEGORY_ID											= "categoryId";
+	public static final String	CATEGORY_CODE										= "code";
+	public static final String	CATEGORY_NAME										= "name";
 	/**
 	 * Databases constants ended
 	 */

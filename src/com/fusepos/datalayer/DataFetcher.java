@@ -18,6 +18,7 @@ import com.fusepos.service.DataSendService;
 import com.fusepos.service.ServiceHandler;
 import com.fusepos.utils.AppGlobal;
 import com.fusepos.utils.Utils;
+import com.fusepos.wrapper.CategoryWrapper;
 import com.fusepos.wrapper.IAsyncTask;
 import com.fusepos.wrapper.LoginServiceResponseWrapper;
 import com.fusepos.wrapper.LoginWrapper;
@@ -204,10 +205,23 @@ public class DataFetcher extends AsyncTask<String, String, ResponseStatusWrapper
 							{
 
 								ProductBO productBO = new ProductBO( Integer.parseInt( ( productWrapper.getId() == null ? "-1" : productWrapper.getId() ) ), productWrapper.getCode(), productWrapper.getName(), productWrapper.getUnit(), productWrapper.getSize(), new BigDecimal( ( productWrapper.getCost() == null ? "-1" : productWrapper.getCost() ) ), new BigDecimal( productWrapper.getPrice() == null ? "-1" : productWrapper.getPrice() ), productWrapper.getAlertQuality(), productWrapper.getImage(), Integer.valueOf( productWrapper.getCategoryId() == null ? "-1" : productWrapper.getCategoryId() ), Integer.valueOf( productWrapper.getSubCategoryId() == null ? "-1" : productWrapper.getSubCategoryId() ), productWrapper.getQuantity(), new BigDecimal( productWrapper.getTaxRate() == null ? "-1" : productWrapper.getTaxRate() ), Integer.valueOf( productWrapper.getTaxQuantity() == null ? "-1" : productWrapper.getTaxQuantity() ), productWrapper.getDetails() );
+								CategoryWrapper categoryWrapper = null;
+								if( productWrapper.getCategoryDetail() != null )
+								{
+									categoryWrapper = productWrapper.getCategoryDetail();
+								}
 								// DatabaseHandler db = new DatabaseHandler(
 								// context, AppGlobal.TABLE_LOGIN );
 								if( db.getProduct( productBO.getId() ) == null )
 									db.addProduct( productBO );
+								if( categoryWrapper != null )
+								{
+									CategoryBO categoryBO = new CategoryBO( Integer.parseInt( categoryWrapper.getId() ), categoryWrapper.getCode(), categoryWrapper.getName() );
+									DatabaseHandler dbHandlerCategory = new DatabaseHandler( context, AppGlobal.TABLE_CATEGORY );
+									if( dbHandlerCategory.getCategory( categoryBO.getId() ) == null )
+										dbHandlerCategory.addCategory( categoryBO );
+									dbHandlerCategory.close();
+								}
 							}
 							ResponseStatusWrapper response = new ResponseStatusWrapper();
 
