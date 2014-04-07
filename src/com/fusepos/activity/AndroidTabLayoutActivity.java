@@ -4,7 +4,6 @@ import android.app.TabActivity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.TabHost;
 import android.widget.TabHost.OnTabChangeListener;
 import android.widget.TabHost.TabSpec;
@@ -56,7 +55,8 @@ public class AndroidTabLayoutActivity extends TabActivity
 			}
 		} );
 		// setTabColor( tabHost );
-		//tabHost.getCurrentTabView().setBackgroundColor( Color.parseColor( orangeColor ) );
+		// tabHost.getCurrentTabView().setBackgroundColor( Color.parseColor(
+		// orangeColor ) );
 		// Tab for Photos
 		TabSpec photospec = tabHost.newTabSpec( "Login" );
 		photospec.setIndicator( "Login", getResources().getDrawable( R.drawable.icon_photos_tab ) );

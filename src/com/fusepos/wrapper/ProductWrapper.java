@@ -10,21 +10,62 @@ package com.fusepos.wrapper;
 public class ProductWrapper
 {
 
-	private String	id;
-	private String	code;
-	private String	name;
-	private String	unit;
-	private String	size;
-	private String	cost;
-	private String	price;
-	private String	alertQuality;
-	private String	image;
-	private String	categoryId;
-	private String	subCategoryId;
-	private String	quantity;
-	private String	taxRate;
-	private String	taxQuantity;
-	private String	details;
+	private String			id;
+	private String			code;
+	private String			name;
+	private String			unit;
+	private String			size;
+	private String			cost;
+	private String			price;
+	private String			alertQuality;
+	private String			image;
+	private String			categoryId;
+	private CategoryWrapper	categoryDetail;
+	private String			subCategoryId;
+	private String			quantity;
+	private String			taxRate;
+	private String			taxQuantity;
+	private String			details;
+
+	/**
+	 * @param id
+	 * @param code
+	 * @param name
+	 * @param unit
+	 * @param size
+	 * @param cost
+	 * @param price
+	 * @param alertQuality
+	 * @param image
+	 * @param categoryId
+	 * @param categoryDetail
+	 * @param subCategoryId
+	 * @param quantity
+	 * @param taxRate
+	 * @param taxQuantity
+	 * @param details
+	 */
+	public ProductWrapper( String id, String code, String name, String unit, String size, String cost, String price, String alertQuality, String image, String categoryId, CategoryWrapper categoryDetail, String subCategoryId, String quantity, String taxRate, String taxQuantity, String details )
+	{
+
+		super();
+		this.id = id;
+		this.code = code;
+		this.name = name;
+		this.unit = unit;
+		this.size = size;
+		this.cost = cost;
+		this.price = price;
+		this.alertQuality = alertQuality;
+		this.image = image;
+		this.categoryId = categoryId;
+		this.categoryDetail = categoryDetail;
+		this.subCategoryId = subCategoryId;
+		this.quantity = quantity;
+		this.taxRate = taxRate;
+		this.taxQuantity = taxQuantity;
+		this.details = details;
+	}
 
 	public ProductWrapper( String id, String code, String name, String unit, String size, String cost, String price, String alertQuality, String image, String categoryId, String subCategoryId, String quantity, String taxRate, String taxQuantity, String details )
 	{
@@ -225,6 +266,25 @@ public class ProductWrapper
 	{
 
 		this.details = details;
+	}
+
+	/**
+	 * @return the categoryDetail
+	 */
+	public CategoryWrapper getCategoryDetail()
+	{
+
+		return categoryDetail;
+	}
+
+	/**
+	 * @param categoryDetail
+	 *            the categoryDetail to set
+	 */
+	public void setCategoryDetail( CategoryWrapper categoryDetail )
+	{
+
+		this.categoryDetail = categoryDetail;
 	}
 
 }
