@@ -13,18 +13,25 @@ import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.GradientDrawable.Orientation;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.LinearLayout.LayoutParams;
 import android.widget.ListView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.fusepos.datalayer.CategoryBO;
 import com.fusepos.datalayer.DatabaseHandler;
 import com.fusepos.datalayer.ProductBO;
 import com.fusepos.service.DataSendService;
@@ -37,28 +44,33 @@ import com.fusepos.utils.SAutoBgButton;
  */
 public class SaleActivity extends Activity
 {
-	List<ProductBO>	_saleListProductForListView;
-	List<ProductBO>	_saleListProductForGridView;
-	SaleListAdapter	_saleListAdapter;
-	SaleGridAdapter	_saleGridAdapter;
+	List<ProductBO>		_saleListProductForListView;
+	List<ProductBO>		_saleListProductForGridView;
+	List<CategoryBO>	_saleListCategoryForDisplay;
+	SaleListAdapter		_saleListAdapter;
+	SaleGridAdapter		_saleGridAdapter;
 
-	GridView		gridProducts;
-	ListView		listProducts;
+	GridView			gridProducts;
+	ListView			listProducts;
 
-	ProgressDialog	loadingDialog;
-	TextView		totalPayableTextView;
-	TextView		totalItemsTextView;
-	TextView		taxTextView;
-	TextView		discountTextView;
-	TextView		totalTextView;
-	TextView		vatTextView;
+	LinearLayout		parentLinearLayout;
+	ProgressDialog		loadingDialog;
+	TextView			totalPayableTextView;
+	TextView			totalItemsTextView;
+	TextView			taxTextView;
+	TextView			discountTextView;
+	TextView			totalTextView;
+	TextView			vatTextView;
+	Button				categoryButton;
 
-	double			totalPayable	= 0.0;
-	int				totalItem		= 0;
-	double			tax				= 0.0;
-	double			discount		= 0.0;
-	double			total			= 0.0;
-	double			vat				= 0.0;
+	double				totalPayable	= 0.0;
+	int					totalItem		= 0;
+	double				tax				= 0.0;
+	double				discount		= 0.0;
+	double				total			= 0.0;
+	double				vat				= 0.0;
+	String				catName			= null;
+	int					catId			= -1;
 
 	@Override
 	protected void onCreate( Bundle savedInstanceState )
@@ -66,6 +78,7 @@ public class SaleActivity extends Activity
 
 		_saleListProductForListView = new ArrayList<ProductBO>();
 		_saleListProductForGridView = new ArrayList<ProductBO>();
+		_saleListCategoryForDisplay = new ArrayList<CategoryBO>();
 
 		super.onCreate( savedInstanceState );
 		setContentView( R.layout.sale_activity );
@@ -73,6 +86,8 @@ public class SaleActivity extends Activity
 		gridProducts = ( GridView ) findViewById( R.id.sale_grid );
 
 		listProducts = ( ListView ) findViewById( R.id.sale_listView );
+
+		parentLinearLayout = ( LinearLayout ) findViewById( R.id.ll2_right );
 
 		totalPayableTextView = ( TextView ) findViewById( R.id.sale_totalPayableTextView );
 		totalItemsTextView = ( TextView ) findViewById( R.id.sale_totalItemText );
@@ -87,8 +102,64 @@ public class SaleActivity extends Activity
 		discountTextView.setText( String.valueOf( discount ) );
 		totalTextView.setText( String.valueOf( total ) );
 		vatTextView.setText( String.valueOf( vat ) );
-		
+
 		bindProducts();
+		bindCategory();
+	}
+
+	public void bindCategory()
+	{
+
+		DatabaseHandler dbHandler = new DatabaseHandler( getApplicationContext(), AppGlobal.TABLE_CATEGORY );
+		_saleListCategoryForDisplay = dbHandler.getAllCategory();
+		dbHandler.close();
+
+		int count = 0;
+		LinearLayout childLinearLayout = null;
+		for( int i = 0 ; i < _saleListCategoryForDisplay.size() ; i++ )
+		{
+			if( count == 0 || count == 4 )
+			{
+				if( count == 4 )
+				{
+					count = 0;
+					parentLinearLayout.addView( childLinearLayout );
+					childLinearLayout = null;
+				}
+				childLinearLayout = new LinearLayout( getApplicationContext() );
+				childLinearLayout.setOrientation( LinearLayout.HORIZONTAL );
+			}
+
+			categoryButton = new Button( this );
+			catName = _saleListCategoryForDisplay.get( i ).getName().toString();
+			catId = _saleListCategoryForDisplay.get( i ).getId();
+
+			categoryButton.setText( catName );
+			categoryButton.setTag( catId );
+			categoryButton.setOnClickListener( new OnClickListener()
+			{
+				@Override
+				public void onClick( View v )
+				{
+
+					int catId = Integer.parseInt( v.getTag().toString() );
+					Log.d( "catID", String.valueOf( catId ) );
+					DatabaseHandler dbHandler = new DatabaseHandler( getApplicationContext(), AppGlobal.TABLE_PRODUCT );
+					_saleListProductForGridView = dbHandler.getProductswithCategoryId( catId );
+
+					dbHandler.close();
+					_saleGridAdapter.notifyDataSetChanged();
+
+				}
+			} );
+
+			LayoutParams lp = new LayoutParams( LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1 );
+
+			childLinearLayout.addView( categoryButton, lp );
+			count++;
+		}
+		if( childLinearLayout != null )
+			parentLinearLayout.addView( childLinearLayout );
 	}
 
 	public void bindProducts()

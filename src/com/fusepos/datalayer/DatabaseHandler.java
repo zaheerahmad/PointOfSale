@@ -624,6 +624,33 @@ public class DatabaseHandler extends SQLiteOpenHelper
 	}
 
 	/**
+	 * @author Adeel
+	 * @return
+	 */
+	public List<ProductBO> getProductswithCategoryId( int id )
+	{
+
+		List<ProductBO> productList = new ArrayList<ProductBO>();
+		String selectQuery = "SELECT * FROM " + AppGlobal.TABLE_PRODUCT + " WHERE " + AppGlobal.CATEGORY_ID + " = " + id;
+		SQLiteDatabase db = this.getWritableDatabase();
+		Cursor cursor = db.rawQuery( selectQuery, null );
+
+		if( cursor.moveToFirst() )
+		{
+			do
+			{
+				ProductBO product = new ProductBO( cursor.getInt( 0 ), cursor.getString( 1 ), cursor.getString( 2 ), cursor.getString( 3 ), cursor.getString( 4 ), new BigDecimal( cursor.getString( 5 ) ), new BigDecimal( cursor.getString( 6 ) ), cursor.getString( 7 ), cursor.getString( 8 ), cursor.getInt( 9 ), cursor.getInt( 10 ), cursor.getString( 11 ), new BigDecimal( cursor.getString( 12 ) ), cursor.getInt( 13 ), cursor.getString( 14 ) );
+				productList.add( product );
+			}
+			while ( cursor.moveToNext() );
+
+		}
+		db.close();
+		return productList;
+
+	}
+
+	/**
 	 * Feedback Table Methods ended
 	 */
 
