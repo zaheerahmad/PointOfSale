@@ -107,6 +107,7 @@ public class SaleActivity extends Activity
 		bindCategory();
 	}
 
+	
 	public void bindCategory()
 	{
 
@@ -147,8 +148,12 @@ public class SaleActivity extends Activity
 					DatabaseHandler dbHandler = new DatabaseHandler( getApplicationContext(), AppGlobal.TABLE_PRODUCT );
 					_saleListProductForGridView = dbHandler.getProductswithCategoryId( catId );
 
+					//needs to be fixed
+					_saleGridAdapter = new SaleGridAdapter( getApplicationContext(), -1, _saleListProductForGridView );
+					gridProducts.setAdapter( _saleGridAdapter );
 					dbHandler.close();
-					_saleGridAdapter.notifyDataSetChanged();
+					
+					//_saleGridAdapter.notifyDataSetChanged();
 
 				}
 			} );
