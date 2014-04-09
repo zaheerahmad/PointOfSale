@@ -1,6 +1,7 @@
 package com.fusepos.datalayer;
 
 import java.math.BigDecimal;
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,6 +51,9 @@ public class DatabaseHandler extends SQLiteOpenHelper
 
 		String CREATE_CATEGORY_TABLE = "CREATE TABLE " + AppGlobal.TABLE_CATEGORY + "(" + AppGlobal.CATEGORY_ID + " INTEGER," + AppGlobal.CATEGORY_CODE + " TEXT," + AppGlobal.CATEGORY_NAME + " TEXT)";
 		db.execSQL( CREATE_CATEGORY_TABLE );
+
+		String CREATE_SUSPEND_PRODUCT_TABLE = "CREATE TABLE " + AppGlobal.TABLE_SUSPEND_PRODUCT + "(" + AppGlobal.SUSPEND_PRODUCT_ID + " INTEGER," + AppGlobal.SUSPEND_PRODUCT_DATE + " TEXT," + AppGlobal.SUSPEND_PRODUCT_JSON + " TEXT)";
+		db.execSQL( CREATE_SUSPEND_PRODUCT_TABLE );
 	}
 
 	/*
@@ -68,9 +72,56 @@ public class DatabaseHandler extends SQLiteOpenHelper
 		db.execSQL( "DROP TABLE IF EXISTS " + AppGlobal.TABLE_PRODUCT );
 
 		db.execSQL( "DROP TABLE IF EXISTS " + AppGlobal.TABLE_CATEGORY );
+
+		db.execSQL( "DROP TABLE IF EXISTS " + AppGlobal.TABLE_SUSPEND_PRODUCT );
 		// Create tables again
 		onCreate( db );
 
+	}
+
+	/**
+	 * @author Adeel
+	 * @return
+	 */
+	public void addSuspendProduct( String suspendProductJson, String suspendProductDate )
+	{
+
+		SQLiteDatabase db = this.getWritableDatabase();
+		ContentValues values = new ContentValues();
+
+		values.put( AppGlobal.SUSPEND_PRODUCT_DATE, suspendProductDate );
+		values.put( AppGlobal.SUSPEND_PRODUCT_JSON, suspendProductJson );
+
+		db.insert( AppGlobal.TABLE_SUSPEND_PRODUCT, null, values );
+		db.close(); // Closing database connection
+	}
+
+	/**
+	 * @author Adeel
+	 * @return
+	 */
+	public List<SuspendProductBO> getAllSuspendProduct()
+	{
+
+		List<SuspendProductBO> suspendProductList = new ArrayList<SuspendProductBO>();
+		// Select All Query
+		String selectQuery = "SELECT  * FROM " + AppGlobal.TABLE_SUSPEND_PRODUCT;
+
+		SQLiteDatabase db = this.getWritableDatabase();
+		Cursor cursor = db.rawQuery( selectQuery, null );
+
+		// looping through all rows and adding to list
+		if( cursor.moveToFirst() )
+		{
+			do
+			{
+				SuspendProductBO sP = new SuspendProductBO( cursor.getInt( 0 ), cursor.getString( 1 ), cursor.getString( 2 ) );
+				suspendProductList.add( sP );
+			}
+			while ( cursor.moveToNext() );
+		}
+		db.close();
+		return suspendProductList;
 	}
 
 	/**

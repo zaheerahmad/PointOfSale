@@ -14,6 +14,7 @@ import android.widget.Toast;
 import com.fusepos.datalayer.DataFetcher;
 import com.fusepos.datalayer.DatabaseHandler;
 import com.fusepos.datalayer.LoginBO;
+import com.fusepos.datalayer.ProductBO;
 import com.fusepos.utils.AppGlobal;
 import com.fusepos.utils.SAutoBgButton;
 import com.fusepos.utils.Utils;
@@ -71,52 +72,61 @@ public class LoginActivity extends Activity
 
 							// Loading Products First Time.. Manually
 							// Internet should be available here.
-
-							new DataFetcher( new IAsyncTask()
+							// put if here to check list of products
+							List<ProductBO> productList = dbHandler.getAllProducts();
+							if( productList.size() <= 0 )
 							{
-
-								@Override
-								public void success( ResponseStatusWrapper response )
+								new DataFetcher( new IAsyncTask()
 								{
 
-									// TODO Auto-generated method stub
-									if( loadingDialog != null )
-										loadingDialog.dismiss();
-
-									Intent saleActivityIntent = new Intent( LoginActivity.this, SaleActivity.class );
-									startActivity( saleActivityIntent );
-								}
-
-								@Override
-								public void fail( ResponseStatusWrapper response )
-								{
-
-									// TODO Auto-generated method stub
-									if( loadingDialog != null )
-										loadingDialog.dismiss();
-									DatabaseHandler db = new DatabaseHandler( getApplicationContext(), AppGlobal.TABLE_PRODUCT );
-									if( db.getProductCount() > 0 )
+									@Override
+									public void success( ResponseStatusWrapper response )
 									{
+
+										// TODO Auto-generated method stub
+										if( loadingDialog != null )
+											loadingDialog.dismiss();
+
 										Intent saleActivityIntent = new Intent( LoginActivity.this, SaleActivity.class );
 										startActivity( saleActivityIntent );
 									}
-									else
+
+									@Override
+									public void fail( ResponseStatusWrapper response )
 									{
-										Toast.makeText( getApplicationContext(), "Couldn't load sync products from server.", Toast.LENGTH_LONG ).show();
+
+										// TODO Auto-generated method stub
+										if( loadingDialog != null )
+											loadingDialog.dismiss();
+										DatabaseHandler db = new DatabaseHandler( getApplicationContext(), AppGlobal.TABLE_PRODUCT );
+										if( db.getProductCount() > 0 )
+										{
+											Intent saleActivityIntent = new Intent( LoginActivity.this, SaleActivity.class );
+											startActivity( saleActivityIntent );
+										}
+										else
+										{
+											Toast.makeText( getApplicationContext(), "Couldn't load sync products from server.", Toast.LENGTH_LONG ).show();
+										}
 									}
-								}
 
-								@Override
-								public void doWait()
-								{
+									@Override
+									public void doWait()
+									{
 
-									// TODO Auto-generated method stub
-									loadingDialog = new ProgressDialog( LoginActivity.this );
-									loadingDialog.setMessage( AppGlobal.TOAST_PLEASE_WAIT );
-									loadingDialog.setCancelable( false );
-									loadingDialog.show();
-								}
-							}, getApplicationContext() ).execute( AppGlobal.DATAFETCHER_ACTION_PRODUCTS_SYNC );
+										// TODO Auto-generated method stub
+										loadingDialog = new ProgressDialog( LoginActivity.this );
+										loadingDialog.setMessage( AppGlobal.TOAST_PLEASE_WAIT );
+										loadingDialog.setCancelable( false );
+										loadingDialog.show();
+									}
+								}, getApplicationContext() ).execute( AppGlobal.DATAFETCHER_ACTION_PRODUCTS_SYNC );
+							}
+							else
+							{
+								Intent saleActivityIntent = new Intent( LoginActivity.this, SaleActivity.class );
+								startActivity( saleActivityIntent );
+							}
 						}
 						else
 						{

@@ -27,6 +27,19 @@ public class ProductBO
 	private BigDecimal	taxRate;
 	private int			taxQuantity;
 	private String		details;
+	private int			qQuantity;
+
+	public int getqQuantity()
+	{
+
+		return qQuantity;
+	}
+
+	public void setqQuantity( int qQuantity )
+	{
+
+		this.qQuantity = qQuantity;
+	}
 
 	public ProductBO( int id, String code, String name, String unit, String size, BigDecimal cost, BigDecimal price, String alertQuality, String image, int categoryId, int subCategoryId, String quantity, BigDecimal taxRate, int taxQuantity, String details )
 	{
@@ -47,6 +60,7 @@ public class ProductBO
 		this.taxRate = taxRate;
 		this.taxQuantity = taxQuantity;
 		this.details = details;
+		this.qQuantity = 1;
 	}
 
 	public ProductBO()
@@ -245,7 +259,7 @@ public class ProductBO
 		}
 		return false;
 	}
-	
+
 	public boolean deleteProductFromList( int productId, List<ProductBO> list )
 	{
 

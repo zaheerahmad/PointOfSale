@@ -66,6 +66,13 @@ public class AppGlobal
 	public static final String	CATEGORY_ID											= "categoryId";
 	public static final String	CATEGORY_CODE										= "code";
 	public static final String	CATEGORY_NAME										= "name";
+
+	// for suspend table
+	public static final String	TABLE_SUSPEND_PRODUCT								= "tbl_suspendProduct";
+	public static final String	SUSPEND_PRODUCT_ID									= "suspendId";
+	public static final String	SUSPEND_PRODUCT_DATE								= "date";
+	public static final String	SUSPEND_PRODUCT_JSON								= "json";
+
 	/**
 	 * Databases constants ended
 	 */

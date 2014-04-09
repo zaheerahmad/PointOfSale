@@ -217,7 +217,7 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal" >
 
-                    <Button
+                    <com.fusepos.utils.SAutoBgButton
                         android:id="@+id/sale_btnCancel"
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
@@ -230,7 +230,7 @@
                         android:textSize="20sp"
                         android:textStyle="bold" />
 
-                    <Button
+                    <com.fusepos.utils.SAutoBgButton
                         android:id="@+id/sale_btnPrint"
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
@@ -243,7 +243,7 @@
                         android:textSize="20sp"
                         android:textStyle="bold" />
 
-                    <Button
+                    <com.fusepos.utils.SAutoBgButton
                         android:id="@+id/sale_btnSuspend"
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
@@ -256,7 +256,7 @@
                         android:textStyle="bold" />
                 </LinearLayout>
 
-                <Button
+                <com.fusepos.utils.SAutoBgButton
                     android:id="@+id/sale_btnPayment"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
