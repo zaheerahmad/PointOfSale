@@ -1,5 +1,8 @@
 package com.fusepos.activity;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import android.app.Activity;
@@ -26,12 +29,16 @@ public class LoginActivity extends Activity
 	EditText		txtUsername		= null;
 	EditText		txtPassword		= null;
 	ProgressDialog	loadingDialog	= null;
+	DatabaseHandler	dbHandler		= null;
+	String			validUntil		= "15/05/2014";
 
 	public void onCreate( Bundle savedInstanceState )
 	{
 
 		super.onCreate( savedInstanceState );
 		setContentView( R.layout.login_layout );
+
+		dbHandler = new DatabaseHandler( getApplicationContext(), AppGlobal.TABLE_LOGIN );
 
 		txtUsername = ( EditText ) findViewById( R.id.login_username_et );
 		txtPassword = ( EditText ) findViewById( R.id.login_password_et );
@@ -59,13 +66,31 @@ public class LoginActivity extends Activity
 				else
 				{
 					// TODO Auto-generated method stub
-					DatabaseHandler dbHandler = new DatabaseHandler( getApplicationContext(), AppGlobal.TABLE_LOGIN );
+					if( !AppGlobal.isPaymentDone )
+					{
+
+						SimpleDateFormat sdf = new SimpleDateFormat( "dd/MM/yyyy" );
+						Date validUltilDate = null;
+						try
+						{
+							validUltilDate = sdf.parse( validUntil );
+						}
+						catch ( ParseException e )
+						{
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						if( new Date().after( validUltilDate ) )
+						{
+							return;
+						}
+					}
+
 					List<LoginBO> logins = dbHandler.getAllLogins();
 					if( dbHandler.isUserExist( txtUsername.getText().toString() ) )
 					{
 						if( dbHandler.validateLogin( txtUsername.getText().toString(), txtPassword.getText().toString() ) )
 						{
-							Toast.makeText( getApplicationContext(), "User validated from SQLLite DB", Toast.LENGTH_SHORT ).show();
 							SharedPreferences pref = Utils.getSharedPreferences( getApplicationContext() );
 							pref.edit().putString( AppGlobal.APP_PREF_USERNAME, txtUsername.getText().toString() ).commit();
 							pref.edit().putString( AppGlobal.APP_PREF_PASSWORD, txtPassword.getText().toString() ).commit();
@@ -148,6 +173,7 @@ public class LoginActivity extends Activity
 						}
 						else
 						{
+
 							new DataFetcher( new IAsyncTask()
 							{
 
@@ -158,51 +184,57 @@ public class LoginActivity extends Activity
 									// TODO Auto-generated method stub
 									if( loadingDialog != null )
 										loadingDialog.dismiss();
-									Toast.makeText( getApplicationContext(), response.message, Toast.LENGTH_SHORT ).show();
-
 									SharedPreferences pref = Utils.getSharedPreferences( getApplicationContext() );
 									pref.edit().putString( AppGlobal.APP_PREF_USERNAME, txtUsername.getText().toString() ).commit();
 									pref.edit().putString( AppGlobal.APP_PREF_PASSWORD, txtPassword.getText().toString() ).commit();
 
-									// Loading Products First Time.. Manually
+									// Loading Products First Time..
+									// Manually
 									// Internet should be available here.
-
-									new DataFetcher( new IAsyncTask()
+									// DatabaseHandler dbHandler =
+									List<ProductBO> productList = dbHandler.getAllProducts();
+									if( productList.size() <= 0 )
 									{
-
-										@Override
-										public void success( ResponseStatusWrapper response )
+										new DataFetcher( new IAsyncTask()
 										{
 
-											// TODO Auto-generated method stub
-											if( loadingDialog != null )
-												loadingDialog.dismiss();
+											@Override
+											public void success( ResponseStatusWrapper response )
+											{
 
-											Intent saleActivityIntent = new Intent( LoginActivity.this, SaleActivity.class );
-											startActivity( saleActivityIntent );
-										}
+												// TODO Auto-generated method
+												// stub
+												if( loadingDialog != null )
+													loadingDialog.dismiss();
 
-										@Override
-										public void fail( ResponseStatusWrapper response )
-										{
+												Intent saleActivityIntent = new Intent( LoginActivity.this, SaleActivity.class );
+												startActivity( saleActivityIntent );
+											}
 
-											// TODO Auto-generated method stub
-											if( loadingDialog != null )
-												loadingDialog.dismiss();
-											Toast.makeText( getApplicationContext(), "Couldn't load sync products from server.", Toast.LENGTH_LONG ).show();
-										}
+											@Override
+											public void fail( ResponseStatusWrapper response )
+											{
 
-										@Override
-										public void doWait()
-										{
+												// TODO Auto-generated method
+												// stub
+												if( loadingDialog != null )
+													loadingDialog.dismiss();
+												Toast.makeText( getApplicationContext(), "Couldn't load sync products from server.", Toast.LENGTH_LONG ).show();
+											}
 
-											// TODO Auto-generated method stub
-											loadingDialog = new ProgressDialog( LoginActivity.this );
-											loadingDialog.setMessage( AppGlobal.TOAST_PLEASE_WAIT );
-											loadingDialog.setCancelable( false );
-											loadingDialog.show();
-										}
-									}, getApplicationContext() ).execute( AppGlobal.DATAFETCHER_ACTION_PRODUCTS_SYNC );
+											@Override
+											public void doWait()
+											{
+
+												// TODO Auto-generated method
+												// stub
+												loadingDialog = new ProgressDialog( LoginActivity.this );
+												loadingDialog.setMessage( AppGlobal.TOAST_PLEASE_WAIT );
+												loadingDialog.setCancelable( false );
+												loadingDialog.show();
+											}
+										}, getApplicationContext() ).execute( AppGlobal.DATAFETCHER_ACTION_PRODUCTS_SYNC );
+									}
 
 								}
 

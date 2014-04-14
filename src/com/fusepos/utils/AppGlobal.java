@@ -8,6 +8,7 @@ public class AppGlobal
 {
 	public static final boolean	isDebugMode											= false;
 	public static final boolean	shouldMaintainLogOfFeeds							= false;
+	public static final boolean isPaymentDone = false;
 
 	// Response Statuses
 	public static final int		RESPONSE_STATUS_FAIL								= 1;
@@ -89,6 +90,7 @@ public class AppGlobal
 	public static final String	DATAFETCHER_ACTION_INSERT_FEEDBACK					= "_insert_feedback_";
 	public static final String	DATAFETCHER_ACTION_LOGIN_USER						= "_login_user_";
 	public static final String	DATAFETCHER_ACTION_PRODUCTS_SYNC					= "_product_sync_";
+	//public static final String	DATAFETCHER_ACTION_PAYMENT_PROCESS					= "_payment_process_";
 
 	// Broadcast Filters
 	public static final String	BROADCAST_FILTER_INTERNET_CONNECTION_FOUND			= "_internet_connection_found_";
@@ -106,6 +108,7 @@ public class AppGlobal
 	public static final String	APP_PREF_DB_PASSWORD								= "_db_password_";
 	public static final String	APP_PREF_USERNAME									= "_username_";
 	public static final String	APP_PREF_PASSWORD									= "_password_";
+	public static final String	APP_PREF_TIMER										= "timer";
 
 	public static final String	SERVER_URL_LOGIN_WEBSERVICE							= "http://fusepos.com/zaheer/AndroidAppWebservices/LoginWebService.php";
 	public static final String	SERVER_URL_GET_ALL_PRODUCT_WEBSERVICE				= "http://fusepos.com/zaheer/AndroidAppWebservices/GetAllProductsAfterIdWebService.php";

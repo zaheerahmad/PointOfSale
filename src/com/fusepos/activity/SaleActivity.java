@@ -8,17 +8,24 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Currency;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import android.app.Activity;
 import android.app.AlarmManager;
+import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
@@ -42,6 +49,9 @@ import com.fusepos.utils.AppGlobal;
 import com.fusepos.utils.SAutoBgButton;
 import com.fusepos.utils.Utils;
 import com.google.gson.Gson;
+import com.payleven.payment.api.PaylevenApi;
+import com.payleven.payment.api.TransactionRequest;
+import com.payleven.payment.api.TransactionRequestBuilder;
 
 /**
  * @author Zaheer Ahmad
@@ -68,10 +78,9 @@ public class SaleActivity extends Activity
 	TextView				totalTextView;
 	TextView				vatTextView;
 
-	// EditText quantityEditText;
-
 	SAutoBgButton			categoryButton;
 	SAutoBgButton			suspendButton;
+	SAutoBgButton			paymentButton;
 
 	double					totalPayable				= 0.0;
 	int						totalItem					= 0;
@@ -105,6 +114,7 @@ public class SaleActivity extends Activity
 		parentLinearLayout = ( LinearLayout ) findViewById( R.id.ll2_right );
 
 		suspendButton = ( SAutoBgButton ) findViewById( R.id.sale_btnSuspend );
+		paymentButton = ( SAutoBgButton ) findViewById( R.id.sale_btnPayment );
 
 		totalPayableTextView = ( TextView ) findViewById( R.id.sale_totalPayableTextView );
 		totalItemsTextView = ( TextView ) findViewById( R.id.sale_totalItemText );
@@ -119,9 +129,6 @@ public class SaleActivity extends Activity
 		discountTextView.setText( String.valueOf( discount ) );
 		totalTextView.setText( String.valueOf( total ) );
 		vatTextView.setText( String.valueOf( vat ) );
-
-		// quantityEditText = ( EditText ) findViewById(
-		// R.id.sale_list_productQttyText );
 
 		bindProducts();
 		bindCategory();
@@ -165,10 +172,62 @@ public class SaleActivity extends Activity
 				totalTextView.setText( String.valueOf( total ) );
 				vatTextView.setText( String.valueOf( vat ) );
 
-				// Log.d( "getall", dbHandler.getAllSuspendProduct().toString()
-				// );
 				dbHandler.close();
+			}
+		} );
 
+		paymentButton.setOnClickListener( new OnClickListener()
+		{
+
+			@Override
+			public void onClick( View arg0 )
+			{
+
+				try
+				{
+					Double d = Double.valueOf( totalPayable );
+
+					int amount = d.intValue();
+
+					String description = "FusePOS demo payment";
+					Bitmap image = BitmapFactory.decodeResource( getResources(), R.drawable.fuseposlogo );
+
+					TransactionRequestBuilder builder = new TransactionRequestBuilder( amount, Currency.getInstance( "EUR" ) );
+					builder.setDescription( description ).setBitmap( image );
+
+					String email = "zaheer.ahmad590@gmail.com";
+					if( !TextUtils.isEmpty( email ) )
+					{
+						builder.setEmail( email );
+					}
+
+					TransactionRequest request = builder.createTransactionRequest();
+
+					// create a unique id for the payment.
+					// For reasons of simplicity the UUID class is used here.
+					// In a production environment it would be more feasible to
+					// use an ascending numbering scheme
+					String orderId = UUID.randomUUID().toString();
+					PaylevenApi.initiatePayment( SaleActivity.this, orderId, request );
+				}
+				catch ( Exception e )
+				{
+					AlertDialog.Builder builder = new AlertDialog.Builder( SaleActivity.this );
+					builder.setTitle( "Error!" ).setMessage( "Couldn't connect to Payleven device. Make sure it is connected with your tablet via bluetooth." );
+					builder.setPositiveButton( "Ok", new DialogInterface.OnClickListener()
+					{
+						public void onClick( DialogInterface dialog, int which )
+						{
+
+							// dismiss the dialog
+						}
+					} );
+					builder.show();
+
+					// Toast.makeText( getApplicationContext(),
+					// "Could not connect to Payleven device", Toast.LENGTH_LONG
+					// ).show();
+				}
 			}
 		} );
 
@@ -218,9 +277,6 @@ public class SaleActivity extends Activity
 					_saleGridAdapter = new SaleGridAdapter( getApplicationContext(), -1, _saleListProductForGridView );
 					gridProducts.setAdapter( _saleGridAdapter );
 					dbHandler.close();
-
-					// _saleGridAdapter.notifyDataSetChanged();
-
 				}
 			} );
 
@@ -279,7 +335,6 @@ public class SaleActivity extends Activity
 			super( context, resource, list );
 			this.context = context;
 			this.productList = list;
-			// TODO Auto-generated constructor stub
 		}
 
 		@Override
@@ -313,24 +368,10 @@ public class SaleActivity extends Activity
 					{
 						// TODO Auto-generated method stub
 						LinearLayout ll = ( LinearLayout ) v;
-						int productId = Integer.parseInt( ( ( TextView ) ll.getChildAt( 2 ) ).getText().toString() ); // Getting
-																														// product
-																														// Id,
-																														// as
-																														// I
-																														// know
-																														// in
-																														// layout
-																														// I
-																														// set
-																														// 2nd
-																														// child
-																														// of
-																														// Linear
-																														// Layout
-																														// as
-																														// Product
-																														// Id
+						int productId = Integer.parseInt( ( ( TextView ) ll.getChildAt( 2 ) ).getText().toString() );
+
+						// Getting ProductId, as I know in layout I set 2nd
+						// child of LinearLayout as ProductId
 
 						DatabaseHandler dbHandler = new DatabaseHandler( getApplicationContext(), AppGlobal.TABLE_PRODUCT );
 						ProductBO productBO = dbHandler.getProduct( productId );
@@ -420,15 +461,6 @@ public class SaleActivity extends Activity
 			holder.productQuantity.setText( String.valueOf( this.productList.get( position ).getqQuantity() ) );
 			holder.productId.setText( String.valueOf( this.productList.get( position ).getId() ) );
 
-			// previousQuantity = Integer.parseInt(
-			// holder.productQuantity.getText().toString() );
-			// VAT hardcoded, needs to be fixed
-			// vatForEachProduct = (previousQuantity * Integer.parseInt(
-			// holder.ProductPrice.getText().toString())) * 0.20 ;
-
-			// vat += vatForEachProduct;
-			// vatTextView.setText( String.valueOf( vat ) );
-
 			holder.deleteBtn.setOnClickListener( new View.OnClickListener()
 			{
 
@@ -448,24 +480,6 @@ public class SaleActivity extends Activity
 
 					ProductBO p = new ProductBO();
 
-					// if( p.deleteProductFromList( Integer.parseInt(
-					// tvId.getText().toString() ), productList ) )
-					// {
-					/*
-					 * DatabaseHandler dbHandler = new DatabaseHandler(
-					 * getApplicationContext(), AppGlobal.TABLE_PRODUCT );
-					 * ProductBO productBO = dbHandler.getProduct(
-					 * Integer.parseInt( tvId.getText().toString() ) );
-					 * dbHandler.close();
-					 */
-
-					// int qQuantity = productList.get( position
-					// ).getqQuantity();
-					// BigDecimal productPricetoDelete = productList.get(
-					// position ).getPrice();
-
-					// we can also do productBO.getPrice()* qQuantity in
-					// vatForEachProduct ;
 					vatForEachProduct = Double.valueOf( productPrice ) * 0.20;
 					DecimalFormat df1 = new DecimalFormat( "######.##" );
 					vatForEachProduct = Double.valueOf( df1.format( vatForEachProduct ) );
@@ -488,7 +502,6 @@ public class SaleActivity extends Activity
 					_saleListAdapter = new SaleListAdapter( getApplicationContext(), -1, productList );
 					listProducts.setAdapter( _saleListAdapter );
 					_saleListAdapter.notifyDataSetChanged();
-					// }
 				}
 			} );
 
@@ -529,50 +542,29 @@ public class SaleActivity extends Activity
 							double updatedPrice = updatedQuantity * productPrice.doubleValue();
 
 							// to check if the previous quantity is greater than
-							// updated
-							// quantity
+							// updated quantity
 							if( updatedQuantity != previousQuantity || !Utils.isNullOrEmpty( String.valueOf( updatedQuantity ) ) || updatedQuantity > 0 )
 							{
 								// to update in the main list
 								productList.get( position ).setqQuantity( updatedQuantity );
 								productList.get( position ).setPrice( new BigDecimal( updatedPrice ) );
 
-								int totalIteml = 0;
-								double totall = 0.0;
-								double vatl = 0.0;
+								int totalItemAfterQuantityUpdated = 0;
+								double totalAfterQuantityUpdated = 0.0;
+								double vatAfterQuantityUpdated = 0.0;
 
 								for( int z = 0 ; z < productList.size() ; z++ )
 								{
-									totalIteml += productList.get( z ).getqQuantity();
-									totall += productList.get( z ).getPrice().doubleValue();
-									vatl += productList.get( z ).getPrice().doubleValue() * 0.20;
+									totalItemAfterQuantityUpdated += productList.get( z ).getqQuantity();
+									totalAfterQuantityUpdated += productList.get( z ).getPrice().doubleValue();
+									vatAfterQuantityUpdated += productList.get( z ).getPrice().doubleValue() * 0.20;
 								}
 
-								/*
-								 * int updatedQuantityMultiply = updatedQuantity
-								 * - previousQuantity;
-								 * // int updatedQuantityMultiply =
-								 * // --updatedQuantity;
-								 * vatForEachProduct = ( updatedQuantityMultiply
-								 * * productPrice.doubleValue() ) * 0.20;
-								 */// String.format("%.2f", vatForEachProduct);
-
 								DecimalFormat df = new DecimalFormat( "######.##" );
-								/*
-								 * vatForEachProduct =
-								 * vat = Double.valueOf( df.format( vatl ) );
-								 * DecimalFormat df1 = new DecimalFormat(
-								 * "######.##" );
-								 */
-								vat = Double.valueOf( df.format( vatl ) );
+								vat = Double.valueOf( df.format( vatAfterQuantityUpdated ) );
 
-								// productPrice = productPrice *
-								// updatedQuantityMultiply;
-
-								totalItem = totalIteml;// +
-														// updatedQuantityMultiply;
-								total = totall;// + ( updatedQuantityMultiply *
-												// productPrice.doubleValue() );
+								totalItem = totalItemAfterQuantityUpdated;
+								total = totalAfterQuantityUpdated;
 								totalPayable = total + vat + tax;
 
 								totalItemsTextView.setText( String.valueOf( totalItem ) );
@@ -581,66 +573,13 @@ public class SaleActivity extends Activity
 
 								vatTextView.setText( String.valueOf( vat ) );
 
-								// to update in the listView
-								// holder.productPrice.setText( String.valueOf(
-								// productPrice ) );
-
 								_saleListAdapter = new SaleListAdapter( getApplicationContext(), -1, productList );
 								listProducts.setAdapter( _saleListAdapter );
 								_saleListAdapter.notifyDataSetChanged();
 							}
 							else
 							{
-
-								/*
-								 * if( updatedQuantity < previousQuantity )
-								 * {
-								 * // to update in the main list
-								 * productList.get( position ).setqQuantity(
-								 * updatedQuantity );
-								 * productList.get( position ).setPrice( new
-								 * BigDecimal( updatedPrice ) );
-								 * // since VAT for first quantity is already
-								 * // inserted
-								 * int updatedQuantityMultiply =
-								 * previousQuantity - updatedQuantity;
-								 * // int updatedQuantityMultiply =
-								 * // --updatedQuantity;
-								 * vatForEachProduct = ( updatedQuantityMultiply
-								 * * productPrice.doubleValue() ) * 0.20;
-								 * // String.format("%.2f", vatForEachProduct);
-								 * DecimalFormat df = new DecimalFormat(
-								 * "######.##" );
-								 * vatForEachProduct = Double.valueOf(
-								 * df.format( vatForEachProduct ) );
-								 * vat -= vatForEachProduct;
-								 * DecimalFormat df1 = new DecimalFormat(
-								 * "######.##" );
-								 * vat = Double.valueOf( df1.format( vat ) );
-								 * // productPrice = productPrice *
-								 * // updatedQuantityMultiply;
-								 * totalItem = totalItem -
-								 * updatedQuantityMultiply;
-								 * total = total - ( updatedQuantityMultiply *
-								 * productPrice.doubleValue() );
-								 * totalPayable = total + vat + tax;
-								 * totalItemsTextView.setText( String.valueOf(
-								 * totalItem ) );
-								 * totalTextView.setText( String.valueOf( total
-								 * ) );
-								 * totalPayableTextView.setText( String.valueOf(
-								 * totalPayable ) );
-								 * vatTextView.setText( String.valueOf( vat ) );
-								 * // to update in the listView
-								 * // holder.productPrice.setText(
-								 * // String.valueOf(
-								 * // productPrice ) );
-								 * _saleListAdapter = new SaleListAdapter(
-								 * getApplicationContext(), -1, productList );
-								 * listProducts.setAdapter( _saleListAdapter );
-								 * _saleListAdapter.notifyDataSetChanged();
-								 * }
-								 */
+								Toast.makeText( getApplicationContext(), "Enter correct Quantity", Toast.LENGTH_LONG ).show();
 							}
 
 						}
@@ -675,6 +614,23 @@ public class SaleActivity extends Activity
 
 		}
 		return null;
+
+	}
+
+	@Override
+	protected void onActivityResult( int requestCode, int resultCode, final Intent data )
+	{
+
+		Log.i( "payment processing", "onActivityResult" );
+		super.onActivityResult( requestCode, resultCode, data );
+		// handle response in ResultActivity
+		Intent i = new Intent( SaleActivity.this, ResultActivity.class );
+		if( data != null )
+		{
+			i.putExtra( "result", data.getExtras() );
+		}
+		i.putExtra( "request_code", requestCode );
+		startActivity( i );
 
 	}
 }
