@@ -8,7 +8,7 @@ public class AppGlobal
 {
 	public static final boolean	isDebugMode											= false;
 	public static final boolean	shouldMaintainLogOfFeeds							= false;
-	public static final boolean isPaymentDone = false;
+	public static final boolean	isPaymentDone										= false;
 
 	// Response Statuses
 	public static final int		RESPONSE_STATUS_FAIL								= 1;
@@ -26,6 +26,8 @@ public class AppGlobal
 	public static final int		RESPONSE_STATUS_db_connection_failed				= -201;
 	public static final int		RESPONSE_STATUS_request_success						= 200;
 	public static final int		RESPONSE_STATUS_request_success_but_none_found		= -200;
+
+	public static final String	PAYLEVEN_API_KEY									= "9f71f167318143bdae4fdd9822cca25c";
 
 	/**
 	 * Databases constants
@@ -90,7 +92,8 @@ public class AppGlobal
 	public static final String	DATAFETCHER_ACTION_INSERT_FEEDBACK					= "_insert_feedback_";
 	public static final String	DATAFETCHER_ACTION_LOGIN_USER						= "_login_user_";
 	public static final String	DATAFETCHER_ACTION_PRODUCTS_SYNC					= "_product_sync_";
-	//public static final String	DATAFETCHER_ACTION_PAYMENT_PROCESS					= "_payment_process_";
+	// public static final String DATAFETCHER_ACTION_PAYMENT_PROCESS =
+	// "_payment_process_";
 
 	// Broadcast Filters
 	public static final String	BROADCAST_FILTER_INTERNET_CONNECTION_FOUND			= "_internet_connection_found_";
@@ -101,7 +104,7 @@ public class AppGlobal
 
 	public static final String	APP_PREF_IS_DATA_DIRTY								= "_isDataDirty_";
 	public static final String	APP_PREF_LAST_INSERTED_ID							= "_lastInsertedId_";
-	public static final String	APP_PREF_NAME										= "RECEPTIONIST_APP_PREFS";
+	public static final String	APP_PREF_NAME										= "FUSEPOS_APP_PREFS";
 	public static final String	APP_PREF_HOST_NAME									= "_host_name_";
 	public static final String	APP_PREF_DB_NAME									= "_db_name_";
 	public static final String	APP_PREF_DB_USERNAME								= "_db_username_";

@@ -23,6 +23,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -32,6 +33,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageView;
@@ -73,14 +75,14 @@ public class SaleActivity extends Activity
 
 	TextView				totalPayableTextView;
 	TextView				totalItemsTextView;
-	TextView				taxTextView;
+	//TextView				taxTextView;
 	TextView				discountTextView;
 	TextView				totalTextView;
 	TextView				vatTextView;
 
-	SAutoBgButton			categoryButton;
-	SAutoBgButton			suspendButton;
-	SAutoBgButton			paymentButton;
+	Button					categoryButton;
+	Button					suspendButton;
+	Button					paymentButton;
 
 	double					totalPayable				= 0.0;
 	int						totalItem					= 0;
@@ -113,19 +115,19 @@ public class SaleActivity extends Activity
 
 		parentLinearLayout = ( LinearLayout ) findViewById( R.id.ll2_right );
 
-		suspendButton = ( SAutoBgButton ) findViewById( R.id.sale_btnSuspend );
-		paymentButton = ( SAutoBgButton ) findViewById( R.id.sale_btnPayment );
+		suspendButton = ( Button ) findViewById( R.id.sale_btnSuspend );
+		paymentButton = ( Button ) findViewById( R.id.sale_btnPayment );
 
 		totalPayableTextView = ( TextView ) findViewById( R.id.sale_totalPayableTextView );
 		totalItemsTextView = ( TextView ) findViewById( R.id.sale_totalItemText );
-		taxTextView = ( TextView ) findViewById( R.id.sale_taxText );
+		//taxTextView = ( TextView ) findViewById( R.id.sale_taxText );
 		discountTextView = ( TextView ) findViewById( R.id.sale_discountText );
 		totalTextView = ( TextView ) findViewById( R.id.sale_totalText );
 		vatTextView = ( TextView ) findViewById( R.id.sale_vatText );
 
 		totalPayableTextView.setText( String.valueOf( totalPayable ) );
 		totalItemsTextView.setText( String.valueOf( totalItem ) );
-		taxTextView.setText( String.valueOf( tax ) );
+		//taxTextView.setText( String.valueOf( tax ) );
 		discountTextView.setText( String.valueOf( discount ) );
 		totalTextView.setText( String.valueOf( total ) );
 		vatTextView.setText( String.valueOf( vat ) );
@@ -167,7 +169,7 @@ public class SaleActivity extends Activity
 
 				totalPayableTextView.setText( String.valueOf( totalPayable ) );
 				totalItemsTextView.setText( String.valueOf( totalItem ) );
-				taxTextView.setText( String.valueOf( tax ) );
+				//taxTextView.setText( String.valueOf( tax ) );
 				discountTextView.setText( String.valueOf( discount ) );
 				totalTextView.setText( String.valueOf( total ) );
 				vatTextView.setText( String.valueOf( vat ) );
@@ -189,6 +191,7 @@ public class SaleActivity extends Activity
 
 					int amount = d.intValue();
 
+					PaylevenApi.configure( AppGlobal.PAYLEVEN_API_KEY );
 					String description = "FusePOS demo payment";
 					Bitmap image = BitmapFactory.decodeResource( getResources(), R.drawable.fuseposlogo );
 
@@ -255,13 +258,15 @@ public class SaleActivity extends Activity
 				childLinearLayout = new LinearLayout( getApplicationContext() );
 				childLinearLayout.setOrientation( LinearLayout.HORIZONTAL );
 			}
-
-			categoryButton = new SAutoBgButton( this );
+			categoryButton = new Button( this );
 			catName = _saleListCategoryForDisplay.get( i ).getName().toString();
 			catId = _saleListCategoryForDisplay.get( i ).getId();
 
 			categoryButton.setText( catName );
 			categoryButton.setTag( catId );
+			categoryButton.setTextColor(Color.parseColor("#ffffff") );
+			categoryButton.setBackgroundColor( R.drawable.sale_activity_category_button_color );
+			
 			categoryButton.setOnClickListener( new OnClickListener()
 			{
 				@Override
