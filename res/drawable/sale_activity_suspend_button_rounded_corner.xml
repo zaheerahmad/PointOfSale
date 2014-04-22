@@ -4,8 +4,8 @@
             <!-- you can use any color you want-->
             <solid android:color="@color/sale_activity_suspend_button_color_default"/>
             <corners
-                        android:bottomRightRadius="10dp"
-                        android:bottomLeftRadius="10dp"
-                        android:topLeftRadius="10dp"
-                        android:topRightRadius="10dp"/>
+                        android:bottomRightRadius="5dp"
+                        android:bottomLeftRadius="5dp"
+                        android:topLeftRadius="5dp"
+                        android:topRightRadius="5dp"/>
 </shape>

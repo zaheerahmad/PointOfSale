@@ -2,67 +2,85 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#333333"
     android:baselineAligned="false"
-    android:orientation="horizontal" >
-    <TextView 
+    android:orientation="vertical" >
+
+    <TextView
         android:id="@+id/sale_list_hidden_productId"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:visibility="gone"/>
+        android:visibility="gone" />
+
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:background="#ffffff" />
 
     <LinearLayout
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="2"
-        android:padding="10dp" >
+        android:orientation="horizontal"
+        android:baselineAligned="false" >
 
-        <com.fusepos.utils.SAutoBgButton
-            android:id="@+id/sale_list_deletebtn"
-            android:layout_width="15dp"
-            android:layout_height="15dp"
-            android:layout_gravity="center"
-            android:background="@drawable/delete_record" />
-    </LinearLayout>
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="2"
+            android:padding="10dp" >
 
-    <LinearLayout
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="2"
-        android:padding="10dp" >
+            <TextView
+                android:id="@+id/sale_list_productText"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:textColor="#ffffff" />
+        </LinearLayout>
 
-        <TextView
-            android:id="@+id/sale_list_productText"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center" />
-    </LinearLayout>
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="2"
+            android:padding="10dp" >
 
-    <LinearLayout
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="2"
-        android:padding="10dp" >
+            <EditText
+                android:id="@+id/sale_list_productQttyText"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:imeOptions="actionDone"
+                android:inputType="number"
+                android:textColor="#ffffff" />
+        </LinearLayout>
 
-        <EditText
-            android:id="@+id/sale_list_productQttyText"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:imeOptions="actionDone"
-            android:inputType="number" />
-    </LinearLayout>
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="2"
+            android:padding="10dp" >
 
-    <LinearLayout
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="2"
-        android:padding="10dp" >
+            <TextView
+                android:id="@+id/sale_list_productPriceText"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:textColor="#ffffff"
+                android:drawableLeft="@drawable/pound_sign" />
+        </LinearLayout>
 
-        <TextView
-            android:id="@+id/sale_list_productPriceText"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center" />
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="2"
+            android:paddingLeft="20dp" >
+
+            <com.fusepos.utils.SAutoBgButton
+                android:id="@+id/sale_list_deletebtn"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_gravity="center"
+                android:background="@drawable/delete_record" />
+        </LinearLayout>
     </LinearLayout>
 
 </LinearLayout>

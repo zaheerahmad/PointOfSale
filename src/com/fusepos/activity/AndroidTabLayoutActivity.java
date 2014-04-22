@@ -7,11 +7,12 @@ import android.os.Bundle;
 import android.widget.TabHost;
 import android.widget.TabHost.OnTabChangeListener;
 import android.widget.TabHost.TabSpec;
+import android.widget.TextView;
 
 public class AndroidTabLayoutActivity extends TabActivity
 {
-	String	orangeColor	= "#ff6600";
-	String	greyColor	= "#808069";
+	String	orangeColor	= "#ffffff";
+	String	greyColor	= "#f6b79d";
 
 	public void setTabColor( TabHost tabhost )
 	{
@@ -39,6 +40,7 @@ public class AndroidTabLayoutActivity extends TabActivity
 
 		TabHost tabHost = getTabHost();
 		final TabHost tH = tabHost;
+		
 		tabHost.setOnTabChangedListener( new OnTabChangeListener()
 		{
 

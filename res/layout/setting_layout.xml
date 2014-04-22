@@ -3,12 +3,12 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#ff6600" >
+    android:background="#ffffff" >
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="fill_parent"
-        android:background="#ff6600"
+        android:background="#ffffff"
         android:orientation="vertical" >
 
         <RelativeLayout
@@ -22,7 +22,7 @@
                 android:layout_margin="10dp"
                 android:gravity="center_horizontal"
                 android:text="FusePOS Settings"
-                android:textColor="#ffffff"
+                android:textColor="#000000"
                 android:textStyle="bold" />
 
             <RelativeLayout
@@ -43,7 +43,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="FusePOS IP"
-                        android:textColor="#ffffff" />
+                        android:textColor="#000000" />
 
                     <EditText
                         android:id="@+id/instance_d_host_name"
@@ -68,7 +68,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="DB Name"
-                        android:textColor="#ffffff" />
+                        android:textColor="#000000" />
 
                     <EditText
                         android:id="@+id/instance_d_db_name"
@@ -93,7 +93,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="DB Username"
-                        android:textColor="#ffffff" />
+                        android:textColor="#000000" />
 
                     <EditText
                         android:id="@+id/instance_d_db_username"
@@ -118,7 +118,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="DB Password"
-                        android:textColor="#ffffff" />
+                        android:textColor="#000000" />
 
                     <EditText
                         android:id="@+id/instance_d_db_password"
@@ -133,11 +133,11 @@
 
                 <com.fusepos.utils.SAutoBgButton
                     android:id="@+id/setting_save_btn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="80dp"
+                    android:layout_height="40dp"
                     android:layout_alignParentRight="true"
                     android:layout_below="@id/setting_rl_d_db_password"
-                    android:background="#330000"
+                    android:background="@drawable/login_activity_login_button_color"
                     android:text="Save"
                     android:textColor="#ffffff" />
             </RelativeLayout>

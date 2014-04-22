@@ -75,7 +75,7 @@ public class SaleActivity extends Activity
 
 	TextView				totalPayableTextView;
 	TextView				totalItemsTextView;
-	//TextView				taxTextView;
+	TextView				taxTextView;
 	TextView				discountTextView;
 	TextView				totalTextView;
 	TextView				vatTextView;
@@ -83,6 +83,7 @@ public class SaleActivity extends Activity
 	Button					categoryButton;
 	Button					suspendButton;
 	Button					paymentButton;
+	Button					cancelButton;
 
 	double					totalPayable				= 0.0;
 	int						totalItem					= 0;
@@ -92,11 +93,13 @@ public class SaleActivity extends Activity
 	double					vat							= 0.0;
 	double					vatForEachProduct			= 0.0;
 	String					catName						= null;
+	// String currencySign = "£";
 	int						catId						= -1;
 	int						defaultQuantity				= 1;
 	int						previousQuantity			= 0;
 	int						updatedQuantity				= 0;
 	private List<ProductBO>	globalListOfProductConst	= null;
+	private List<Button>	catButtonsList				= null;
 
 	@Override
 	protected void onCreate( Bundle savedInstanceState )
@@ -106,6 +109,7 @@ public class SaleActivity extends Activity
 		_saleListProductForGridView = new ArrayList<ProductBO>();
 		_saleListCategoryForDisplay = new ArrayList<CategoryBO>();
 		globalListOfProductConst = new ArrayList<ProductBO>();
+		catButtonsList = new ArrayList<Button>();
 
 		super.onCreate( savedInstanceState );
 		setContentView( R.layout.sale_activity );
@@ -117,23 +121,75 @@ public class SaleActivity extends Activity
 
 		suspendButton = ( Button ) findViewById( R.id.sale_btnSuspend );
 		paymentButton = ( Button ) findViewById( R.id.sale_btnPayment );
+		cancelButton = ( Button ) findViewById( R.id.sale_btnCancel );
 
 		totalPayableTextView = ( TextView ) findViewById( R.id.sale_totalPayableTextView );
 		totalItemsTextView = ( TextView ) findViewById( R.id.sale_totalItemText );
-		//taxTextView = ( TextView ) findViewById( R.id.sale_taxText );
+		taxTextView = ( TextView ) findViewById( R.id.sale_taxText );
 		discountTextView = ( TextView ) findViewById( R.id.sale_discountText );
 		totalTextView = ( TextView ) findViewById( R.id.sale_totalText );
 		vatTextView = ( TextView ) findViewById( R.id.sale_vatText );
 
 		totalPayableTextView.setText( String.valueOf( totalPayable ) );
 		totalItemsTextView.setText( String.valueOf( totalItem ) );
-		//taxTextView.setText( String.valueOf( tax ) );
+		taxTextView.setText( String.valueOf( tax ) );
 		discountTextView.setText( String.valueOf( discount ) );
 		totalTextView.setText( String.valueOf( total ) );
 		vatTextView.setText( String.valueOf( vat ) );
 
-		bindProducts();
-		bindCategory();
+		cancelButton.setOnClickListener( new OnClickListener()
+		{
+
+			@Override
+			public void onClick( View arg0 )
+			{
+
+				if( _saleListProductForListView.size() > 0 )
+				{
+					AlertDialog.Builder builder = new AlertDialog.Builder( SaleActivity.this );
+					builder.setTitle( "Order Cancelation" ).setMessage( "Are you sure you want to cancel the order?" );
+					builder.setPositiveButton( "Yes", new DialogInterface.OnClickListener()
+					{
+						public void onClick( DialogInterface dialog, int which )
+						{
+
+							_saleListProductForListView.clear();
+							_saleListAdapter = new SaleListAdapter( getApplicationContext(), -1, _saleListProductForListView );
+							listProducts.setAdapter( _saleListAdapter );
+							_saleListAdapter.notifyDataSetChanged();
+
+							totalPayable = 0.0;
+							totalItem = 0;
+							tax = 0.0;
+							discount = 0.0;
+							total = 0.0;
+							vat = 0.0;
+							vatForEachProduct = 0.0;
+							defaultQuantity = 1;
+							previousQuantity = 0;
+							updatedQuantity = 0;
+
+							totalPayableTextView.setText( String.valueOf( totalPayable ) );
+							totalItemsTextView.setText( String.valueOf( totalItem ) );
+							taxTextView.setText( String.valueOf( tax ) );
+							discountTextView.setText( String.valueOf( discount ) );
+							totalTextView.setText( String.valueOf( total ) );
+							vatTextView.setText( String.valueOf( vat ) );
+						}
+					} );
+					builder.setNegativeButton( "No", new DialogInterface.OnClickListener()
+					{
+
+						@Override
+						public void onClick( DialogInterface arg0, int arg1 )
+						{
+
+						}
+					} );
+					builder.show();
+				}
+			}
+		} );
 
 		suspendButton.setOnClickListener( new OnClickListener()
 		{
@@ -142,39 +198,44 @@ public class SaleActivity extends Activity
 			public void onClick( View arg0 )
 			{
 
-				Gson gson = new Gson();
-				String suspendProductJson = gson.toJson( _saleListProductForListView );
+				if( _saleListProductForListView.size() > 0 )
+				{
+					Gson gson = new Gson();
+					String suspendProductJson = gson.toJson( _saleListProductForListView );
 
-				SimpleDateFormat sdf = new SimpleDateFormat( "MM/dd/yyyy" );
-				String suspendProductDate = sdf.format( new Date() );
+					SimpleDateFormat sdf = new SimpleDateFormat( "MM/dd/yyyy" );
+					String suspendProductDate = sdf.format( new Date() );
 
-				DatabaseHandler dbHandler = new DatabaseHandler( getApplicationContext(), AppGlobal.TABLE_SUSPEND_PRODUCT );
-				dbHandler.addSuspendProduct( suspendProductJson, suspendProductDate );
+					DatabaseHandler dbHandler = new DatabaseHandler( getApplicationContext(), AppGlobal.TABLE_SUSPEND_PRODUCT );
+					dbHandler.addSuspendProduct( suspendProductJson, suspendProductDate );
 
-				_saleListProductForListView.clear();
-				_saleListAdapter = new SaleListAdapter( getApplicationContext(), -1, _saleListProductForListView );
-				listProducts.setAdapter( _saleListAdapter );
-				_saleListAdapter.notifyDataSetChanged();
+					_saleListProductForListView.clear();
+					_saleListAdapter = new SaleListAdapter( getApplicationContext(), -1, _saleListProductForListView );
+					listProducts.setAdapter( _saleListAdapter );
+					_saleListAdapter.notifyDataSetChanged();
 
-				totalPayable = 0.0;
-				totalItem = 0;
-				tax = 0.0;
-				discount = 0.0;
-				total = 0.0;
-				vat = 0.0;
-				vatForEachProduct = 0.0;
-				defaultQuantity = 1;
-				previousQuantity = 0;
-				updatedQuantity = 0;
+					totalPayable = 0.0;
+					totalItem = 0;
+					tax = 0.0;
+					discount = 0.0;
+					total = 0.0;
+					vat = 0.0;
+					vatForEachProduct = 0.0;
+					defaultQuantity = 1;
+					previousQuantity = 0;
+					updatedQuantity = 0;
 
-				totalPayableTextView.setText( String.valueOf( totalPayable ) );
-				totalItemsTextView.setText( String.valueOf( totalItem ) );
-				//taxTextView.setText( String.valueOf( tax ) );
-				discountTextView.setText( String.valueOf( discount ) );
-				totalTextView.setText( String.valueOf( total ) );
-				vatTextView.setText( String.valueOf( vat ) );
+					totalPayableTextView.setText( String.valueOf( totalPayable ) );
+					totalItemsTextView.setText( String.valueOf( totalItem ) );
+					taxTextView.setText( String.valueOf( tax ) );
+					discountTextView.setText( String.valueOf( discount ) );
+					totalTextView.setText( String.valueOf( total ) );
+					vatTextView.setText( String.valueOf( vat ) );
 
-				dbHandler.close();
+					dbHandler.close();
+				}
+				else
+					Toast.makeText( getApplicationContext(), "Cannot Suspend. List is empty!", Toast.LENGTH_LONG ).show();
 			}
 		} );
 
@@ -185,54 +246,78 @@ public class SaleActivity extends Activity
 			public void onClick( View arg0 )
 			{
 
-				try
+				if( _saleListProductForListView.size() > 0 )
 				{
-					Double d = Double.valueOf( totalPayable );
-
-					int amount = d.intValue();
-
-					PaylevenApi.configure( AppGlobal.PAYLEVEN_API_KEY );
-					String description = "FusePOS demo payment";
-					Bitmap image = BitmapFactory.decodeResource( getResources(), R.drawable.fuseposlogo );
-
-					TransactionRequestBuilder builder = new TransactionRequestBuilder( amount, Currency.getInstance( "EUR" ) );
-					builder.setDescription( description ).setBitmap( image );
-
-					String email = "zaheer.ahmad590@gmail.com";
-					if( !TextUtils.isEmpty( email ) )
+					try
 					{
-						builder.setEmail( email );
+
+						Double d = Double.valueOf( totalPayable );
+
+						int amount = d.intValue();
+
+						PaylevenApi.configure( AppGlobal.PAYLEVEN_API_KEY );
+						String description = "FusePOS demo payment";
+						Bitmap image = BitmapFactory.decodeResource( getResources(), R.drawable.fuseposlogo );
+
+						TransactionRequestBuilder builder = new TransactionRequestBuilder( amount, Currency.getInstance( "EUR" ) );
+						builder.setDescription( description ).setBitmap( image );
+
+						String email = "zaheer.ahmad590@gmail.com";
+						if( !TextUtils.isEmpty( email ) )
+						{
+							builder.setEmail( email );
+						}
+
+						TransactionRequest request = builder.createTransactionRequest();
+
+						// create a unique id for the payment.
+						// For reasons of simplicity the UUID class is used
+						// here.
+						// In a production environment it would be more feasible
+						// to
+						// use an ascending numbering scheme
+						String orderId = UUID.randomUUID().toString();
+						PaylevenApi.initiatePayment( SaleActivity.this, orderId, request );
 					}
 
-					TransactionRequest request = builder.createTransactionRequest();
+					catch ( Exception e )
+					{
+						AlertDialog.Builder builder = new AlertDialog.Builder( SaleActivity.this );
+						builder.setTitle( "Error!" ).setMessage( "Couldn't connect to Payleven device. Make sure it is connected with your tablet via bluetooth." );
+						builder.setPositiveButton( "Ok", new DialogInterface.OnClickListener()
+						{
+							public void onClick( DialogInterface dialog, int which )
+							{
 
-					// create a unique id for the payment.
-					// For reasons of simplicity the UUID class is used here.
-					// In a production environment it would be more feasible to
-					// use an ascending numbering scheme
-					String orderId = UUID.randomUUID().toString();
-					PaylevenApi.initiatePayment( SaleActivity.this, orderId, request );
+								// dismiss the dialog
+							}
+						} );
+						builder.show();
+
+						// Toast.makeText( getApplicationContext(),
+						// "Could not connect to Payleven device",
+						// Toast.LENGTH_LONG
+						// ).show();
+					}
 				}
-				catch ( Exception e )
+				else
 				{
 					AlertDialog.Builder builder = new AlertDialog.Builder( SaleActivity.this );
-					builder.setTitle( "Error!" ).setMessage( "Couldn't connect to Payleven device. Make sure it is connected with your tablet via bluetooth." );
+					builder.setTitle( "Error!" ).setMessage( "Cannot initiate Payment. List Empty!." );
 					builder.setPositiveButton( "Ok", new DialogInterface.OnClickListener()
 					{
 						public void onClick( DialogInterface dialog, int which )
 						{
 
-							// dismiss the dialog
 						}
 					} );
 					builder.show();
-
-					// Toast.makeText( getApplicationContext(),
-					// "Could not connect to Payleven device", Toast.LENGTH_LONG
-					// ).show();
 				}
 			}
 		} );
+
+		bindProducts();
+		bindCategory();
 
 	}
 
@@ -264,9 +349,8 @@ public class SaleActivity extends Activity
 
 			categoryButton.setText( catName );
 			categoryButton.setTag( catId );
-			categoryButton.setTextColor(Color.parseColor("#ffffff") );
-			categoryButton.setBackgroundColor( R.drawable.sale_activity_category_button_color );
-			
+			categoryButton.setTextColor( Color.parseColor( "#ffffff" ) );
+			categoryButton.setBackgroundColor( Color.parseColor( "#f6b79d" ) );
 			categoryButton.setOnClickListener( new OnClickListener()
 			{
 				@Override
@@ -274,9 +358,22 @@ public class SaleActivity extends Activity
 				{
 
 					int catId = Integer.parseInt( v.getTag().toString() );
-					Log.d( "catID", String.valueOf( catId ) );
+					// Log.d( "catID", String.valueOf( catId ) );
+
 					DatabaseHandler dbHandler = new DatabaseHandler( getApplicationContext(), AppGlobal.TABLE_PRODUCT );
 					_saleListProductForGridView = dbHandler.getProductswithCategoryId( catId );
+
+					Button b = ( Button ) v;
+					b.setTextColor( Color.parseColor( "#000000" ) );
+					b.setBackgroundColor( Color.parseColor( "#ffffff" ) );
+					for( int j = 0 ; j < catButtonsList.size() ; j++ )
+					{
+						if( catButtonsList.get( j ).getTag().toString() != v.getTag().toString() )
+						{
+							catButtonsList.get( j ).setTextColor( Color.parseColor( "#ffffff" ) );
+							catButtonsList.get( j ).setBackgroundColor( Color.parseColor( "#f6b79d" ) );
+						}
+					}
 
 					// needs to be fixed
 					_saleGridAdapter = new SaleGridAdapter( getApplicationContext(), -1, _saleListProductForGridView );
@@ -286,9 +383,11 @@ public class SaleActivity extends Activity
 			} );
 
 			LayoutParams lp = new LayoutParams( LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1 );
+			lp.rightMargin = 5;
 
 			childLinearLayout.addView( categoryButton, lp );
 			count++;
+			catButtonsList.add( categoryButton );
 		}
 		if( childLinearLayout != null )
 			parentLinearLayout.addView( childLinearLayout );
@@ -476,9 +575,10 @@ public class SaleActivity extends Activity
 					// TODO Auto-generated method stub
 					LinearLayout ll = ( LinearLayout ) v.getParent();
 					LinearLayout ll1 = ( LinearLayout ) ll.getParent();
-					TextView tvId = ( TextView ) ll1.getChildAt( 0 );
-					TextView productPriceTextView = ( TextView ) ( ( LinearLayout ) ll1.getChildAt( 4 ) ).getChildAt( 0 );
-					EditText currentQuantityTextView = ( EditText ) ( ( LinearLayout ) ll1.getChildAt( 3 ) ).getChildAt( 0 );
+					LinearLayout lll = ( LinearLayout ) ll1.getParent();
+					TextView tvId = ( TextView ) lll.getChildAt( 0 );
+					TextView productPriceTextView = ( TextView ) ( ( LinearLayout ) ( ( LinearLayout ) lll.getChildAt( 2 ) ).getChildAt( 2 ) ).getChildAt( 0 );
+					EditText currentQuantityTextView = ( EditText ) ( ( LinearLayout ) ( ( LinearLayout ) lll.getChildAt( 2 ) ).getChildAt( 1 ) ).getChildAt( 0 );
 
 					String currentQuantity = currentQuantityTextView.getText().toString();
 					String productPrice = productPriceTextView.getText().toString();
@@ -627,15 +727,18 @@ public class SaleActivity extends Activity
 	{
 
 		Log.i( "payment processing", "onActivityResult" );
-		super.onActivityResult( requestCode, resultCode, data );
-		// handle response in ResultActivity
-		Intent i = new Intent( SaleActivity.this, ResultActivity.class );
-		if( data != null )
+		if( resultCode != 0 )
 		{
-			i.putExtra( "result", data.getExtras() );
+			super.onActivityResult( requestCode, resultCode, data );
+			// handle response in ResultActivity
+			Intent i = new Intent( SaleActivity.this, ResultActivity.class );
+			if( data != null )
+			{
+				i.putExtra( "result", data.getExtras() );
+			}
+			i.putExtra( "request_code", requestCode );
+			startActivity( i );
 		}
-		i.putExtra( "request_code", requestCode );
-		startActivity( i );
 
 	}
 }

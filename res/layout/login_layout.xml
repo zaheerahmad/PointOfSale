@@ -2,7 +2,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="#ff6600"
+    android:background="#ffffff"
     android:paddingLeft="20dp"
     android:paddingRight="20dp"
      >
@@ -10,21 +10,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical" >
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_horizontal" >
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Point of Sale Login"
-                android:textColor="#ffffff"
-                android:textStyle="bold"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp" />
-        </LinearLayout>
 
         <LinearLayout
             android:layout_width="fill_parent"
@@ -37,7 +22,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Username"
-                android:textColor="#ffffff" />
+                android:textColor="#000000" />
 
             <EditText
                 android:id="@+id/login_username_et"
@@ -61,7 +46,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Password"
-                android:textColor="#ffffff" />
+                android:textColor="#000000" />
 
             <EditText
                 android:id="@+id/login_password_et"
@@ -99,10 +84,10 @@
 
                     <com.fusepos.utils.SAutoBgButton
                         android:id="@+id/login_login_btn"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_width="80dp"
+                        android:layout_height="40dp"
                         android:layout_alignParentRight="true"
-                        android:background="#330000"
+                        android:background="@drawable/login_activity_login_button_color"
                         android:text="Login"
                         android:textColor="#ffffff" />
 

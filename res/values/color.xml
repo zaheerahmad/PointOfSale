@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="main_layout_background_color">#ADADAD</color>
-    <color name="main_layout_tab_color">#808069</color>
-    <color name="sale_activity_payment_button_color_default">#8FBC8F</color>
+
+    <color name="app_main_color_orange">#ff7428</color>
+    <color name="main_layout_background_color">#f7f7f7</color>
+    <color name="main_layout_tab_color">#f6b79d</color>
+    <color name="sale_activity_payment_button_color_default">#33d629</color>
     <color name="button_color_pressed">#CDCDCD</color>
-    <color name="sale_activity_print_button_color_default">#0000FF</color>
-    <color name="sale_activity_suspend_button_color_default">#EEEE00</color>
-    <color name="sale_activity_cancel_button_color_default">#ff0000</color>
-    <color name="sale_activity_category_button_color_default">#000000</color>
+    <color name="sale_activity_print_button_color_default">#266db9</color>
+    <color name="sale_activity_suspend_button_color_default">#fea718</color>
+    <color name="sale_activity_cancel_button_color_default">#ef2929</color>
+    <color name="sale_activity_category_button_color_default">#f6b79d</color>
+    <color name="login_activity_login_button_color_default">#ff7428</color>
+
 </resources>

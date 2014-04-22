@@ -10,6 +10,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -70,18 +71,23 @@ public class LoginActivity extends Activity
 					{
 
 						SimpleDateFormat sdf = new SimpleDateFormat( "dd/MM/yyyy" );
-						Date validUltilDate = null;
+						Date validUntilDate = null;
 						try
 						{
-							validUltilDate = sdf.parse( validUntil );
+							validUntilDate = sdf.parse( validUntil );
 						}
 						catch ( ParseException e )
 						{
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
-						if( new Date().after( validUltilDate ) )
+						if( new Date().after( validUntilDate ) )
 						{
+							
+							String array[] = null;
+							
+							array[2].toString();
+							
 							return;
 						}
 					}
