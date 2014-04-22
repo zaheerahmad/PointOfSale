@@ -3,12 +3,12 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#ff6600" >
+    android:background="#ffffff" >
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="fill_parent"
-        android:background="#ff6600"
+        android:background="#ffffff"
         android:orientation="vertical" >
 
         <RelativeLayout
@@ -22,7 +22,7 @@
                 android:layout_margin="10dp"
                 android:gravity="center_horizontal"
                 android:text="FusePOS Support"
-                android:textColor="#ffffff"
+                android:textColor="#000000"
                 android:textStyle="bold" />
             
         </RelativeLayout>
