@@ -18,10 +18,12 @@ import android.view.inputmethod.InputMethodManager;
 
 /**
  * @author Zaheer Ahmad
- *
+ * 
  */
 public class Utils
 {
+	public static boolean isSynchronizing = false;
+	
 	public static void hideSoftKeyboard( Activity activity )
 	{
 

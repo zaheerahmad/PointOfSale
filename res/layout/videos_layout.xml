@@ -7,13 +7,14 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="fill_parent"
+        android:layout_height="wrap_content"
         android:background="#ffffff"
         android:orientation="vertical" >
 
         <RelativeLayout
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content" >
+            android:layout_height="fill_parent"
+            android:layout_marginBottom="30dp" >
 
             <TextView
                 android:id="@+id/sign_in_heading"
@@ -22,10 +23,47 @@
                 android:layout_margin="10dp"
                 android:gravity="center_horizontal"
                 android:text="FusePOS Support"
+                android:textAppearance="?android:attr/textAppearanceMedium"
                 android:textColor="#000000"
                 android:textStyle="bold" />
-            
         </RelativeLayout>
+
+        <TextView
+            android:id="@+id/textView1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:text="In order to use FusePOS app, you need to have already registered for a FusePOS account at fusepos.com" />
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:text="Once registered, you will be emailed your database IP, and unique database login information. Keep this information safe and secure." />
+
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:text="Enter your details on the settings screen, save and then use the login screen to login with your FusePOS account information." />
+
+        <TextView
+            android:id="@+id/textView4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:text="Help &amp; Support available at fusepos.com/support" />
+        <TextView
+            android:id="@+id/textView5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:text="Or email support@fusepos.com" />
     </LinearLayout>
 
 </ScrollView>

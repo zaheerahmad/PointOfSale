@@ -71,9 +71,12 @@ public class DataFetcher extends AsyncTask<String, String, ResponseStatusWrapper
 		 */
 		if( Utils.hasInternetConnection( this.context ) )
 		{
+			Utils.isSynchronizing = true;
 			this.hasInternet = true;
 			async.doWait();
 		}
+		else
+			Utils.isSynchronizing = false;
 		/**
 		 * Network checking ended.
 		 */

@@ -8,30 +8,31 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Currency;
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.text.Editable;
-import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -40,6 +41,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -51,9 +54,6 @@ import com.fusepos.utils.AppGlobal;
 import com.fusepos.utils.SAutoBgButton;
 import com.fusepos.utils.Utils;
 import com.google.gson.Gson;
-import com.payleven.payment.api.PaylevenApi;
-import com.payleven.payment.api.TransactionRequest;
-import com.payleven.payment.api.TransactionRequestBuilder;
 
 /**
  * @author Zaheer Ahmad
@@ -61,6 +61,7 @@ import com.payleven.payment.api.TransactionRequestBuilder;
  */
 public class SaleActivity extends Activity
 {
+
 	List<ProductBO>			_saleListProductForListView;
 	List<ProductBO>			_saleListProductForGridView;
 	List<CategoryBO>		_saleListCategoryForDisplay;
@@ -71,7 +72,17 @@ public class SaleActivity extends Activity
 	ListView				listProducts;
 
 	LinearLayout			parentLinearLayout;
+	RelativeLayout			paymentDialogRelativeLayoutCash1;
+	RelativeLayout			paymentDialogRelativeLayoutCash2;
+	RelativeLayout			paymentDialogRelativeLayoutChecque;
+	RelativeLayout			paymentDialogRelativeLayoutCreditCard1;
+	RelativeLayout			paymentDialogRelativeLayoutCreditCard2;
+
 	ProgressDialog			loadingDialog;
+
+	Spinner					dialogPaymentMethodSpinner;
+
+	CountDownTimer			cDt;
 
 	TextView				totalPayableTextView;
 	TextView				totalItemsTextView;
@@ -79,11 +90,23 @@ public class SaleActivity extends Activity
 	TextView				discountTextView;
 	TextView				totalTextView;
 	TextView				vatTextView;
+	TextView				paymentDialogTotalPayableTextView;
+	TextView				paymentDialogTotalItemsTextView;
+	TextView				paymentDialogChangeTextView;
+
+	EditText				paymentDialogPaidEditText;
 
 	Button					categoryButton;
 	Button					suspendButton;
 	Button					paymentButton;
 	Button					cancelButton;
+	Button					paymentDialogSubmitButton;
+	Button					paymentDialogCloseButton;
+
+	Dialog					paymentDialog;
+
+	// for payment dialog
+	double					paymentDialogPaid			= 0.0;
 
 	double					totalPayable				= 0.0;
 	int						totalItem					= 0;
@@ -92,6 +115,7 @@ public class SaleActivity extends Activity
 	double					total						= 0.0;
 	double					vat							= 0.0;
 	double					vatForEachProduct			= 0.0;
+
 	String					catName						= null;
 	// String currencySign = "£";
 	int						catId						= -1;
@@ -110,18 +134,51 @@ public class SaleActivity extends Activity
 		_saleListCategoryForDisplay = new ArrayList<CategoryBO>();
 		globalListOfProductConst = new ArrayList<ProductBO>();
 		catButtonsList = new ArrayList<Button>();
+		paymentDialog = new Dialog( SaleActivity.this );
+
+		// to check if synchronization is true then invoke the options menu to
+		// enable or disable the cloud icon
+		cDt = new CountDownTimer( 60000, 1000 )
+		{
+
+			public void onTick( long millisUntilFinished )
+			{
+
+				invalidateOptionsMenu();
+			}
+
+			public void onFinish()
+			{
+
+				cDt.start();
+			}
+		};
+
+		cDt.start();
 
 		super.onCreate( savedInstanceState );
 		setContentView( R.layout.sale_activity );
+		paymentDialog.setContentView( R.layout.sale_activity_payment_dialog );
 
 		gridProducts = ( GridView ) findViewById( R.id.sale_grid );
 		listProducts = ( ListView ) findViewById( R.id.sale_listView );
 
 		parentLinearLayout = ( LinearLayout ) findViewById( R.id.ll2_right );
+		paymentDialogRelativeLayoutCash1 = ( RelativeLayout ) paymentDialog.findViewById( R.id.sale_activity_payment_dialog_relativeLayout_payment_method_cash1 );
+		paymentDialogRelativeLayoutCash2 = ( RelativeLayout ) paymentDialog.findViewById( R.id.sale_activity_payment_dialog_relativeLayout_payment_method_cash2 );
+		paymentDialogRelativeLayoutChecque = ( RelativeLayout ) paymentDialog.findViewById( R.id.sale_activity_payment_dialog_relativeLayout_payment_method_checque1 );
+		paymentDialogRelativeLayoutCreditCard1 = ( RelativeLayout ) paymentDialog.findViewById( R.id.sale_activity_payment_dialog_relativeLayout_payment_method_creditCard1 );
+		paymentDialogRelativeLayoutCreditCard2 = ( RelativeLayout ) paymentDialog.findViewById( R.id.sale_activity_payment_dialog_relativeLayout_payment_method_creditCard2 );
+
+		paymentDialogPaidEditText = ( EditText ) paymentDialog.findViewById( R.id.sale_activity_payment_dialog_editText_paid );
+
+		dialogPaymentMethodSpinner = ( Spinner ) paymentDialog.findViewById( R.id.sale_activity_payment_dialog_spinner_payment_method );
 
 		suspendButton = ( Button ) findViewById( R.id.sale_btnSuspend );
 		paymentButton = ( Button ) findViewById( R.id.sale_btnPayment );
 		cancelButton = ( Button ) findViewById( R.id.sale_btnCancel );
+		paymentDialogSubmitButton = ( Button ) paymentDialog.findViewById( R.id.sale_activity_payment_dialog_submit_button );
+		paymentDialogCloseButton = ( Button ) paymentDialog.findViewById( R.id.sale_activity_payment_dialog_cancel_button );
 
 		totalPayableTextView = ( TextView ) findViewById( R.id.sale_totalPayableTextView );
 		totalItemsTextView = ( TextView ) findViewById( R.id.sale_totalItemText );
@@ -129,6 +186,9 @@ public class SaleActivity extends Activity
 		discountTextView = ( TextView ) findViewById( R.id.sale_discountText );
 		totalTextView = ( TextView ) findViewById( R.id.sale_totalText );
 		vatTextView = ( TextView ) findViewById( R.id.sale_vatText );
+		paymentDialogTotalPayableTextView = ( TextView ) paymentDialog.findViewById( R.id.sale_activity_payment_dialog_textView_total_paypable );
+		paymentDialogTotalItemsTextView = ( TextView ) paymentDialog.findViewById( R.id.sale_activity_payment_dialog_textView_total_items );
+		paymentDialogChangeTextView = ( TextView ) paymentDialog.findViewById( R.id.sale_activity_payment_dialog_textView_change );
 
 		totalPayableTextView.setText( String.valueOf( totalPayable ) );
 		totalItemsTextView.setText( String.valueOf( totalItem ) );
@@ -136,6 +196,117 @@ public class SaleActivity extends Activity
 		discountTextView.setText( String.valueOf( discount ) );
 		totalTextView.setText( String.valueOf( total ) );
 		vatTextView.setText( String.valueOf( vat ) );
+		paymentDialog.setTitle( "Finalize Sale" );
+
+		dialogPaymentMethodSpinner.setOnItemSelectedListener( new OnItemSelectedListener()
+		{
+
+			@Override
+			public void onItemSelected( AdapterView<?> adapter, View v, int position, long id )
+			{
+
+				String item = adapter.getItemAtPosition( position ).toString();
+
+				if( item.equals( "Cash" ) )
+				{
+					paymentDialogRelativeLayoutCash1.setVisibility( View.VISIBLE );
+					paymentDialogRelativeLayoutCash2.setVisibility( View.VISIBLE );
+					paymentDialogRelativeLayoutChecque.setVisibility( View.GONE );
+					paymentDialogRelativeLayoutCreditCard1.setVisibility( View.GONE );
+					paymentDialogRelativeLayoutCreditCard2.setVisibility( View.GONE );
+				}
+				if( item.equals( "Checque" ) )
+				{
+					paymentDialogRelativeLayoutChecque.setVisibility( View.VISIBLE );
+					paymentDialogRelativeLayoutCash1.setVisibility( View.GONE );
+					paymentDialogRelativeLayoutCash2.setVisibility( View.GONE );
+					paymentDialogRelativeLayoutCreditCard1.setVisibility( View.GONE );
+					paymentDialogRelativeLayoutCreditCard2.setVisibility( View.GONE );
+				}
+				if( item.equals( "Credit Card" ) )
+				{
+					paymentDialogRelativeLayoutCreditCard1.setVisibility( View.VISIBLE );
+					paymentDialogRelativeLayoutCreditCard2.setVisibility( View.VISIBLE );
+					paymentDialogRelativeLayoutCash1.setVisibility( View.GONE );
+					paymentDialogRelativeLayoutCash2.setVisibility( View.GONE );
+					paymentDialogRelativeLayoutChecque.setVisibility( View.GONE );
+				}
+			}
+
+			@Override
+			public void onNothingSelected( AdapterView<?> arg0 )
+			{
+
+				// TODO Auto-generated method stub
+
+			}
+		} );
+
+		paymentDialogPaidEditText.addTextChangedListener( new TextWatcher()
+		{
+
+			@Override
+			public void onTextChanged( CharSequence arg0, int arg1, int arg2, int arg3 )
+			{
+
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void beforeTextChanged( CharSequence arg0, int arg1, int arg2, int arg3 )
+			{
+
+			}
+
+			@Override
+			public void afterTextChanged( Editable arg0 )
+			{
+
+				if( !Utils.isNullOrEmpty( paymentDialogPaidEditText.getText().toString() ) )
+				{
+					paymentDialogPaid = Double.valueOf( paymentDialogPaidEditText.getText().toString() );
+
+					DecimalFormat df = new DecimalFormat( "######.##" );
+
+					if( paymentDialogPaid >= totalPayable )
+					{
+						paymentDialogPaid = Double.valueOf( paymentDialogPaidEditText.getText().toString() );
+						paymentDialogChangeTextView.setText( String.valueOf( Double.valueOf( df.format( paymentDialogPaid - totalPayable ) ) ) );
+					}
+					else
+						paymentDialogChangeTextView.setText( String.valueOf( "0" ) );
+				}
+			}
+		} );
+
+		paymentDialogCloseButton.setOnClickListener( new OnClickListener()
+		{
+
+			@Override
+			public void onClick( View arg0 )
+			{
+
+				paymentDialog.dismiss();
+				paymentDialogChangeTextView.setText( "" );
+				paymentDialogPaid = 0.0;
+				paymentDialogPaidEditText.setText( "" );
+			}
+		} );
+
+		paymentDialogSubmitButton.setOnClickListener( new OnClickListener()
+		{
+
+			@Override
+			public void onClick( View arg0 )
+			{
+
+				if( paymentDialogPaid < totalPayable )
+					Toast.makeText( getApplicationContext(), "Paid amount is less than the payable amount.", Toast.LENGTH_LONG ).show();
+				else
+					Toast.makeText( getApplicationContext(), "Paid the amount.", Toast.LENGTH_LONG ).show();
+			}
+		} );
 
 		cancelButton.setOnClickListener( new OnClickListener()
 		{
@@ -248,62 +419,67 @@ public class SaleActivity extends Activity
 
 				if( _saleListProductForListView.size() > 0 )
 				{
-					try
-					{
+					paymentDialogTotalPayableTextView.setText( String.valueOf( totalPayable ) );
+					paymentDialogTotalItemsTextView.setText( String.valueOf( totalItem ) );
 
-						Double d = Double.valueOf( totalPayable );
-
-						int amount = d.intValue();
-
-						PaylevenApi.configure( AppGlobal.PAYLEVEN_API_KEY );
-						String description = "FusePOS demo payment";
-						Bitmap image = BitmapFactory.decodeResource( getResources(), R.drawable.fuseposlogo );
-
-						TransactionRequestBuilder builder = new TransactionRequestBuilder( amount, Currency.getInstance( "EUR" ) );
-						builder.setDescription( description ).setBitmap( image );
-
-						String email = "zaheer.ahmad590@gmail.com";
-						if( !TextUtils.isEmpty( email ) )
-						{
-							builder.setEmail( email );
-						}
-
-						TransactionRequest request = builder.createTransactionRequest();
-
-						// create a unique id for the payment.
-						// For reasons of simplicity the UUID class is used
-						// here.
-						// In a production environment it would be more feasible
-						// to
-						// use an ascending numbering scheme
-						String orderId = UUID.randomUUID().toString();
-						PaylevenApi.initiatePayment( SaleActivity.this, orderId, request );
-					}
-
-					catch ( Exception e )
-					{
-						AlertDialog.Builder builder = new AlertDialog.Builder( SaleActivity.this );
-						builder.setTitle( "Error!" ).setMessage( "Couldn't connect to Payleven device. Make sure it is connected with your tablet via bluetooth." );
-						builder.setPositiveButton( "Ok", new DialogInterface.OnClickListener()
-						{
-							public void onClick( DialogInterface dialog, int which )
-							{
-
-								// dismiss the dialog
-							}
-						} );
-						builder.show();
-
-						// Toast.makeText( getApplicationContext(),
-						// "Could not connect to Payleven device",
-						// Toast.LENGTH_LONG
-						// ).show();
-					}
+					paymentDialog.show();
+					/*
+					 * try
+					 * {
+					 * Double d = Double.valueOf( totalPayable );
+					 * int amount = d.intValue();
+					 * PaylevenApi.configure( AppGlobal.PAYLEVEN_API_KEY );
+					 * String description = "FusePOS demo payment";
+					 * Bitmap image = BitmapFactory.decodeResource(
+					 * getResources(), R.drawable.fuseposlogo );
+					 * TransactionRequestBuilder builder = new
+					 * TransactionRequestBuilder( amount, Currency.getInstance(
+					 * "EUR" ) );
+					 * builder.setDescription( description ).setBitmap( image );
+					 * String email = "zaheer.ahmad590@gmail.com";
+					 * if( !TextUtils.isEmpty( email ) )
+					 * {
+					 * builder.setEmail( email );
+					 * }
+					 * TransactionRequest request =
+					 * builder.createTransactionRequest();
+					 * // create a unique id for the payment.
+					 * // For reasons of simplicity the UUID class is used
+					 * // here.
+					 * // In a production environment it would be more feasible
+					 * // to
+					 * // use an ascending numbering scheme
+					 * String orderId = UUID.randomUUID().toString();
+					 * PaylevenApi.initiatePayment( SaleActivity.this, orderId,
+					 * request );
+					 * }
+					 * catch ( Exception e )
+					 * {
+					 * AlertDialog.Builder builder = new AlertDialog.Builder(
+					 * SaleActivity.this );
+					 * builder.setTitle( "Error!" ).setMessage(
+					 * "Couldn't connect to Payleven device. Make sure it is connected with your tablet via bluetooth."
+					 * );
+					 * builder.setPositiveButton( "Ok", new
+					 * DialogInterface.OnClickListener()
+					 * {
+					 * public void onClick( DialogInterface dialog, int which )
+					 * {
+					 * // dismiss the dialog
+					 * }
+					 * } );
+					 * builder.show();
+					 * // Toast.makeText( getApplicationContext(),
+					 * // "Could not connect to Payleven device",
+					 * // Toast.LENGTH_LONG
+					 * // ).show();
+					 * }
+					 */
 				}
 				else
 				{
 					AlertDialog.Builder builder = new AlertDialog.Builder( SaleActivity.this );
-					builder.setTitle( "Error!" ).setMessage( "Cannot initiate Payment. List Empty!." );
+					builder.setTitle( "Error!" ).setMessage( "Cannot initiate Payment. List Empty!" );
 					builder.setPositiveButton( "Ok", new DialogInterface.OnClickListener()
 					{
 						public void onClick( DialogInterface dialog, int which )
@@ -415,6 +591,7 @@ public class SaleActivity extends Activity
 
 		if( !DataSendService.isServiceRunning )
 		{
+
 			final Calendar TIME = Calendar.getInstance();
 			TIME.set( Calendar.MINUTE, 0 );
 			TIME.set( Calendar.SECOND, 0 );
@@ -424,6 +601,7 @@ public class SaleActivity extends Activity
 			final Intent i = new Intent( getApplicationContext(), DataSendService.class );
 			PendingIntent serviceIntent = PendingIntent.getService( getApplicationContext(), 0, i, PendingIntent.FLAG_CANCEL_CURRENT );
 			m.setRepeating( AlarmManager.RTC, TIME.getTime().getTime(), AppGlobal.SERVICE_DELAY, serviceIntent );
+
 		}
 	}
 
@@ -741,4 +919,21 @@ public class SaleActivity extends Activity
 		}
 
 	}
+
+	@Override
+	public boolean onCreateOptionsMenu( Menu menu )
+	{
+
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate( R.menu.main, menu );
+
+		if( Utils.isSynchronizing )
+		{
+			menu.findItem( R.id.action_sync ).setVisible( true );
+			// for( int i = 0 ; i < menu.size() ; i++ )
+			// menu.findItem( arg0 ).setVisible( true );
+		}
+		return true;
+	}
+
 }
