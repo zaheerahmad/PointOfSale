@@ -82,6 +82,8 @@ public class AppGlobal
 	public static final String	TAX_RATE_NAME										= "name";
 	public static final String	TAX_RATE_RATE										= "rate";
 	public static final String	TAX_RATE_TYPE										= "type";
+	
+	//for sales table
 	/**
 	 * Databases constants ended
 	 */

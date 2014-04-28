@@ -57,9 +57,7 @@ public class DatabaseHandler extends SQLiteOpenHelper
 
 		String CREATE_TAX_RATE_TABLE = "CREATE TABLE " + AppGlobal.TABLE_TAX_RATE + "(" + AppGlobal.TAX_RATE_ID + " INTEGER," + AppGlobal.TAX_RATE_NAME + " TEXT," + AppGlobal.TAX_RATE_RATE + " TEXT," + AppGlobal.TAX_RATE_TYPE + "TEXT)";
 		db.execSQL( CREATE_TAX_RATE_TABLE );
-		
-		// to hard codde 1st value in the table
-		addTaxRate();
+
 	}
 
 	/*
@@ -84,45 +82,94 @@ public class DatabaseHandler extends SQLiteOpenHelper
 		db.execSQL( "DROP TABLE IF EXISTS " + AppGlobal.TABLE_TAX_RATE );
 		// Create tables again
 		onCreate( db );
-		
-		// to hard codde 1st value in the table
-		addTaxRate();
 
 	}
 
-	public int updateTaxRate( TaxBO tax )
-	{
-
-		SQLiteDatabase db = this.getWritableDatabase();
-
-		ContentValues values = new ContentValues();
-
-		values.put( AppGlobal.TAX_RATE_NAME, tax.getName() );
-		values.put( AppGlobal.TAX_RATE_RATE, tax.getRate() );
-		values.put( AppGlobal.TAX_RATE_TYPE, tax.getType() );
-
-		// updating row
-		return db.update( AppGlobal.TABLE_TAX_RATE, values, AppGlobal.TAX_RATE_ID + " = ?", new String[] { String.valueOf( tax.getTaxId() ) } );
-	}
-
-	public void addTaxRate()
-	{
-
-		SQLiteDatabase db = this.getWritableDatabase();
-		ContentValues values = new ContentValues();
-
-		values.put( AppGlobal.TAX_RATE_NAME, "VAT" );
-		values.put( AppGlobal.TAX_RATE_RATE, "20" );
-		values.put( AppGlobal.TAX_RATE_TYPE, "1" );
-
-		db.insert( AppGlobal.TABLE_TAX_RATE, null, values );
-		db.close(); // Closing database connection
-	}
-
-	/**
-	 * @author Adeel
-	 * @return
+	/*
+	 * tax table methods
 	 */
+
+	public String updateTaxRate( TaxBO tax )
+	{
+
+		String countQuery = "SELECT  * FROM " + AppGlobal.TABLE_TAX_RATE;
+		SQLiteDatabase db = this.getReadableDatabase();
+		Cursor cursor = db.rawQuery( countQuery, null );
+
+		int count = -1;
+		if( cursor != null && !cursor.isClosed() )
+		{
+			count = cursor.getCount();
+			cursor.close();
+		}
+		if( count <= 0 )
+		{
+			// db = this.getWritableDatabase();
+			ContentValues values = new ContentValues();
+
+			values.put( AppGlobal.TAX_RATE_NAME, tax.getName() );
+			values.put( AppGlobal.TAX_RATE_RATE, tax.getRate() );
+			values.put( AppGlobal.TAX_RATE_TYPE, tax.getType() );
+
+			db.insert( AppGlobal.TABLE_TAX_RATE, null, values );
+
+			db.close();
+
+			return tax.getRate();
+		}
+		else
+		{
+			// db = this.getWritableDatabase();
+
+			ContentValues values = new ContentValues();
+
+			values.put( AppGlobal.TAX_RATE_NAME, tax.getName() );
+			values.put( AppGlobal.TAX_RATE_RATE, tax.getRate() );
+			values.put( AppGlobal.TAX_RATE_TYPE, tax.getType() );
+
+			db.close();
+			// updating row
+			db.update( AppGlobal.TABLE_TAX_RATE, values, AppGlobal.TAX_RATE_ID + " = ?", new String[] { String.valueOf( tax.getTaxId() ) } );
+			return "true";
+		}
+	}
+
+	/*
+	 * public void addTaxRate()
+	 * {
+	 * SQLiteDatabase db = this.getWritableDatabase();
+	 * ContentValues values = new ContentValues();
+	 * values.put( AppGlobal.TAX_RATE_NAME, "VAT" );
+	 * values.put( AppGlobal.TAX_RATE_RATE, "20" );
+	 * values.put( AppGlobal.TAX_RATE_TYPE, "1" );
+	 * db.insert( AppGlobal.TABLE_TAX_RATE, null, values );
+	 * db.close(); // Closing database connection
+	 * }
+	 */
+
+	public String getTaxRate()
+	{
+
+		// List<ProductBO> productList = new ArrayList<ProductBO>();
+		String rate = null;
+		String selectQuery = "SELECT * FROM " + AppGlobal.TABLE_TAX_RATE;
+		SQLiteDatabase db = this.getWritableDatabase();
+		Cursor cursor = db.rawQuery( selectQuery, null );
+
+		if( cursor != null && cursor.getCount() > 0 )
+		{
+			// if( cursor.moveToFirst() )
+			// {
+			rate = cursor.getString( 2 );
+		}
+		db.close();
+		return rate;
+	}
+
+	/*
+	 * suspended product table methods
+	 */
+
 	public void addSuspendProduct( String suspendProductJson, String suspendProductDate )
 	{
 
@@ -136,10 +183,6 @@ public class DatabaseHandler extends SQLiteOpenHelper
 		db.close(); // Closing database connection
 	}
 
-	/**
-	 * @author Adeel
-	 * @return
-	 */
 	public List<SuspendProductBO> getAllSuspendProduct()
 	{
 
@@ -164,10 +207,8 @@ public class DatabaseHandler extends SQLiteOpenHelper
 		return suspendProductList;
 	}
 
-	/**
-	 * Feedback Table Methods started
-	 * 
-	 * @param loginBO
+	/*
+	 * login table methods
 	 */
 
 	public void addLogin( LoginBO loginBO )
@@ -349,16 +390,8 @@ public class DatabaseHandler extends SQLiteOpenHelper
 		return false;
 	}
 
-	/**
-	 * Feedback Table Methods ended
-	 */
-
-	// Feedback Table Methods started
-
-	/**
-	 * 
-	 * 
-	 * @param productBO
+	/*
+	 * Products Table Methods started
 	 */
 
 	public void addProduct( ProductBO productBO )
@@ -567,6 +600,8 @@ public class DatabaseHandler extends SQLiteOpenHelper
 		return ( this.getProduct( id ) != null );
 
 	}
+
+	// category table methods started
 
 	public void addCategory( CategoryBO categoryBO )
 	{

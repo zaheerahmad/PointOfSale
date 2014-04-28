@@ -23,6 +23,7 @@ import android.view.inputmethod.InputMethodManager;
 public class Utils
 {
 	public static boolean isSynchronizing = false;
+	public static String taxRate = null;
 	
 	public static void hideSoftKeyboard( Activity activity )
 	{

@@ -115,6 +115,7 @@ public class SaleActivity extends Activity
 	double					discount					= 0.0;
 	double					total						= 0.0;
 	double					vat							= 0.0;
+	double					vatTaxRate					= 0.20;
 	double					vatForEachProduct			= 0.0;
 
 	String					catName						= null;
@@ -495,7 +496,6 @@ public class SaleActivity extends Activity
 
 		bindProducts();
 		bindCategory();
-
 	}
 
 	public void bindCategory()
@@ -503,6 +503,7 @@ public class SaleActivity extends Activity
 
 		DatabaseHandler dbHandler = new DatabaseHandler( getApplicationContext(), AppGlobal.TABLE_CATEGORY );
 		_saleListCategoryForDisplay = dbHandler.getAllCategory();
+
 		dbHandler.close();
 
 		int count = 0;
@@ -602,6 +603,10 @@ public class SaleActivity extends Activity
 			final Intent i = new Intent( getApplicationContext(), DataSendService.class );
 			PendingIntent serviceIntent = PendingIntent.getService( getApplicationContext(), 0, i, PendingIntent.FLAG_CANCEL_CURRENT );
 			m.setRepeating( AlarmManager.RTC, TIME.getTime().getTime(), AppGlobal.SERVICE_DELAY, serviceIntent );
+			
+			//get tax rate
+			//dbHandler = new DatabaseHandler( getApplicationContext(), AppGlobal.TABLE_TAX_RATE );
+			//dbHandler.getTaxRate();
 
 		}
 	}
@@ -648,7 +653,7 @@ public class SaleActivity extends Activity
 				{
 
 					try
-					{
+					{						
 						// TODO Auto-generated method stub
 						LinearLayout ll = ( LinearLayout ) v;
 						int productId = Integer.parseInt( ( ( TextView ) ll.getChildAt( 2 ) ).getText().toString() );
@@ -669,7 +674,7 @@ public class SaleActivity extends Activity
 							else
 							{
 								// Updated Calculations here..
-								vatForEachProduct = ( defaultQuantity * productBO.getPrice().doubleValue() ) * 0.20;
+								vatForEachProduct = ( defaultQuantity * productBO.getPrice().doubleValue() ) * vatTaxRate;
 
 								vat += vatForEachProduct;
 								totalItem++;
@@ -764,7 +769,7 @@ public class SaleActivity extends Activity
 
 					ProductBO p = new ProductBO();
 
-					vatForEachProduct = Double.valueOf( productPrice ) * 0.20;
+					vatForEachProduct = Double.valueOf( productPrice ) * vatTaxRate;
 					DecimalFormat df1 = new DecimalFormat( "######.##" );
 					vatForEachProduct = Double.valueOf( df1.format( vatForEachProduct ) );
 					vat = vat - vatForEachProduct;
@@ -841,7 +846,7 @@ public class SaleActivity extends Activity
 								{
 									totalItemAfterQuantityUpdated += productList.get( z ).getqQuantity();
 									totalAfterQuantityUpdated += productList.get( z ).getPrice().doubleValue();
-									vatAfterQuantityUpdated += productList.get( z ).getPrice().doubleValue() * 0.20;
+									vatAfterQuantityUpdated += productList.get( z ).getPrice().doubleValue() * vatTaxRate;
 								}
 
 								DecimalFormat df = new DecimalFormat( "######.##" );

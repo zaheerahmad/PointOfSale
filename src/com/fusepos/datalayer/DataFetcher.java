@@ -285,7 +285,7 @@ public class DataFetcher extends AsyncTask<String, String, ResponseStatusWrapper
 							TaxBO taxBO = new TaxBO( Integer.parseInt( ( taxWrapper.getId() == null ? "-1" : taxWrapper.getId() ) ), taxWrapper.getName(), taxWrapper.getRate(), taxWrapper.getType() );
 
 							db = new DatabaseHandler( context, AppGlobal.TABLE_TAX_RATE );
-							db.updateTaxRate( taxBO );
+							Utils.taxRate = db.updateTaxRate( taxBO );
 						}
 					}
 					db.close();
