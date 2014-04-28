@@ -76,6 +76,12 @@ public class AppGlobal
 	public static final String	SUSPEND_PRODUCT_DATE								= "date";
 	public static final String	SUSPEND_PRODUCT_JSON								= "json";
 
+	// for tax table
+	public static final String	TABLE_TAX_RATE										= "tbl_taxRate";
+	public static final String	TAX_RATE_ID											= "taxId";
+	public static final String	TAX_RATE_NAME										= "name";
+	public static final String	TAX_RATE_RATE										= "rate";
+	public static final String	TAX_RATE_TYPE										= "type";
 	/**
 	 * Databases constants ended
 	 */
@@ -92,8 +98,7 @@ public class AppGlobal
 	public static final String	DATAFETCHER_ACTION_INSERT_FEEDBACK					= "_insert_feedback_";
 	public static final String	DATAFETCHER_ACTION_LOGIN_USER						= "_login_user_";
 	public static final String	DATAFETCHER_ACTION_PRODUCTS_SYNC					= "_product_sync_";
-	// public static final String DATAFETCHER_ACTION_PAYMENT_PROCESS =
-	// "_payment_process_";
+	public static final String	DATAFETCHER_ACTION_GET_TAX_RATE						= "_tax_rate_";
 
 	// Broadcast Filters
 	public static final String	BROADCAST_FILTER_INTERNET_CONNECTION_FOUND			= "_internet_connection_found_";
@@ -115,7 +120,7 @@ public class AppGlobal
 
 	public static final String	SERVER_URL_LOGIN_WEBSERVICE							= "http://fusepos.com/zaheer/AndroidAppWebservices/LoginWebService.php";
 	public static final String	SERVER_URL_GET_ALL_PRODUCT_WEBSERVICE				= "http://fusepos.com/zaheer/AndroidAppWebservices/GetAllProductsAfterIdWebService.php";
-
+	public static final String	SERVER_URL_GET_TAX_RATE_WEBSERVICE					= "http://fusepos.com/zaheer/AndroidAppWebservices/GetTaxRateWebService.php";
 	public static final String	PARAM_DB_HOST										= "host";
 	public static final String	PARAM_DB_USER										= "uDB";
 	public static final String	PARAM_DB_PASSWPRD									= "pwddb";

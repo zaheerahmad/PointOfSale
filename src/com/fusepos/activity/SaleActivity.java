@@ -53,6 +53,7 @@ import com.fusepos.service.DataSendService;
 import com.fusepos.utils.AppGlobal;
 import com.fusepos.utils.SAutoBgButton;
 import com.fusepos.utils.Utils;
+import com.fusepos.wrapper.TaxServiceResponseWrapper;
 import com.google.gson.Gson;
 
 /**

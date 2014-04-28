@@ -5,24 +5,15 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Currency;
 import java.util.List;
-import java.util.UUID;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
-import android.app.Activity;
-import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
-import android.text.TextUtils;
 
-import com.fusepos.activity.MainActivity;
-import com.fusepos.activity.R;
 import com.fusepos.service.DataSendService;
 import com.fusepos.service.ServiceHandler;
 import com.fusepos.utils.AppGlobal;
@@ -34,10 +25,9 @@ import com.fusepos.wrapper.LoginWrapper;
 import com.fusepos.wrapper.ProductServiceResponseWrapper;
 import com.fusepos.wrapper.ProductWrapper;
 import com.fusepos.wrapper.ResponseStatusWrapper;
+import com.fusepos.wrapper.TaxServiceResponseWrapper;
+import com.fusepos.wrapper.TaxWrapper;
 import com.google.gson.Gson;
-import com.payleven.payment.api.PaylevenApi;
-import com.payleven.payment.api.TransactionRequest;
-import com.payleven.payment.api.TransactionRequestBuilder;
 
 /**
  * @author Zaheer Ahmad
@@ -192,14 +182,15 @@ public class DataFetcher extends AsyncTask<String, String, ResponseStatusWrapper
 				if( serverResponseWrapper != null )
 				{
 
+					// to sync Product and Categories table
 					if( serverResponseWrapper.getCode() == AppGlobal.RESPONSE_STATUS_db_connection_failed )
 					{
 						ResponseStatusWrapper response = new ResponseStatusWrapper();
 
 						response.status = AppGlobal.RESPONSE_STATUS_db_connection_failed;
 						response.message = serverResponseWrapper.getMessage();
-						db.close();
-						return response;
+						// db.close();
+						// return response;
 					}
 					else if( serverResponseWrapper.getCode() == AppGlobal.RESPONSE_STATUS_request_success_but_none_found )
 					{
@@ -207,8 +198,8 @@ public class DataFetcher extends AsyncTask<String, String, ResponseStatusWrapper
 
 						response.status = AppGlobal.RESPONSE_STATUS_request_success_but_none_found;
 						response.message = serverResponseWrapper.getMessage();
-						db.close();
-						return response;
+						// db.close();
+						// return response;
 					}
 
 					else if( serverResponseWrapper.getCode() == AppGlobal.RESPONSE_STATUS_request_success )
@@ -242,42 +233,93 @@ public class DataFetcher extends AsyncTask<String, String, ResponseStatusWrapper
 
 							response.status = AppGlobal.RESPONSE_STATUS_request_success;
 							response.message = serverResponseWrapper.getMessage();
-							db.close();
-							return response;
+							// db.close();
+							// return response;
 
 						}
 					}
 				}
 
-				db.close();
+				// to sync Tax Rate Table
+				db = new DatabaseHandler( context, AppGlobal.TABLE_TAX_RATE );
+				nameValuePairs = new ArrayList<NameValuePair>( 1 );
+				nameValuePairs.add( new BasicNameValuePair( AppGlobal.PARAM_DB_HOST, host ) );
+				nameValuePairs.add( new BasicNameValuePair( AppGlobal.PARAM_DB_NAME, dbName ) );
+				nameValuePairs.add( new BasicNameValuePair( AppGlobal.PARAM_DB_USER, dbUser ) );
+				nameValuePairs.add( new BasicNameValuePair( AppGlobal.PARAM_DB_PASSWPRD, dbPassword ) );
+
+				inputStream = sh.makeServiceCall( AppGlobal.SERVER_URL_GET_TAX_RATE_WEBSERVICE, nameValuePairs );
+				reader = new InputStreamReader( inputStream );
+
+				TaxServiceResponseWrapper taxServiceResponseWrapper = gson.fromJson( reader, TaxServiceResponseWrapper.class );
+
+				if( taxServiceResponseWrapper != null )
+				{
+
+					if( taxServiceResponseWrapper.getCode() == AppGlobal.RESPONSE_STATUS_db_connection_failed )
+					{
+						ResponseStatusWrapper response = new ResponseStatusWrapper();
+
+						response.status = AppGlobal.RESPONSE_STATUS_db_connection_failed;
+						response.message = taxServiceResponseWrapper.getMessage();
+						// db.close();
+						// return response;
+					}
+					else if( taxServiceResponseWrapper.getCode() == AppGlobal.RESPONSE_STATUS_request_success_but_none_found )
+					{
+						ResponseStatusWrapper response = new ResponseStatusWrapper();
+
+						response.status = AppGlobal.RESPONSE_STATUS_request_success_but_none_found;
+						response.message = taxServiceResponseWrapper.getMessage();
+						// db.close();
+						// return response;
+					}
+
+					else if( taxServiceResponseWrapper.getCode() == AppGlobal.RESPONSE_STATUS_request_success )
+					{
+
+						if( taxServiceResponseWrapper != null )
+						{
+							TaxWrapper taxWrapper = taxServiceResponseWrapper.getResponse();
+
+							TaxBO taxBO = new TaxBO( Integer.parseInt( ( taxWrapper.getId() == null ? "-1" : taxWrapper.getId() ) ), taxWrapper.getName(), taxWrapper.getRate(), taxWrapper.getType() );
+
+							db = new DatabaseHandler( context, AppGlobal.TABLE_TAX_RATE );
+							db.updateTaxRate( taxBO );
+						}
+					}
+					db.close();
+				}
 			}
 
-			/*if( params != null && params[0].equalsIgnoreCase( AppGlobal.DATAFETCHER_ACTION_PAYMENT_PROCESS ) )
-			{
-				int totalPayable = Integer.parseInt( params[1] );
-
-				int amount = totalPayable;
-				String description = "testing payment";
-				//Bitmap image = BitmapFactory.decodeResource( getResources(), R.drawable.fuseposlogo );
-
-				TransactionRequestBuilder builder = new TransactionRequestBuilder( amount, Currency.getInstance( "EUR" ) );
-				builder.setDescription( description );//.setBitmap( image );
-
-				String email = etEmail.getText().toString();
-				if( !TextUtils.isEmpty( email ) )
-				{
-					builder.setEmail( email );
-				}
-
-				TransactionRequest request = builder.createTransactionRequest();
-
-				// create a unique id for the payment.
-				// For reasons of simplicity the UUID class is used here.
-				// In a production environment it would be more feasible to use
-				// an ascending numbering scheme
-				String orderId = UUID.randomUUID().toString();
-				PaylevenApi.initiatePayment(( Activity ) context , orderId, request );
-			}*/
+			/*
+			 * if( params != null && params[0].equalsIgnoreCase(
+			 * AppGlobal.DATAFETCHER_ACTION_PAYMENT_PROCESS ) )
+			 * {
+			 * int totalPayable = Integer.parseInt( params[1] );
+			 * int amount = totalPayable;
+			 * String description = "testing payment";
+			 * //Bitmap image = BitmapFactory.decodeResource( getResources(),
+			 * R.drawable.fuseposlogo );
+			 * TransactionRequestBuilder builder = new
+			 * TransactionRequestBuilder( amount, Currency.getInstance( "EUR" )
+			 * );
+			 * builder.setDescription( description );//.setBitmap( image );
+			 * String email = etEmail.getText().toString();
+			 * if( !TextUtils.isEmpty( email ) )
+			 * {
+			 * builder.setEmail( email );
+			 * }
+			 * TransactionRequest request = builder.createTransactionRequest();
+			 * // create a unique id for the payment.
+			 * // For reasons of simplicity the UUID class is used here.
+			 * // In a production environment it would be more feasible to use
+			 * // an ascending numbering scheme
+			 * String orderId = UUID.randomUUID().toString();
+			 * PaylevenApi.initiatePayment(( Activity ) context , orderId,
+			 * request );
+			 * }
+			 */
 
 		}
 		catch ( Exception ex )
