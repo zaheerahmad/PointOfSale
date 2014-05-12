@@ -1,5 +1,7 @@
 package com.fusepos.utils;
 
+import java.text.DecimalFormat;
+
 /**
  * @author Zaheer Ahmad
  * 
@@ -9,6 +11,7 @@ public class AppGlobal
 	public static final boolean	isDebugMode											= false;
 	public static final boolean	shouldMaintainLogOfFeeds							= false;
 	public static final boolean	isPaymentDone										= false;
+	public static final String	BROADCAST_CLOUD										= "_broadcast_cloud";
 
 	// Response Statuses
 	public static final int		RESPONSE_STATUS_FAIL								= 1;
@@ -71,10 +74,10 @@ public class AppGlobal
 	public static final String	CATEGORY_NAME										= "name";
 
 	// for suspend table
-	public static final String	TABLE_SUSPEND_PRODUCT								= "tbl_suspendProduct";
-	public static final String	SUSPEND_PRODUCT_ID									= "suspendId";
-	public static final String	SUSPEND_PRODUCT_DATE								= "date";
-	public static final String	SUSPEND_PRODUCT_JSON								= "json";
+	public static final String	TABLE_SUSPENDED_SALES								= "tbl_suspendSales";
+	public static final String	SUSPENDED_SALES_ID									= "suspendId";
+	public static final String	SUSPENDED_SALES_DATE								= "date";
+	public static final String	SUSPENDED_SALES_JSON								= "json";
 
 	// for tax table
 	public static final String	TABLE_TAX_RATE										= "tbl_taxRate";
@@ -82,8 +85,115 @@ public class AppGlobal
 	public static final String	TAX_RATE_NAME										= "name";
 	public static final String	TAX_RATE_RATE										= "rate";
 	public static final String	TAX_RATE_TYPE										= "type";
-	
-	//for sales table
+
+	// for sales table
+	public static final String	TABLE_SALES											= "tbl_sales";
+	public static final String	SALES_ID											= "salesId";
+	public static final String	SALES_REFERENCE_NO									= "referenceNo";
+	public static final String	SALES_WAREHOUSE_ID									= "warehouseId";
+	public static final String	SALES_BILLER_ID										= "billerId";
+	public static final String	SALES_BILLER_NAME									= "billerName";
+	public static final String	SALES_CUSTOMER_ID									= "customerId";
+	public static final String	SALES_CUSTOMER_NAME									= "customerName";
+	public static final String	SALES_DATE											= "date";
+	public static final String	SALES_NOTE											= "note";
+	public static final String	SALES_INTERNAL_NOTE									= "internalNote";
+	public static final String	SALES_INV_TOTAL										= "invTotal";
+	public static final String	SALES_TOTAL_TAX										= "totalTax";
+	public static final String	SALES_TOTAL											= "total";
+	public static final String	SALES_INVOICE_TYPE									= "invoiceType";
+	public static final String	SALES_IN_TYPE										= "inType";
+	public static final String	SALES_TOTAL_TAX2									= "totalTax2";
+	public static final String	SALES_TAX_RATE2_ID									= "taxRate2Id";
+	public static final String	SALES_INV_DISCOUNT									= "invDiscount";
+	public static final String	SALES_DISCOUNT_ID									= "discountId";
+	public static final String	SALES_USER											= "user";
+	public static final String	SALES_UPDATED_BY									= "updatedBy";
+	public static final String	SALES_PAID_BY										= "paidBy";
+	public static final String	SALES_COUNT											= "count";
+	public static final String	SALES_SHIPPING										= "shipping";
+	public static final String	SALES_POS											= "pos";
+	public static final String	SALES_PAID											= "paid";
+	public static final String	SALES_CC_NO											= "ccNo";
+	public static final String	SALES_CC_HOLDER										= "ccHolder";
+	public static final String	SALES_CHECQUE_NO									= "checqueNo";
+
+	// for sales history table
+	public static final String	TABLE_SALES_HISTORY									= "tbl_salesHistory";
+	public static final String	SALES_HISTORY_ID									= "salesHistoryId";
+	public static final String	SALES_HISTORY_SALES_ID								= "salesId";
+	public static final String	SALES_HISTORY_REFERENCE_NO							= "referenceNo";
+	public static final String	SALES_HISTORY_WAREHOUSE_ID							= "warehouseId";
+	public static final String	SALES_HISTORY_BILLER_ID								= "billerId";
+	public static final String	SALES_HISTORY_BILLER_NAME							= "billerName";
+	public static final String	SALES_HISTORY_CUSTOMER_ID							= "customerId";
+	public static final String	SALES_HISTORY_CUSTOMER_NAME							= "customerName";
+	public static final String	SALES_HISTORY_DATE									= "date";
+	public static final String	SALES_HISTORY_NOTE									= "note";
+	public static final String	SALES_HISTORY_INTERNAL_NOTE							= "internalNote";
+	public static final String	SALES_HISTORY_INV_TOTAL								= "invTotal";
+	public static final String	SALES_HISTORY_TOTAL_TAX								= "totalTax";
+	public static final String	SALES_HISTORY_TOTAL									= "total";
+	public static final String	SALES_HISTORY_INVOICE_TYPE							= "invoiceType";
+	public static final String	SALES_HISTORY_IN_TYPE								= "inType";
+	public static final String	SALES_HISTORY_TOTAL_TAX2							= "totalTax2";
+	public static final String	SALES_HISTORY_TAX_RATE2_ID							= "taxRate2Id";
+	public static final String	SALES_HISTORY_INV_DISCOUNT							= "invDiscount";
+	public static final String	SALES_HISTORY_DISCOUNT_ID							= "discountId";
+	public static final String	SALES_HISTORY_USER									= "user";
+	public static final String	SALES_HISTORY_UPDATED_BY							= "updatedBy";
+	public static final String	SALES_HISTORY_PAID_BY								= "paidBy";
+	public static final String	SALES_HISTORY_COUNT									= "count";
+	public static final String	SALES_HISTORY_SHIPPING								= "shipping";
+	public static final String	SALES_HISTORY_POS									= "pos";
+	public static final String	SALES_HISTORY_PAID									= "paid";
+	public static final String	SALES_HISTORY_CC_NO									= "ccNo";
+	public static final String	SALES_HISTORY_CC_HOLDER								= "ccHolder";
+	public static final String	SALES_HISTORY_CHECQUE_NO							= "checqueNo";
+	public static final String	SALES_HISTORY_EVENT_TIME							= "eventTime";
+	public static final String	SALES_HISTORY_ACTION								= "action";
+
+	// for sale_items
+	public static final String	TABLE_SALE_ITEMS									= "tbl_saleItems";
+	public static final String	SALE_ITEMS_ID										= "saleItemsId";
+	public static final String	SALE_ITEMS_SALE_ID									= "salesId";
+	public static final String	SALE_ITEMS_PRODUCT_ID								= "productId";
+	public static final String	SALE_ITEMS_PRODUCT_CODE								= "productCode";
+	public static final String	SALE_ITEMS_PRODUCT_NAME								= "productName";
+	public static final String	SALE_ITEMS_PRODUCT_UNIT								= "productUnit";
+	public static final String	SALE_ITEMS_TAX_RATE_ID								= "taxRateId";
+	public static final String	SALE_ITEMS_TAX										= "tax";
+	public static final String	SALE_ITEMS_QUANTITY									= "quantity";
+	public static final String	SALE_ITEMS_UNIT_PRICE								= "unitPrice";
+	public static final String	SALE_ITEMS_GROSS_TOTAL								= "grossTotal";
+	public static final String	SALE_ITEMS_VAL_TAX									= "valTax";
+	public static final String	SALE_ITEMS_SERIAL_NO								= "serialNo";
+	public static final String	SALE_ITEMS_DISCOUNT_VAL								= "discountVal";
+	public static final String	SALE_ITEMS_DISCOUNT									= "discount";
+	public static final String	SALE_ITEMS_DISCOUNT_ID								= "discountId";
+
+	// for sale_items_history
+	public static final String	TABLE_SALE_ITEMS_HISTORY							= "tbl_saleItemsHistory";
+	public static final String	SALE_ITEMS_HISTORY_ID								= "saleItemsHistoryId";
+	public static final String	SALE_ITEMS_HISTORY_SALE_ITEMS_ID					= "saleItemId";
+	public static final String	SALE_ITEMS_HISTORY_SALE_ID							= "saleId";
+	public static final String	SALE_ITEMS_HISTORY_PRODUCT_ID						= "productId";
+	public static final String	SALE_ITEMS_HISTORY_PRODUCT_CODE						= "productCode";
+	public static final String	SALE_ITEMS_HISTORY_PRODUCT_NAME						= "productName";
+	public static final String	SALE_ITEMS_HISTORY_PRODUCT_UNIT						= "productUnit";
+	public static final String	SALE_ITEMS_HISTORY_TAX_RATE_ID						= "taxRateId";
+	public static final String	SALE_ITEMS_HISTORY_TAX								= "tax";
+	public static final String	SALE_ITEMS_HISTORY_QUANTITY							= "quantity";
+	public static final String	SALE_ITEMS_HISTORY_UNIT_PRICE						= "unitPrice";
+	public static final String	SALE_ITEMS_HISTORY_GROSS_TOTAL						= "grossTotal";
+	public static final String	SALE_ITEMS_HISTORY_VAL_TAX							= "valTax";
+	public static final String	SALE_ITEMS_HISTORY_SERIAL_NO						= "serialNo";
+	public static final String	SALE_ITEMS_HISTORY_DISCOUNT_VAL						= "discountVal";
+	public static final String	SALE_ITEMS_HISTORY_DISCOUNT							= "discount";
+	public static final String	SALE_ITEMS_HISTORY_DISCOUNT_ID						= "discountId";
+	public static final String	SALE_ITEMS_HISTORY_EVENT_TIME						= "eventTime";
+	public static final String	SALE_ITEMS_HISTORY_ACTION							= "action";
+
 	/**
 	 * Databases constants ended
 	 */
@@ -107,7 +217,7 @@ public class AppGlobal
 
 	public static final String	AlchemyAPI_Key										= "3bb77eb7d9347bdd4807989f1e9876de91e2cb67";
 
-	public static final long	SERVICE_DELAY										= 2 * 60 * 1000;
+	public static final long	SERVICE_DELAY										= 1 * 60 * 1000;
 
 	public static final String	APP_PREF_IS_DATA_DIRTY								= "_isDataDirty_";
 	public static final String	APP_PREF_LAST_INSERTED_ID							= "_lastInsertedId_";
@@ -119,7 +229,11 @@ public class AppGlobal
 	public static final String	APP_PREF_USERNAME									= "_username_";
 	public static final String	APP_PREF_PASSWORD									= "_password_";
 	public static final String	APP_PREF_TIMER										= "timer";
+	public static final String	APP_PREF_FIRST_NAME									= "_first_name_";
+	public static final String	APP_PREF_LAST_NAME									= "_last_name_";
 
+	// Web Service links
+	public static final String	SERVER_URL_UPDATE_SALES_DATA_WEBSERVICE				= "updateSalesWebService";
 	public static final String	SERVER_URL_LOGIN_WEBSERVICE							= "http://fusepos.com/zaheer/AndroidAppWebservices/LoginWebService.php";
 	public static final String	SERVER_URL_GET_ALL_PRODUCT_WEBSERVICE				= "http://fusepos.com/zaheer/AndroidAppWebservices/GetAllProductsAfterIdWebService.php";
 	public static final String	SERVER_URL_GET_TAX_RATE_WEBSERVICE					= "http://fusepos.com/zaheer/AndroidAppWebservices/GetTaxRateWebService.php";

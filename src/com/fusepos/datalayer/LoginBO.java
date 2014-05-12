@@ -28,7 +28,7 @@ public class LoginBO
 	 * @param company
 	 * @param phone
 	 */
-	public LoginBO( int loginId, String username, String password, String email, String fname, String lname, String company, String phone )
+	public LoginBO( int loginId, String username, String fname, String lname, String password, String email, String company, String phone )
 	{
 
 		super();

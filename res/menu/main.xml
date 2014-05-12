@@ -10,10 +10,10 @@
 
     <item
         android:id="@+id/action_sync"
-        android:icon="@drawable/ic_sync_cloud"
+        android:icon="@drawable/ic_action_cloudsync"
         android:showAsAction="always"
         android:title="Synchronize"
-        android:visible="false"/>
+        android:visible="true"/>
     <item
         android:id="@+id/action_suspended"
         android:icon="@drawable/ic_suspended_list"

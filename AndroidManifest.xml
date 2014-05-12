@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.fusepos.activity"
-    android:versionCode="1"
-    android:versionName="2.0" >
+    android:versionCode="6"
+    android:versionName="2.0.4" >
 
     <uses-sdk
         android:minSdkVersion="11"
@@ -52,14 +52,12 @@
 
         <!-- Photos Activity -->
         <activity android:name="com.fusepos.activity.LoginActivity" />
-
         <activity android:name="com.fusepos.activity.ResultActivity" />
         <activity android:name="com.fusepos.activity.WebViewActivity" />
-        <!--
-             <service
+
+        <service
             android:name="com.fusepos.service.DataSendService"
             android:enabled="true" />
-        -->
     </application>
 
 </manifest>

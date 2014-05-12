@@ -83,11 +83,11 @@ public class LoginActivity extends Activity
 						}
 						if( new Date().after( validUntilDate ) )
 						{
-							
+
 							String array[] = null;
-							
+
 							array[2].toString();
-							
+
 							return;
 						}
 					}
@@ -100,6 +100,11 @@ public class LoginActivity extends Activity
 							SharedPreferences pref = Utils.getSharedPreferences( getApplicationContext() );
 							pref.edit().putString( AppGlobal.APP_PREF_USERNAME, txtUsername.getText().toString() ).commit();
 							pref.edit().putString( AppGlobal.APP_PREF_PASSWORD, txtPassword.getText().toString() ).commit();
+
+							LoginBO loginBO = dbHandler.getLoginDetailsAfterLogin( txtUsername.getText().toString(), txtPassword.getText().toString() );
+
+							pref.edit().putString( AppGlobal.APP_PREF_FIRST_NAME, loginBO.getFname() );
+							pref.edit().putString( AppGlobal.APP_PREF_LAST_NAME, loginBO.getLname() );
 
 							// Loading Products First Time.. Manually
 							// Internet should be available here.

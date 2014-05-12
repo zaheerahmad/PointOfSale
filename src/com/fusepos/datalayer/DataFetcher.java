@@ -1,9 +1,13 @@
 package com.fusepos.datalayer;
 
+import java.io.BufferedInputStream;
+import java.io.DataOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.math.BigDecimal;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,6 +17,7 @@ import org.apache.http.message.BasicNameValuePair;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.fusepos.service.DataSendService;
 import com.fusepos.service.ServiceHandler;
@@ -25,6 +30,7 @@ import com.fusepos.wrapper.LoginWrapper;
 import com.fusepos.wrapper.ProductServiceResponseWrapper;
 import com.fusepos.wrapper.ProductWrapper;
 import com.fusepos.wrapper.ResponseStatusWrapper;
+import com.fusepos.wrapper.ServerResponseWrapper;
 import com.fusepos.wrapper.TaxServiceResponseWrapper;
 import com.fusepos.wrapper.TaxWrapper;
 import com.google.gson.Gson;
@@ -62,6 +68,7 @@ public class DataFetcher extends AsyncTask<String, String, ResponseStatusWrapper
 		if( Utils.hasInternetConnection( this.context ) )
 		{
 			Utils.isSynchronizing = true;
+
 			this.hasInternet = true;
 			async.doWait();
 		}
@@ -149,6 +156,10 @@ public class DataFetcher extends AsyncTask<String, String, ResponseStatusWrapper
 							LoginWrapper loginWrapper = serverResponseWrapper.getResponse();
 
 							LoginBO loginBO = new LoginBO( Integer.parseInt( loginWrapper.getId() ), loginWrapper.getUsername(), loginWrapper.getPassword(), loginWrapper.getEmail(), loginWrapper.getFirstName(), loginWrapper.getLastName(), loginWrapper.getCompany(), loginWrapper.getPhone() );
+							SharedPreferences pref1 = Utils.getSharedPreferences( context );
+							pref1.edit().putString( AppGlobal.APP_PREF_FIRST_NAME, loginWrapper.getFirstName() ).commit();
+							pref1.edit().putString( AppGlobal.APP_PREF_LAST_NAME, loginWrapper.getLastName() ).commit();
+
 							DatabaseHandler db = new DatabaseHandler( context, AppGlobal.TABLE_LOGIN );
 							db.addLogin( loginBO );
 							db.close();
@@ -165,7 +176,23 @@ public class DataFetcher extends AsyncTask<String, String, ResponseStatusWrapper
 
 			if( params != null && params[0].equalsIgnoreCase( AppGlobal.DATAFETCHER_ACTION_PRODUCTS_SYNC ) )
 			{
+				ResponseStatusWrapper response = new ResponseStatusWrapper();
+				ServerResponseWrapper updateServerResponse;
+				URL url;
+				HttpURLConnection httpUrlConnection;
+				DataOutputStream outputStream;
+				InputStream responseStream;
+				Reader saleUpdateReader;
+				SalesDataBO salesDataBO;
+
+				List<SalesDataBO> salesDataBOList = new ArrayList<SalesDataBO>();
+				List<SalesBO> salesBOList = new ArrayList<SalesBO>();
+				List<SalesHistoryBO> salesHistoryBOList = new ArrayList<SalesHistoryBO>();
+				List<SaleItemsBO> saleItemsBOList = new ArrayList<SaleItemsBO>();
+				List<SaleItemsHistoryBO> saleItemsHistoryBOList = new ArrayList<SaleItemsHistoryBO>();
+
 				DatabaseHandler db = new DatabaseHandler( context, AppGlobal.TABLE_PRODUCT );
+
 				List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>( 1 );
 				nameValuePairs.add( new BasicNameValuePair( AppGlobal.PARAM_DB_HOST, host ) );
 				nameValuePairs.add( new BasicNameValuePair( AppGlobal.PARAM_DB_NAME, dbName ) );
@@ -185,7 +212,6 @@ public class DataFetcher extends AsyncTask<String, String, ResponseStatusWrapper
 					// to sync Product and Categories table
 					if( serverResponseWrapper.getCode() == AppGlobal.RESPONSE_STATUS_db_connection_failed )
 					{
-						ResponseStatusWrapper response = new ResponseStatusWrapper();
 
 						response.status = AppGlobal.RESPONSE_STATUS_db_connection_failed;
 						response.message = serverResponseWrapper.getMessage();
@@ -194,7 +220,8 @@ public class DataFetcher extends AsyncTask<String, String, ResponseStatusWrapper
 					}
 					else if( serverResponseWrapper.getCode() == AppGlobal.RESPONSE_STATUS_request_success_but_none_found )
 					{
-						ResponseStatusWrapper response = new ResponseStatusWrapper();
+						// ResponseStatusWrapper response = new
+						// ResponseStatusWrapper();
 
 						response.status = AppGlobal.RESPONSE_STATUS_request_success_but_none_found;
 						response.message = serverResponseWrapper.getMessage();
@@ -229,7 +256,8 @@ public class DataFetcher extends AsyncTask<String, String, ResponseStatusWrapper
 									dbHandlerCategory.close();
 								}
 							}
-							ResponseStatusWrapper response = new ResponseStatusWrapper();
+							// ResponseStatusWrapper response = new
+							// ResponseStatusWrapper();
 
 							response.status = AppGlobal.RESPONSE_STATUS_request_success;
 							response.message = serverResponseWrapper.getMessage();
@@ -258,7 +286,8 @@ public class DataFetcher extends AsyncTask<String, String, ResponseStatusWrapper
 
 					if( taxServiceResponseWrapper.getCode() == AppGlobal.RESPONSE_STATUS_db_connection_failed )
 					{
-						ResponseStatusWrapper response = new ResponseStatusWrapper();
+						// ResponseStatusWrapper response = new
+						// ResponseStatusWrapper();
 
 						response.status = AppGlobal.RESPONSE_STATUS_db_connection_failed;
 						response.message = taxServiceResponseWrapper.getMessage();
@@ -267,7 +296,8 @@ public class DataFetcher extends AsyncTask<String, String, ResponseStatusWrapper
 					}
 					else if( taxServiceResponseWrapper.getCode() == AppGlobal.RESPONSE_STATUS_request_success_but_none_found )
 					{
-						ResponseStatusWrapper response = new ResponseStatusWrapper();
+						// ResponseStatusWrapper response = new
+						// ResponseStatusWrapper();
 
 						response.status = AppGlobal.RESPONSE_STATUS_request_success_but_none_found;
 						response.message = taxServiceResponseWrapper.getMessage();
@@ -282,45 +312,88 @@ public class DataFetcher extends AsyncTask<String, String, ResponseStatusWrapper
 						{
 							TaxWrapper taxWrapper = taxServiceResponseWrapper.getResponse();
 
-							TaxBO taxBO = new TaxBO( Integer.parseInt( ( taxWrapper.getId() == null ? "-1" : taxWrapper.getId() ) ), taxWrapper.getName(), taxWrapper.getRate(), taxWrapper.getType() );
-
-							db = new DatabaseHandler( context, AppGlobal.TABLE_TAX_RATE );
-							Utils.taxRate = db.updateTaxRate( taxBO );
+							TaxBO taxBO = new TaxBO( Integer.parseInt( taxWrapper.getId() ), taxWrapper.getName(), taxWrapper.getRate(), taxWrapper.getType() );
+							if( !db.isTaxRateExist() )
+							{
+								db.addTaxRate( taxBO );
+								Utils.taxRate = taxBO.getRate();
+							}
+							else
+								Utils.taxRate = db.updateTaxRate( taxBO );
 						}
 					}
-					db.close();
+
 				}
+
+				// We need to sync all sales tables data from sqllite to
+				// server.. So here you will get all data from each 4 tables
+				// step by step and convert whole data for one table in json
+				// object using Gson and I will provide you the service
+				// You will send that json in that service. Just like we did in
+				// Receptionist. Wait
+
+				// for updating sales table
+
+				/*db = new DatabaseHandler( context, AppGlobal.TABLE_SALES );
+				salesBOList = db.getAllSales();
+
+				db = new DatabaseHandler( context, AppGlobal.TABLE_SALES_HISTORY );
+				salesHistoryBOList = db.getAllSalesHistory();
+
+				for( int i = 0 ; i < salesBOList.size() ; i++ )
+				{
+					int id = salesBOList.get( i ).getId();
+
+					DatabaseHandler db1 = new DatabaseHandler( context, AppGlobal.TABLE_SALE_ITEMS );
+					saleItemsBOList = db1.getSaleItemsForId( id );
+
+					db1 = new DatabaseHandler( context, AppGlobal.TABLE_SALE_ITEMS_HISTORY );
+					saleItemsHistoryBOList = db1.getSaleItemsHistoryForId( id );
+
+					salesDataBO = new SalesDataBO( salesBOList.get( i ), salesHistoryBOList.get( i ), saleItemsBOList, saleItemsHistoryBOList );
+					salesDataBOList.add( salesDataBO );
+				}
+				
+				StringBuilder strBuilder = new StringBuilder();
+				StringBuilder salesDataBOListJson = new StringBuilder( gson.toJson( salesDataBOList ));
+				
+				strBuilder.append( gson.toJson( salesDataBOList ) );
+				
+				Log.d( "Sale DATA Json", salesDataBOListJson.toString() );
+				
+				url = new URL( AppGlobal.SERVER_URL_UPDATE_SALES_DATA_WEBSERVICE );
+				httpUrlConnection = ( HttpURLConnection ) url.openConnection();
+				httpUrlConnection.setRequestMethod( "POST" );
+				httpUrlConnection.setRequestProperty( "Content-Type", "application/x-www-form-urlencoded" );
+				// httpUrlConnection.setRequestProperty(
+				// "Content-Length", "" + Integer.toString(
+				// jsonParams.getBytes().length ) );
+				httpUrlConnection.setRequestProperty( "Content-Language", "en-US" );
+				httpUrlConnection.setUseCaches( false );
+				httpUrlConnection.setDoInput( true );
+				httpUrlConnection.setDoOutput( true );
+				outputStream = new DataOutputStream( httpUrlConnection.getOutputStream() );
+				outputStream.writeBytes( "requestParam=" + salesDataBOListJson );
+				outputStream.flush();
+				outputStream.close();
+				// get response
+				responseStream = new BufferedInputStream( httpUrlConnection.getInputStream() );
+				saleUpdateReader = new InputStreamReader( responseStream );
+				updateServerResponse = gson.fromJson( saleUpdateReader, ServerResponseWrapper.class );
+				if( updateServerResponse.getCode() == 1 )
+				{
+					response.status = AppGlobal.RESPONSE_STATUS_SUCCESS;
+					response.message = AppGlobal.RESPONSE_STATUS_SUCCESS_MESSAGE;
+				}
+				else
+				{
+					response.status = AppGlobal.RESPONSE_STATUS_FAIL;
+					response.message = AppGlobal.RESPONSE_STATUS_FAIL_MESSAGE;
+				}*/
+
+				db.close();
+				return response;
 			}
-
-			/*
-			 * if( params != null && params[0].equalsIgnoreCase(
-			 * AppGlobal.DATAFETCHER_ACTION_PAYMENT_PROCESS ) )
-			 * {
-			 * int totalPayable = Integer.parseInt( params[1] );
-			 * int amount = totalPayable;
-			 * String description = "testing payment";
-			 * //Bitmap image = BitmapFactory.decodeResource( getResources(),
-			 * R.drawable.fuseposlogo );
-			 * TransactionRequestBuilder builder = new
-			 * TransactionRequestBuilder( amount, Currency.getInstance( "EUR" )
-			 * );
-			 * builder.setDescription( description );//.setBitmap( image );
-			 * String email = etEmail.getText().toString();
-			 * if( !TextUtils.isEmpty( email ) )
-			 * {
-			 * builder.setEmail( email );
-			 * }
-			 * TransactionRequest request = builder.createTransactionRequest();
-			 * // create a unique id for the payment.
-			 * // For reasons of simplicity the UUID class is used here.
-			 * // In a production environment it would be more feasible to use
-			 * // an ascending numbering scheme
-			 * String orderId = UUID.randomUUID().toString();
-			 * PaylevenApi.initiatePayment(( Activity ) context , orderId,
-			 * request );
-			 * }
-			 */
-
 		}
 		catch ( Exception ex )
 		{

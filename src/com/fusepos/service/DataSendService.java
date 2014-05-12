@@ -55,6 +55,8 @@ public class DataSendService extends Service
 				if( AppGlobal.isDebugMode )
 					Toast.makeText( getApplicationContext(), AppGlobal.TOAST_DATA_UPLOADED_SUCCESSFULLY, Toast.LENGTH_LONG ).show();
 
+				Intent intent = new Intent( AppGlobal.BROADCAST_CLOUD );
+				sendBroadcast( intent );
 				
 				isServiceRunning = false;
 			}
@@ -70,6 +72,8 @@ public class DataSendService extends Service
 					if( !Utils.isNullOrEmpty( response.debugInfo ) )
 						Toast.makeText( getApplicationContext(), "Error Debug Info: " + response.debugInfo, Toast.LENGTH_LONG ).show();
 				}
+				Intent intent = new Intent( AppGlobal.BROADCAST_CLOUD );
+				sendBroadcast( intent );
 				isServiceRunning = false;
 			}
 
@@ -80,6 +84,8 @@ public class DataSendService extends Service
 				// TODO Auto-generated method stub
 				if( AppGlobal.isDebugMode )
 					Toast.makeText( getApplicationContext(), AppGlobal.TOAST_INTERNET_CONNECTION_FOUND, Toast.LENGTH_LONG ).show();
+				Intent intent = new Intent( AppGlobal.BROADCAST_CLOUD );
+				sendBroadcast( intent );
 			}
 		}, getApplicationContext() ).execute( new String[] { AppGlobal.DATAFETCHER_ACTION_PRODUCTS_SYNC } );
 		return super.onStartCommand( intent, flags, startId );

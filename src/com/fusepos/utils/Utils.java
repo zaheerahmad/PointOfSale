@@ -1,8 +1,17 @@
 package com.fusepos.utils;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
+import java.util.List;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.utils.URLEncodedUtils;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.jsoup.Jsoup;
 
 import android.annotation.TargetApi;
@@ -22,9 +31,9 @@ import android.view.inputmethod.InputMethodManager;
  */
 public class Utils
 {
-	public static boolean isSynchronizing = false;
-	public static String taxRate = null;
-	
+	public static boolean	isSynchronizing	= false;
+	public static String	taxRate			= "0.0";
+
 	public static void hideSoftKeyboard( Activity activity )
 	{
 
@@ -159,4 +168,5 @@ public class Utils
 
 		return context.getSharedPreferences( AppGlobal.APP_PREF_NAME, Context.MODE_PRIVATE );
 	}
+
 }
