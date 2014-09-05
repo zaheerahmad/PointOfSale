@@ -3,7 +3,6 @@
  */
 package com.fusepos.activity;
 
-import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -64,13 +63,12 @@ import com.fusepos.datalayer.SaleItemsBO;
 import com.fusepos.datalayer.SaleItemsHistoryBO;
 import com.fusepos.datalayer.SalesBO;
 import com.fusepos.datalayer.SalesHistoryBO;
+import com.fusepos.datalayer.SuspendedBillsBO;
 import com.fusepos.datalayer.SuspendedSalesBO;
 import com.fusepos.service.DataSendService;
 import com.fusepos.utils.AppGlobal;
 import com.fusepos.utils.SAutoBgButton;
 import com.fusepos.utils.Utils;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.payleven.payment.api.PaylevenApi;
 import com.payleven.payment.api.TransactionRequest;
 import com.payleven.payment.api.TransactionRequestBuilder;
@@ -96,7 +94,7 @@ public class SaleActivity extends Activity
 	List<ProductBO>				_saleListProductForListView;
 	List<ProductBO>				_saleListProductForGridView;
 	List<CategoryBO>			_saleListCategoryForDisplay;
-	List<SuspendedSalesBO>		listSuspendedSalesForDialogListView;
+	List<SuspendedBillsBO>		suspendedBillsListForSuspendedDialogListView;
 	private List<ProductBO>		globalListOfProductConst	= null;
 	private List<Button>		catButtonsList				= null;
 
@@ -143,6 +141,7 @@ public class SaleActivity extends Activity
 
 	Dialog						paymentDialog;
 	Dialog						suspendedSalesDialog;
+
 	// for suspended dialog
 	int							suspendedItems				= 0;
 	double						suspendedProductTax			= 0.0;
@@ -184,6 +183,8 @@ public class SaleActivity extends Activity
 		salesHistoryBOList = new ArrayList<SalesHistoryBO>();
 		saleItemsBOList = new ArrayList<SaleItemsBO>();
 		saleItemsHistoryBOList = new ArrayList<SaleItemsHistoryBO>();
+
+		suspendedBillsListForSuspendedDialogListView = new ArrayList<SuspendedBillsBO>();
 
 		catButtonsList = new ArrayList<Button>();
 		paymentDialog = new Dialog( SaleActivity.this );
@@ -402,7 +403,7 @@ public class SaleActivity extends Activity
 						String lastName = pref.getString( AppGlobal.APP_PREF_LAST_NAME, "lastName" );
 
 						// for adding in sales table
-						salesBO = new SalesBO( salesId, "SL-000" + salesId, 1, 1, "Customer One", 1, "Walk In", salesDateToday, "", "", new BigDecimal( String.valueOf( total ) ), new BigDecimal( 0 ), new BigDecimal( String.valueOf( totalPayable ) ), 0, "", new BigDecimal( String.valueOf( vat ) ), taxId, new BigDecimal( 0 ), 0, firstName + " " + lastName, "", paymentDialogPaidBy, totalItem, new BigDecimal( 0 ), 1, new BigDecimal( String.valueOf( paymentDialogPaid ) ), paymentDialogCreditCardNo, paymentDialogCardHolder, paymentDialogChecqueNo );
+						salesBO = new SalesBO( salesId, "SL-000" + salesId, 1, 1, "Customer One", 1, "Walk In", salesDateToday, "", "", new BigDecimal( String.valueOf( total ) ), new BigDecimal( 0 ), new BigDecimal( String.valueOf( totalPayable ) ), 0, "", new BigDecimal( String.valueOf( vat ) ), taxId, new BigDecimal( 0 ), 0, firstName + " " + lastName, "", paymentDialogPaidBy, totalItem, new BigDecimal( 0 ), 1, new BigDecimal( String.valueOf( paymentDialogPaid ) ), paymentDialogCreditCardNo, paymentDialogCardHolder, paymentDialogChecqueNo, AppGlobal.UNSYNC );
 						dbHandler.addSales( salesBO );
 
 						// for adding in salesHistory table
@@ -410,7 +411,7 @@ public class SaleActivity extends Activity
 						int salesHistoryId = dbHandler.getLastInsertedSalesHistoryId();
 						salesHistoryId = salesHistoryId + 1;
 
-						salesHistoryBO = new SalesHistoryBO( salesHistoryId, salesId, "SL-000" + salesId, 1, 1, "Customer One", 1, "Walk In", salesDateToday, "", "", new BigDecimal( String.valueOf( total ) ), new BigDecimal( 0 ), new BigDecimal( String.valueOf( totalPayable ) ), 0, "", new BigDecimal( String.valueOf( vat ) ), taxId, new BigDecimal( 0 ), 0, "owner", "", paymentDialogPaidBy, totalItem, new BigDecimal( 0 ), 1, new BigDecimal( String.valueOf( paymentDialogPaid ) ), paymentDialogCreditCardNo, paymentDialogCardHolder, paymentDialogChecqueNo, salesEventDateTime, "insert" );
+						salesHistoryBO = new SalesHistoryBO( salesHistoryId, salesId, "SL-000" + salesId, 1, 1, "Customer One", 1, "Walk In", salesDateToday, "", "", new BigDecimal( String.valueOf( total ) ), new BigDecimal( 0 ), new BigDecimal( String.valueOf( totalPayable ) ), 0, "", new BigDecimal( String.valueOf( vat ) ), taxId, new BigDecimal( 0 ), 0, "owner", "", paymentDialogPaidBy, totalItem, new BigDecimal( 0 ), 1, new BigDecimal( String.valueOf( paymentDialogPaid ) ), paymentDialogCreditCardNo, paymentDialogCardHolder, paymentDialogChecqueNo, salesEventDateTime, "insert", AppGlobal.UNSYNC );
 						dbHandler.addSalesHistory( salesHistoryBO );
 
 						// for adding in saleItems and saleItemsHistory tables
@@ -442,10 +443,10 @@ public class SaleActivity extends Activity
 							// );
 							BigDecimal grossTotal = new BigDecimal( String.valueOf( _saleListProductForListView.get( i ).getPrice() ) );
 
-							saleItemsBO = new SaleItemsBO( saleItemsId, salesId, productId, productCode, productName, productUnit, taxId, "", quantity, unitPrice, grossTotal, new BigDecimal( 0 ), "", new BigDecimal( 0 ), "", 0 );
+							saleItemsBO = new SaleItemsBO( saleItemsId, salesId, productId, productCode, productName, productUnit, taxId, "", quantity, unitPrice, grossTotal, new BigDecimal( 0 ), "", new BigDecimal( 0 ), "", 0, AppGlobal.UNSYNC );
 							dbHandler.addSaleItems( saleItemsBO );
 
-							saleItemsHistoryBO = new SaleItemsHistoryBO( saleItemsHistoryId, saleItemsId, salesId, productId, productCode, productName, productUnit, taxId, "", quantity, unitPrice, grossTotal, new BigDecimal( 0 ), "", new BigDecimal( 0 ), "", 0, salesEventDateTime, "insert" );
+							saleItemsHistoryBO = new SaleItemsHistoryBO( saleItemsHistoryId, saleItemsId, salesId, productId, productCode, productName, productUnit, taxId, "", quantity, unitPrice, grossTotal, new BigDecimal( 0 ), "", new BigDecimal( 0 ), "", 0, salesEventDateTime, "insert", AppGlobal.UNSYNC );
 							db1.addSaleItemsHistory( saleItemsHistoryBO );
 
 						}
@@ -483,7 +484,7 @@ public class SaleActivity extends Activity
 							{
 								AlertDialog.Builder builder = new AlertDialog.Builder( SaleActivity.this );
 								builder.setTitle( "Error!" ).setMessage( "Couldn't connect to Payleven device. Make sure it is connected with your tablet via bluetooth." );
-								builder.setPositiveButton( "Ok", new DialogInterface.OnClickListener()
+								builder.setPositiveButton( "OK", new DialogInterface.OnClickListener()
 								{
 									public void onClick( DialogInterface dialog, int which )
 									{
@@ -502,8 +503,8 @@ public class SaleActivity extends Activity
 						paymentDialog.dismiss();
 
 						AlertDialog.Builder builder = new AlertDialog.Builder( SaleActivity.this );
-						builder.setTitle( "Done!" ).setMessage( "Payment Successfull" );
-						builder.setPositiveButton( "Ok", new DialogInterface.OnClickListener()
+						builder.setTitle( "Done!" ).setMessage( "Payment Successful" );
+						builder.setPositiveButton( "OK", new DialogInterface.OnClickListener()
 						{
 							public void onClick( DialogInterface dialog, int which )
 							{
@@ -641,22 +642,37 @@ public class SaleActivity extends Activity
 				{
 					AlertDialog.Builder builder = new AlertDialog.Builder( SaleActivity.this );
 					builder.setTitle( "Suspend Sale!" ).setMessage( "Are you sure you want to suspend Sale?" );
-					builder.setPositiveButton( "Ok", new DialogInterface.OnClickListener()
+					builder.setPositiveButton( "OK", new DialogInterface.OnClickListener()
 					{
 						public void onClick( DialogInterface dialog, int which )
 						{
 
-							DatabaseHandler dbHandler = new DatabaseHandler( getApplicationContext(), AppGlobal.TABLE_SUSPENDED_SALES );
-							Gson gson = new Gson();
-							String suspendedSalesJson = gson.toJson( _saleListProductForListView );
+							SimpleDateFormat sdf = new SimpleDateFormat( "yyyy-MM-dd" );
+							String suspendedBillsDate = sdf.format( new Date() );
 
-							SimpleDateFormat sdf = new SimpleDateFormat( "MM/dd/yyyy" );
-							String suspendedSalesDate = sdf.format( new Date() );
+							DatabaseHandler dbHandler = new DatabaseHandler( getApplicationContext(), AppGlobal.TABLE_SUSPENDED_BILLS );
+							int suspendedBillsId = dbHandler.getLastInsertedSuspendedBillsId();
+							suspendedBillsId = suspendedBillsId + 1;
+
+							SuspendedBillsBO suspendedBillsBO = new SuspendedBillsBO( suspendedBillsId, suspendedBillsDate, 1, totalItem, ( float ) 0.0, ( float ) vat, new BigDecimal( discount ), new BigDecimal( total ), ( float ) totalPayable, AppGlobal.UNSYNC, String.valueOf( 0 ) );
+							dbHandler.addSuspendedBills( suspendedBillsBO );
+
+							dbHandler = new DatabaseHandler( getApplicationContext(), AppGlobal.TABLE_SUSPENDED_SALES );
+
 							int id = dbHandler.getLastInsertedSuspendedSalesId();
-							id = id + 1;
+							// id = id + 1;
 
-							suspendedSalesBO = new SuspendedSalesBO( id, suspendedSalesJson, suspendedSalesDate );
-							dbHandler.addSuspendedSales( suspendedSalesBO );
+							DecimalFormat df1 = new DecimalFormat( "######.##" );
+
+							for( int i = 0 ; i < _saleListProductForListView.size() ; i++ )
+							{
+								double uPrice = Double.valueOf( df1.format( Double.valueOf( String.valueOf( _saleListProductForListView.get( i ).getPrice() ) ) / Double.valueOf( String.valueOf( _saleListProductForListView.get( i ).getqQuantity() ) ) ) );
+								BigDecimal unitPrice = new BigDecimal( String.valueOf( uPrice ) );
+
+								id = id + 1;
+								suspendedSalesBO = new SuspendedSalesBO( id, suspendedBillsId, _saleListProductForListView.get( i ).getId(), _saleListProductForListView.get( i ).getCode(), _saleListProductForListView.get( i ).getName(), _saleListProductForListView.get( i ).getUnit(), 0/* taxid */, "", _saleListProductForListView.get( i ).getqQuantity(), unitPrice, _saleListProductForListView.get( i ).getPrice(), new BigDecimal( 0.00 ), "", 0, new BigDecimal( 0.00 ), "", AppGlobal.UNSYNC );
+								dbHandler.addSuspendedSales( suspendedSalesBO );
+							}
 
 							_saleListProductForListView.clear();
 							_saleListAdapter = new SaleListAdapter( getApplicationContext(), -1, _saleListProductForListView );
@@ -718,7 +734,7 @@ public class SaleActivity extends Activity
 				{
 					AlertDialog.Builder builder = new AlertDialog.Builder( SaleActivity.this );
 					builder.setTitle( "Error!" ).setMessage( "Cannot initiate Payment. List Empty!" );
-					builder.setPositiveButton( "Ok", new DialogInterface.OnClickListener()
+					builder.setPositiveButton( "OK", new DialogInterface.OnClickListener()
 					{
 						public void onClick( DialogInterface dialog, int which )
 						{
@@ -903,29 +919,23 @@ public class SaleActivity extends Activity
 						{
 							if( productBO != null )
 							{
-								if( productBO.isListHasProduct( productBO, _saleListProductForListView ) )
-								{
-									if( AppGlobal.isDebugMode )
-										Toast.makeText( getApplicationContext(), "Product already added in List!", Toast.LENGTH_SHORT ).show();
-								}
-								else
-								{
-									// Updated Calculations here..
-									vatForEachProduct = ( defaultQuantity * productBO.getPrice().doubleValue() ) * vatTaxRate;
 
-									vat += vatForEachProduct;
-									totalItem++;
-									total += productBO.getPrice().doubleValue();
-									totalPayable = total + vat + tax;
+								// Updated Calculations here..
+								vatForEachProduct = ( defaultQuantity * productBO.getPrice().doubleValue() ) * vatTaxRate;
 
-									totalItemsTextView.setText( String.valueOf( totalItem ) );
-									totalTextView.setText( String.valueOf( total ) );
-									totalPayableTextView.setText( String.valueOf( totalPayable ) );
-									vatTextView.setText( String.valueOf( vat ) );
+								vat += vatForEachProduct;
+								totalItem++;
+								total += productBO.getPrice().doubleValue();
+								totalPayable = total + vat + tax;
 
-									_saleListProductForListView.add( productBO );
-									_saleListAdapter.notifyDataSetChanged();
-								}
+								totalItemsTextView.setText( String.valueOf( totalItem ) );
+								totalTextView.setText( String.valueOf( total ) );
+								totalPayableTextView.setText( String.valueOf( totalPayable ) );
+								vatTextView.setText( String.valueOf( vat ) );
+
+								_saleListProductForListView.add( productBO );
+								_saleListAdapter.notifyDataSetChanged();
+
 							}
 						}
 						else
@@ -1133,13 +1143,12 @@ public class SaleActivity extends Activity
 
 	}
 
-	public class SuspendedListAdapter extends ArrayAdapter<SuspendedSalesBO>
+	public class SuspendedListAdapter extends ArrayAdapter<SuspendedBillsBO>
 	{
-
 		Context					context;
-		List<SuspendedSalesBO>	suspendedList;
+		List<SuspendedBillsBO>	suspendedList;
 
-		public SuspendedListAdapter( Context context, int resource, List<SuspendedSalesBO> list )
+		public SuspendedListAdapter( Context context, int resource, List<SuspendedBillsBO> list )
 		{
 
 			super( context, resource, list );
@@ -1153,32 +1162,11 @@ public class SaleActivity extends Activity
 
 			final ViewHolder holder;
 			View view = convertView;
-
 			if( view == null )
 			{
 				view = getLayoutInflater().inflate( R.layout.suspended_sales_list, parent, false );
 			}
 			holder = new ViewHolder();
-
-			Gson gson = new Gson();
-			String jsonOutput = suspendedList.get( position ).getSuspendProductJson().toString();
-			Type listType = new TypeToken<List<ProductBO>>()
-			{
-			}.getType();
-			List<ProductBO> myModelList = gson.fromJson( jsonOutput, listType );
-
-			DecimalFormat df = new DecimalFormat( "######.##" );
-
-			suspendedItems = 0;
-			suspendedInvoiceTax = 0.0;
-			suspendedTotal = 0.0;
-
-			for( int j = 0 ; j < myModelList.size() ; j++ )
-			{
-				suspendedItems += myModelList.get( j ).getqQuantity();
-				suspendedInvoiceTax = suspendedInvoiceTax + ( Double.valueOf( df.format( Double.valueOf( myModelList.get( j ).getPrice().toString() ) * vatTaxRate ) ) );
-				suspendedTotal = suspendedTotal + Double.valueOf( myModelList.get( j ).getPrice().toString() );
-			}
 
 			holder.suspendedSaleDate = ( TextView ) view.findViewById( R.id.suspended_sales_list_date_textView );
 			holder.suspendedSaleItems = ( TextView ) view.findViewById( R.id.suspended_sales_list_items_textView );
@@ -1189,92 +1177,94 @@ public class SaleActivity extends Activity
 			holder.suspendedSaleAddbutton = ( Button ) view.findViewById( R.id.suspended_sales_list_button_add );
 			holder.suspendedSaleDeleteButton = ( Button ) view.findViewById( R.id.suspended_sales_list_button_delete );
 
-			holder.suspendedSaleDate.setText( suspendedList.get( position ).getSuspendProductDate().toString() );
-			holder.suspendedSaleItems.setText( String.valueOf( suspendedItems ) );
-			holder.suspendedSaleProductTax.setText( "0.0" );
-			holder.suspendedSaleInvoiceTax.setText( String.valueOf( suspendedInvoiceTax ) );
-			holder.suspendedSaleDiscount.setText( "0.0" );
-			holder.suspendedSaleTotal.setText( String.valueOf( suspendedTotal ) );
-
+			holder.suspendedSaleDate.setText( suspendedList.get( position ).getDate() );
+			holder.suspendedSaleItems.setText( String.valueOf( suspendedList.get( position ).getCount() ) );
+			holder.suspendedSaleProductTax.setText( String.valueOf( suspendedList.get( position ).getTax1() ) );
+			holder.suspendedSaleInvoiceTax.setText( String.valueOf( suspendedList.get( position ).getTax2() ) );
+			holder.suspendedSaleDiscount.setText( suspendedList.get( position ).getDiscount().toPlainString() );
+			holder.suspendedSaleTotal.setText( String.valueOf( suspendedList.get( position ).getTotal() ) );
 			holder.suspendedSaleAddbutton.setOnClickListener( new OnClickListener()
 			{
-
 				@Override
 				public void onClick( View v )
 				{
 
 					_saleListProductForListView.clear();
+					int id = suspendedList.get( position ).getId();
+					DatabaseHandler db = new DatabaseHandler( getApplicationContext(), AppGlobal.TABLE_SUSPENDED_SALES );
+					List<SuspendedSalesBO> suspendedSalesBOList = db.getSuspendedSalesFromSuspendId( id );
 
-					Gson gson = new Gson();
-					String jsonOutput = suspendedList.get( position ).getSuspendProductJson().toString();
-					Type listType = new TypeToken<List<ProductBO>>()
+					db = new DatabaseHandler( getApplicationContext(), AppGlobal.TABLE_PRODUCT );
+					for( int i = 0 ; i < suspendedSalesBOList.size() ; i++ )
 					{
-					}.getType();
-					_saleListProductForListView = gson.fromJson( jsonOutput, listType );
+						ProductBO productBO = db.getProduct( suspendedSalesBOList.get( i ).getProductId() );
+						productBO.setPrice( suspendedSalesBOList.get( i ).getGrossTotal() );
+						productBO.setqQuantity( suspendedSalesBOList.get( i ).getQuantity() );
+
+						_saleListProductForListView.add( productBO );
+					}
 
 					_saleListAdapter = new SaleListAdapter( getApplicationContext(), -1, _saleListProductForListView );
 					listProducts.setAdapter( _saleListAdapter );
 					_saleListAdapter.notifyDataSetChanged();
 
-					Gson gson1 = new Gson();
-					String jsonOutput1 = suspendedList.get( position ).getSuspendProductJson().toString();
-					Type listType1 = new TypeToken<List<ProductBO>>()
-					{
-					}.getType();
-					List<ProductBO> myModelList1 = gson1.fromJson( jsonOutput1, listType1 );
-
 					DecimalFormat df1 = new DecimalFormat( "######.##" );
-					vat = 0.0;
-					totalItem = 0;
-					totalPayable = 0.0;
-					for( int j = 0 ; j < myModelList1.size() ; j++ )
-					{
-						totalItem += myModelList1.get( j ).getqQuantity();
-						vat = vat + ( Double.valueOf( df1.format( Double.valueOf( myModelList1.get( j ).getPrice().toString() ) * vatTaxRate ) ) );
-						totalPayable = totalPayable + Double.valueOf( myModelList1.get( j ).getPrice().toString() );
-						total = total + myModelList1.get( j ).getPrice().doubleValue();
-					}
+
+					vat = Double.valueOf( Float.toString( suspendedList.get( position ).getTax2() ) );
+					totalItem = suspendedList.get( position ).getCount();
+					totalPayable = Double.valueOf( Float.toString( suspendedList.get( position ).getTotal() ) );
+					total = Double.valueOf( suspendedList.get( position ).getInvTotal().toPlainString() );
 
 					totalItemsTextView.setText( String.valueOf( totalItem ) );
 					totalTextView.setText( String.valueOf( total ) );
-					totalPayableTextView.setText( String.valueOf( totalPayable ) );
+					totalPayableTextView.setText( String.valueOf( df1.format( totalPayable ) ) );
 					vatTextView.setText( String.valueOf( vat ) );
+					if( suspendedList.get( position ).getStatus().equals( AppGlobal.SYNC ) )
+					{
+						DatabaseHandler db1 = new DatabaseHandler( getApplicationContext(), AppGlobal.TABLE_SUSPENDED_BILLS );
+						int effectedRow = db1.updateSuspendedBillsStatus( suspendedList.get( position ) );
+					}
+					else
+					{
 
-					// to delete the suspended sale that is restored now
-					int id = suspendedList.get( position ).getId();
+						db.deleteSuspendedBills( id );
 
-					DatabaseHandler db = new DatabaseHandler( getApplicationContext(), AppGlobal.TABLE_SUSPENDED_SALES );
-					db.deletesuspendedSales( id );
-
+						db = new DatabaseHandler( getApplicationContext(), AppGlobal.TABLE_SUSPENDED_SALES );
+						db.deleteSuspendedSales( id );
+					}
 					suspendedList.remove( position );
-					_suspendedListAdapter = new SuspendedListAdapter( getApplicationContext(), -1, suspendedList );
-					listSuspendedSales.setAdapter( _suspendedListAdapter );
-					_suspendedListAdapter.notifyDataSetChanged();
 					suspendedSalesDialog.dismiss();
 				}
 			} );
-
 			holder.suspendedSaleDeleteButton.setOnClickListener( new OnClickListener()
 			{
-
 				@Override
 				public void onClick( View v )
 				{
 
 					int id = suspendedList.get( position ).getId();
+					DatabaseHandler db = new DatabaseHandler( getApplicationContext(), AppGlobal.TABLE_SUSPENDED_BILLS );
+					// db.deleteSuspendedBills( id );
 
-					DatabaseHandler db = new DatabaseHandler( getApplicationContext(), AppGlobal.TABLE_SUSPENDED_SALES );
-					db.deletesuspendedSales( id );
+					if( suspendedList.get( position ).getStatus().equals( AppGlobal.SYNC ) )
+					{
+						DatabaseHandler db1 = new DatabaseHandler( getApplicationContext(), AppGlobal.TABLE_SUSPENDED_BILLS );
+						int effectedRow = db1.updateSuspendedBillsStatus( suspendedList.get( position ) );
+						suspendedList.remove( position );
+					}
+					else
+					{
 
-					suspendedList.remove( position );
-					_suspendedListAdapter = new SuspendedListAdapter( getApplicationContext(), -1, suspendedList );
-					listSuspendedSales.setAdapter( _suspendedListAdapter );
+						db.deleteSuspendedBills( id );
+
+						db = new DatabaseHandler( getApplicationContext(), AppGlobal.TABLE_SUSPENDED_SALES );
+						db.deleteSuspendedSales( id );
+						suspendedList.remove( position );
+					}
 					_suspendedListAdapter.notifyDataSetChanged();
 				}
 			} );
-
 			view.setTag( holder );
-
 			return view;
 		}
 
@@ -1289,7 +1279,6 @@ public class SaleActivity extends Activity
 			Button		suspendedSaleAddbutton;
 			Button		suspendedSaleDeleteButton;
 		}
-
 	}
 
 	public ProductBO getProductBO( int productId, List<ProductBO> prodList )
@@ -1336,13 +1325,13 @@ public class SaleActivity extends Activity
 				vatTaxRate = Double.valueOf( Utils.taxRate ) / 100;
 				if( vatTaxRate != 0.0 )
 				{
-					DatabaseHandler dbHandler = new DatabaseHandler( getApplicationContext(), AppGlobal.TABLE_SUSPENDED_SALES );
-					listSuspendedSalesForDialogListView = dbHandler.getAllSuspendedSales();
+					DatabaseHandler dbHandler = new DatabaseHandler( getApplicationContext(), AppGlobal.TABLE_SUSPENDED_BILLS );
+					suspendedBillsListForSuspendedDialogListView = dbHandler.getAllSuspendedSalesForAdapter();
 					dbHandler.close();
 
-					if( listSuspendedSalesForDialogListView != null && listSuspendedSalesForDialogListView.size() > 0 )
+					if( suspendedBillsListForSuspendedDialogListView != null && suspendedBillsListForSuspendedDialogListView.size() > 0 )
 					{
-						_suspendedListAdapter = new SuspendedListAdapter( getApplicationContext(), -1, listSuspendedSalesForDialogListView );
+						_suspendedListAdapter = new SuspendedListAdapter( getApplicationContext(), -1, suspendedBillsListForSuspendedDialogListView );
 						listSuspendedSales.setAdapter( _suspendedListAdapter );
 						suspendedSalesDialog.show();
 					}

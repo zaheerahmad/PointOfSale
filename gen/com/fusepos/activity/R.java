@@ -8,7 +8,22 @@
 package com.fusepos.activity;
 
 public final class R {
+    public static final class array {
+        public static final int payment_method_type=0x7f070000;
+    }
     public static final class attr {
+    }
+    public static final class color {
+        public static final int app_main_color_orange=0x7f040000;
+        public static final int button_color_pressed=0x7f040004;
+        public static final int login_activity_login_button_color_default=0x7f040009;
+        public static final int main_layout_background_color=0x7f040001;
+        public static final int main_layout_tab_color=0x7f040002;
+        public static final int sale_activity_cancel_button_color_default=0x7f040007;
+        public static final int sale_activity_category_button_color_default=0x7f040008;
+        public static final int sale_activity_payment_button_color_default=0x7f040003;
+        public static final int sale_activity_print_button_color_default=0x7f040005;
+        public static final int sale_activity_suspend_button_color_default=0x7f040006;
     }
     public static final class dimen {
         /**  Default screen margins, per the Android Design guidelines. 
@@ -17,41 +32,171 @@ public final class R {
          screen margins) for sw720dp devices (e.g. 10" tablets) in landscape here.
     
          */
-        public static final int activity_horizontal_margin=0x7f040000;
-        public static final int activity_vertical_margin=0x7f040001;
+        public static final int activity_horizontal_margin=0x7f050000;
+        public static final int activity_vertical_margin=0x7f050001;
     }
     public static final class drawable {
-        public static final int ic_launcher=0x7f020000;
-        public static final int login_logo=0x7f020001;
-        public static final int password_icon=0x7f020002;
-        public static final int setting_icon=0x7f020003;
-        public static final int user_icon=0x7f020004;
+        public static final int delete_record=0x7f020000;
+        public static final int fuseposlogo=0x7f020001;
+        public static final int ic_action_cloudsync=0x7f020002;
+        public static final int ic_add_suspended_sale_list=0x7f020003;
+        public static final int ic_launcher=0x7f020004;
+        public static final int ic_remove_suspended_sale_list=0x7f020005;
+        public static final int ic_suspended_list=0x7f020006;
+        public static final int icon=0x7f020007;
+        public static final int icon_photos_tab=0x7f020008;
+        public static final int icon_songs_tab=0x7f020009;
+        public static final int icon_videos_tab=0x7f02000a;
+        public static final int login_activity_login_button_color=0x7f02000b;
+        public static final int login_activity_login_button_color_pressed=0x7f02000c;
+        public static final int login_activity_login_button_rounded_corner=0x7f02000d;
+        public static final int login_logo=0x7f02000e;
+        public static final int password_icon=0x7f02000f;
+        public static final int photos_gray=0x7f020010;
+        public static final int photos_white=0x7f020011;
+        public static final int pound_sign=0x7f020012;
+        public static final int product_default=0x7f020013;
+        public static final int sale_activity_cancel_button_color=0x7f020014;
+        public static final int sale_activity_cancel_button_color_pressed=0x7f020015;
+        public static final int sale_activity_cancel_button_rounded_corner=0x7f020016;
+        public static final int sale_activity_category_button_color=0x7f020017;
+        public static final int sale_activity_category_button_color_pressed=0x7f020018;
+        public static final int sale_activity_category_button_rounded_corner=0x7f020019;
+        public static final int sale_activity_payment_button_color=0x7f02001a;
+        public static final int sale_activity_payment_button_color_pressed=0x7f02001b;
+        public static final int sale_activity_payment_button_rounded_corner=0x7f02001c;
+        public static final int sale_activity_payment_dialog_cancel_button_color=0x7f02001d;
+        public static final int sale_activity_payment_dialog_cancel_button_color_pressed=0x7f02001e;
+        public static final int sale_activity_payment_dialog_cancel_button_rounded_corner=0x7f02001f;
+        public static final int sale_activity_payment_dialog_submit_button_color=0x7f020020;
+        public static final int sale_activity_payment_dialog_submit_button_color_pressed=0x7f020021;
+        public static final int sale_activity_payment_dialog_submit_button_rounded_corner=0x7f020022;
+        public static final int sale_activity_print_button_color=0x7f020023;
+        public static final int sale_activity_print_button_color_pressed=0x7f020024;
+        public static final int sale_activity_print_button_rounded_corner=0x7f020025;
+        public static final int sale_activity_suspend_button_color=0x7f020026;
+        public static final int sale_activity_suspend_button_color_pressed=0x7f020027;
+        public static final int sale_activity_suspend_button_rounded_corner=0x7f020028;
+        public static final int setting_icon=0x7f020029;
+        public static final int songs_gray=0x7f02002a;
+        public static final int songs_white=0x7f02002b;
+        public static final int user_icon=0x7f02002c;
+        public static final int videos_gray=0x7f02002d;
+        public static final int videos_white=0x7f02002e;
     }
     public static final class id {
-        public static final int action_settings=0x7f08000b;
-        public static final int instance_d_db_name=0x7f080008;
-        public static final int instance_d_db_password=0x7f08000a;
-        public static final int instance_d_db_username=0x7f080009;
-        public static final int instance_d_host_name=0x7f080007;
-        public static final int login_logo=0x7f080000;
-        public static final int login_password_et=0x7f080002;
-        public static final int login_setting_btn=0x7f080003;
-        public static final int login_username_et=0x7f080001;
-        public static final int setting_seprator=0x7f080005;
-        public static final int sign_in_heading=0x7f080004;
-        public static final int signin_control_layout=0x7f080006;
+        public static final int action_suspended=0x7f0a0053;
+        public static final int action_sync=0x7f0a0052;
+        public static final int activity_main_manage_btn=0x7f0a0007;
+        public static final int activity_main_pos_btn=0x7f0a0006;
+        public static final int instance_d_db_name=0x7f0a0043;
+        public static final int instance_d_db_password=0x7f0a0045;
+        public static final int instance_d_db_username=0x7f0a0044;
+        public static final int instance_d_host_name=0x7f0a0042;
+        public static final int ll2_right=0x7f0a0009;
+        public static final int login_login_btn=0x7f0a0003;
+        public static final int login_logo=0x7f0a0000;
+        public static final int login_password_et=0x7f0a0002;
+        public static final int login_setting_btn=0x7f0a0004;
+        public static final int login_username_et=0x7f0a0001;
+        public static final int parentLinearLayout=0x7f0a001b;
+        public static final int product_list_title_linear_layout=0x7f0a000a;
+        public static final int sale_activity_payment_dialog_cancel_button=0x7f0a002a;
+        public static final int sale_activity_payment_dialog_editText_checqueNo=0x7f0a0028;
+        public static final int sale_activity_payment_dialog_editText_creditCardNo=0x7f0a0024;
+        public static final int sale_activity_payment_dialog_editText_holderName=0x7f0a0026;
+        public static final int sale_activity_payment_dialog_editText_paid=0x7f0a0020;
+        public static final int sale_activity_payment_dialog_relativeLayout_payment_method_cash1=0x7f0a001f;
+        public static final int sale_activity_payment_dialog_relativeLayout_payment_method_cash2=0x7f0a0021;
+        public static final int sale_activity_payment_dialog_relativeLayout_payment_method_checque1=0x7f0a0027;
+        public static final int sale_activity_payment_dialog_relativeLayout_payment_method_creditCard1=0x7f0a0023;
+        public static final int sale_activity_payment_dialog_relativeLayout_payment_method_creditCard2=0x7f0a0025;
+        public static final int sale_activity_payment_dialog_spinner_payment_method=0x7f0a001e;
+        public static final int sale_activity_payment_dialog_submit_button=0x7f0a0029;
+        public static final int sale_activity_payment_dialog_textView_change=0x7f0a0022;
+        public static final int sale_activity_payment_dialog_textView_total_items=0x7f0a001d;
+        public static final int sale_activity_payment_dialog_textView_total_paypable=0x7f0a001c;
+        public static final int sale_activity_suspended_products_dialog_linearLayout=0x7f0a002b;
+        public static final int sale_activity_suspended_products_dialog_listView=0x7f0a0035;
+        public static final int sale_activity_suspended_products_dialog_textView_main=0x7f0a002c;
+        public static final int sale_btnCancel=0x7f0a0016;
+        public static final int sale_btnPayment=0x7f0a0019;
+        public static final int sale_btnPrint=0x7f0a0017;
+        public static final int sale_btnSuspend=0x7f0a0018;
+        public static final int sale_calculation_linearLayout=0x7f0a000c;
+        public static final int sale_calculation_rl=0x7f0a0014;
+        public static final int sale_calculation_rl1=0x7f0a000d;
+        public static final int sale_discountText=0x7f0a0011;
+        public static final int sale_grid=0x7f0a001a;
+        public static final int sale_grid_ll_parent=0x7f0a0036;
+        public static final int sale_grid_productId=0x7f0a0039;
+        public static final int sale_grid_productImage=0x7f0a0037;
+        public static final int sale_grid_productName=0x7f0a0038;
+        public static final int sale_listView=0x7f0a000b;
+        public static final int sale_list_deletebtn=0x7f0a003e;
+        public static final int sale_list_hidden_productId=0x7f0a003a;
+        public static final int sale_list_productPriceText=0x7f0a003d;
+        public static final int sale_list_productQttyText=0x7f0a003c;
+        public static final int sale_list_productText=0x7f0a003b;
+        public static final int sale_taxText=0x7f0a0010;
+        public static final int sale_totalItemText=0x7f0a000f;
+        public static final int sale_totalPayableTextView=0x7f0a0015;
+        public static final int sale_totalText=0x7f0a0012;
+        public static final int sale_vatText=0x7f0a0013;
+        public static final int sale_view=0x7f0a000e;
+        public static final int scroll_view=0x7f0a0008;
+        public static final int setting_rl_d_db_name=0x7f0a0047;
+        public static final int setting_rl_d_db_password=0x7f0a0049;
+        public static final int setting_rl_d_db_username=0x7f0a0048;
+        public static final int setting_rl_d_host_name=0x7f0a0046;
+        public static final int setting_save_btn=0x7f0a004a;
+        public static final int setting_seprator=0x7f0a0040;
+        public static final int sign_in_heading=0x7f0a003f;
+        public static final int signin_control_layout=0x7f0a0041;
+        public static final int suspended_sales_list_action_textView=0x7f0a0033;
+        public static final int suspended_sales_list_button_add=0x7f0a004b;
+        public static final int suspended_sales_list_button_delete=0x7f0a004c;
+        public static final int suspended_sales_list_date_textView=0x7f0a002d;
+        public static final int suspended_sales_list_discount_textView=0x7f0a0031;
+        public static final int suspended_sales_list_invoice_tax_textView=0x7f0a0030;
+        public static final int suspended_sales_list_items_textView=0x7f0a002e;
+        public static final int suspended_sales_list_product_tax_textView=0x7f0a002f;
+        public static final int suspended_sales_list_total_textView=0x7f0a0032;
+        public static final int textView1=0x7f0a0005;
+        public static final int textView2=0x7f0a004d;
+        public static final int textView3=0x7f0a004e;
+        public static final int textView4=0x7f0a004f;
+        public static final int textView5=0x7f0a0050;
+        public static final int view1=0x7f0a0034;
+        public static final int webview=0x7f0a0051;
     }
     public static final class layout {
         public static final int activity_login=0x7f030000;
-        public static final int setting_db_instance=0x7f030001;
+        public static final int activity_main=0x7f030001;
+        public static final int login_layout=0x7f030002;
+        public static final int main=0x7f030003;
+        public static final int sale_activity=0x7f030004;
+        public static final int sale_activity_payment_dialog=0x7f030005;
+        public static final int sale_activity_suspended_sales_dialog=0x7f030006;
+        public static final int sale_grid_item=0x7f030007;
+        public static final int sale_list_item=0x7f030008;
+        public static final int setting_db_instance=0x7f030009;
+        public static final int setting_layout=0x7f03000a;
+        public static final int suspended_sales_list=0x7f03000b;
+        public static final int videos_layout=0x7f03000c;
+        public static final int web_view=0x7f03000d;
     }
     public static final class menu {
-        public static final int main=0x7f070000;
+        public static final int main=0x7f090000;
     }
     public static final class string {
-        public static final int action_settings=0x7f050001;
-        public static final int app_name=0x7f050000;
-        public static final int hello_world=0x7f050002;
+        public static final int action_settings=0x7f060001;
+        public static final int app_name=0x7f060000;
+        public static final int demo_collection=0x7f060005;
+        public static final int demo_external_activity=0x7f060004;
+        public static final int dummy_section_text=0x7f060003;
+        public static final int hello_world=0x7f060002;
+        public static final int payment_method=0x7f060006;
     }
     public static final class style {
         /** 
@@ -75,10 +220,10 @@ public final class R {
     
  API 14 theme customizations can go here. 
          */
-        public static final int AppBaseTheme=0x7f060000;
+        public static final int AppBaseTheme=0x7f080000;
         /**  Application theme. 
  All customizations that are NOT specific to a particular API-level can go here. 
          */
-        public static final int AppTheme=0x7f060001;
+        public static final int AppTheme=0x7f080001;
     }
 }

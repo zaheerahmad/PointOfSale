@@ -20,8 +20,9 @@ public class SaleItemsBO
 	private BigDecimal	discountVal;
 	private String		discount;
 	private int			discountId;
+	private String		status;
 
-	public SaleItemsBO( int id, int saleId, int productId, String productCode, String productName, String productUnit, int taxRateId, String tax, int quantity, BigDecimal unitPrice, BigDecimal grossTotal, BigDecimal valTax, String serialNo, BigDecimal discountVal, String discount, int discountId )
+	public SaleItemsBO( int id, int saleId, int productId, String productCode, String productName, String productUnit, int taxRateId, String tax, int quantity, BigDecimal unitPrice, BigDecimal grossTotal, BigDecimal valTax, String serialNo, BigDecimal discountVal, String discount, int discountId, String status )
 	{
 
 		super();
@@ -41,6 +42,7 @@ public class SaleItemsBO
 		this.discountVal = discountVal;
 		this.discount = discount;
 		this.discountId = discountId;
+		this.status = status;
 	}
 
 	public int getId()
@@ -233,6 +235,18 @@ public class SaleItemsBO
 	{
 
 		this.discountId = discountId;
+	}
+
+	public String getStatus()
+	{
+
+		return status;
+	}
+
+	public void setStatus( String status )
+	{
+
+		this.status = status;
 	}
 
 }

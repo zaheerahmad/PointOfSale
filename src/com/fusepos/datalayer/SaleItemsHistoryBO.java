@@ -23,8 +23,9 @@ public class SaleItemsHistoryBO
 	private int			discountId;
 	private String		eventTime;
 	private String		action;
+	private String		status;
 
-	public SaleItemsHistoryBO( int id, int saleItemId, int saleId, int productId, String productCode, String productName, String productUnit, int taxRateId, String tax, int quantity, BigDecimal unitPrice, BigDecimal grossTotal, BigDecimal valTax, String serialNo, BigDecimal discountVal, String discount, int discountId, String eventTime, String action )
+	public SaleItemsHistoryBO( int id, int saleItemId, int saleId, int productId, String productCode, String productName, String productUnit, int taxRateId, String tax, int quantity, BigDecimal unitPrice, BigDecimal grossTotal, BigDecimal valTax, String serialNo, BigDecimal discountVal, String discount, int discountId, String eventTime, String action, String status )
 	{
 
 		super();
@@ -47,6 +48,7 @@ public class SaleItemsHistoryBO
 		this.discountId = discountId;
 		this.eventTime = eventTime;
 		this.action = action;
+		this.status = status;
 	}
 
 	public int getId()
@@ -275,6 +277,18 @@ public class SaleItemsHistoryBO
 	{
 
 		this.action = action;
+	}
+
+	public String getStatus()
+	{
+
+		return status;
+	}
+
+	public void setStatus( String status )
+	{
+
+		this.status = status;
 	}
 
 }

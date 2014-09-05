@@ -61,11 +61,11 @@
 
             <TextView
                 android:id="@+id/sale_list_productPriceText"
-                android:layout_width="fill_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:textColor="#ffffff"
-                android:drawableLeft="@drawable/pound_sign" />
+                android:drawableRight="@drawable/pound_sign" />
         </LinearLayout>
 
         <LinearLayout

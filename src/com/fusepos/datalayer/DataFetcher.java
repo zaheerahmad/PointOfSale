@@ -17,7 +17,6 @@ import org.apache.http.message.BasicNameValuePair;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
-import android.util.Log;
 
 import com.fusepos.service.DataSendService;
 import com.fusepos.service.ServiceHandler;
@@ -30,7 +29,10 @@ import com.fusepos.wrapper.LoginWrapper;
 import com.fusepos.wrapper.ProductServiceResponseWrapper;
 import com.fusepos.wrapper.ProductWrapper;
 import com.fusepos.wrapper.ResponseStatusWrapper;
+import com.fusepos.wrapper.ResponseSuspendedSaleWrapper;
+import com.fusepos.wrapper.ServerResponseSuspendedSaleWrapper;
 import com.fusepos.wrapper.ServerResponseWrapper;
+import com.fusepos.wrapper.SuspendedSyncResponseWrapper;
 import com.fusepos.wrapper.TaxServiceResponseWrapper;
 import com.fusepos.wrapper.TaxWrapper;
 import com.google.gson.Gson;
@@ -155,7 +157,7 @@ public class DataFetcher extends AsyncTask<String, String, ResponseStatusWrapper
 						{
 							LoginWrapper loginWrapper = serverResponseWrapper.getResponse();
 
-							LoginBO loginBO = new LoginBO( Integer.parseInt( loginWrapper.getId() ), loginWrapper.getUsername(), loginWrapper.getPassword(), loginWrapper.getEmail(), loginWrapper.getFirstName(), loginWrapper.getLastName(), loginWrapper.getCompany(), loginWrapper.getPhone() );
+							LoginBO loginBO = new LoginBO( Integer.parseInt( loginWrapper.getId() ), loginWrapper.getUsername(), loginWrapper.getFirstName(), loginWrapper.getLastName(), loginWrapper.getPassword(), loginWrapper.getEmail(), loginWrapper.getCompany(), loginWrapper.getPhone() );
 							SharedPreferences pref1 = Utils.getSharedPreferences( context );
 							pref1.edit().putString( AppGlobal.APP_PREF_FIRST_NAME, loginWrapper.getFirstName() ).commit();
 							pref1.edit().putString( AppGlobal.APP_PREF_LAST_NAME, loginWrapper.getLastName() ).commit();
@@ -177,7 +179,6 @@ public class DataFetcher extends AsyncTask<String, String, ResponseStatusWrapper
 			if( params != null && params[0].equalsIgnoreCase( AppGlobal.DATAFETCHER_ACTION_PRODUCTS_SYNC ) )
 			{
 				ResponseStatusWrapper response = new ResponseStatusWrapper();
-				ServerResponseWrapper updateServerResponse;
 				URL url;
 				HttpURLConnection httpUrlConnection;
 				DataOutputStream outputStream;
@@ -334,64 +335,161 @@ public class DataFetcher extends AsyncTask<String, String, ResponseStatusWrapper
 
 				// for updating sales table
 
-				/*db = new DatabaseHandler( context, AppGlobal.TABLE_SALES );
-				salesBOList = db.getAllSales();
-
-				db = new DatabaseHandler( context, AppGlobal.TABLE_SALES_HISTORY );
-				salesHistoryBOList = db.getAllSalesHistory();
-
-				for( int i = 0 ; i < salesBOList.size() ; i++ )
+				db = new DatabaseHandler( context, AppGlobal.TABLE_SALES );
+				salesBOList = db.getAllUnsyncSales();
+				if( salesBOList.size() > 0 )
 				{
-					int id = salesBOList.get( i ).getId();
+					db = new DatabaseHandler( context, AppGlobal.TABLE_SALES_HISTORY );
+					salesHistoryBOList = db.getAllUnsyncSalesHistory();
 
-					DatabaseHandler db1 = new DatabaseHandler( context, AppGlobal.TABLE_SALE_ITEMS );
-					saleItemsBOList = db1.getSaleItemsForId( id );
+					for( int i = 0 ; i < salesBOList.size() ; i++ )
+					{
+						int id = salesBOList.get( i ).getId();
 
-					db1 = new DatabaseHandler( context, AppGlobal.TABLE_SALE_ITEMS_HISTORY );
-					saleItemsHistoryBOList = db1.getSaleItemsHistoryForId( id );
+						DatabaseHandler db1 = new DatabaseHandler( context, AppGlobal.TABLE_SALE_ITEMS );
+						saleItemsBOList = db1.getSaleItemsForId( id );
 
-					salesDataBO = new SalesDataBO( salesBOList.get( i ), salesHistoryBOList.get( i ), saleItemsBOList, saleItemsHistoryBOList );
-					salesDataBOList.add( salesDataBO );
+						db1 = new DatabaseHandler( context, AppGlobal.TABLE_SALE_ITEMS_HISTORY );
+						saleItemsHistoryBOList = db1.getSaleItemsHistoryForId( id );
+
+						salesDataBO = new SalesDataBO( salesBOList.get( i ), salesHistoryBOList.get( i ), saleItemsBOList, saleItemsHistoryBOList );
+						salesDataBOList.add( salesDataBO );
+					}
+
+					StringBuilder salesDataBOListJson = new StringBuilder( gson.toJson( salesDataBOList ) );
+
+					String u = AppGlobal.SERVER_URL_UPDATE_SALES_DATA_WEBSERVICE + "?" + AppGlobal.PARAM_DB_HOST + "=" + host + "&" + AppGlobal.PARAM_DB_NAME + "=" + dbName + "&" + AppGlobal.PARAM_DB_USER + "=" + dbUser + "&" + AppGlobal.PARAM_DB_PASSWPRD + "=" + dbPassword;
+
+					url = new URL( u );
+					httpUrlConnection = ( HttpURLConnection ) url.openConnection();
+					httpUrlConnection.setRequestMethod( "POST" );
+					httpUrlConnection.setRequestProperty( "Content-Type", "application/x-www-form-urlencoded" );
+					// httpUrlConnection.setRequestProperty(
+					// "Content-Length", "" + Integer.toString(
+					// jsonParams.getBytes().length ) );
+					httpUrlConnection.setRequestProperty( "Content-Language", "en-US" );
+					httpUrlConnection.setUseCaches( false );
+					httpUrlConnection.setDoInput( true );
+					httpUrlConnection.setDoOutput( true );
+					outputStream = new DataOutputStream( httpUrlConnection.getOutputStream() );
+					outputStream.writeBytes( "requestParam=" + salesDataBOListJson );
+					outputStream.flush();
+					outputStream.close();
+					// get response
+					responseStream = new BufferedInputStream( httpUrlConnection.getInputStream() );
+					saleUpdateReader = new InputStreamReader( responseStream );
+
+					ServerResponseWrapper serverResponseWrapper1 = gson.fromJson( saleUpdateReader, ServerResponseWrapper.class );
+					if( serverResponseWrapper1.getCode() == AppGlobal.RESPONSE_STATUS_SUCCESS )
+					{
+						db = new DatabaseHandler( context, AppGlobal.TABLE_SALES );
+						int effectedRowSales = db.updateSalesStatus( salesBOList );
+
+						db = new DatabaseHandler( context, AppGlobal.TABLE_SALES_HISTORY );
+						int effectedRowSalesHistory = db.updateSalesHistoryStatus( salesHistoryBOList );
+
+						for( int i = 0 ; i < salesBOList.size() ; i++ )
+						{
+							int id = salesBOList.get( i ).getId();
+
+							DatabaseHandler db1 = new DatabaseHandler( context, AppGlobal.TABLE_SALE_ITEMS );
+							saleItemsBOList = db1.getSaleItemsForId( id );
+							int effectedRowSaleItems = db1.updateSaleItemsStatus( saleItemsBOList );
+
+							db1 = new DatabaseHandler( context, AppGlobal.TABLE_SALE_ITEMS_HISTORY );
+							saleItemsHistoryBOList = db1.getSaleItemsHistoryForId( id );
+							int effectedRowSaleItemsHistory = db1.updateSaleItemsHistoryStatus( saleItemsHistoryBOList );
+
+							salesDataBO = new SalesDataBO( salesBOList.get( i ), salesHistoryBOList.get( i ), saleItemsBOList, saleItemsHistoryBOList );
+							salesDataBOList.add( salesDataBO );
+						}
+
+						response.status = AppGlobal.RESPONSE_STATUS_SUCCESS;
+						response.message = AppGlobal.RESPONSE_STATUS_SUCCESS_MESSAGE;
+					}
+
+					else
+					{
+						response.status = AppGlobal.RESPONSE_STATUS_FAIL;
+						response.message = AppGlobal.RESPONSE_STATUS_FAIL_MESSAGE;
+					}
+
 				}
-				
-				StringBuilder strBuilder = new StringBuilder();
-				StringBuilder salesDataBOListJson = new StringBuilder( gson.toJson( salesDataBOList ));
-				
-				strBuilder.append( gson.toJson( salesDataBOList ) );
-				
-				Log.d( "Sale DATA Json", salesDataBOListJson.toString() );
-				
-				url = new URL( AppGlobal.SERVER_URL_UPDATE_SALES_DATA_WEBSERVICE );
-				httpUrlConnection = ( HttpURLConnection ) url.openConnection();
-				httpUrlConnection.setRequestMethod( "POST" );
-				httpUrlConnection.setRequestProperty( "Content-Type", "application/x-www-form-urlencoded" );
-				// httpUrlConnection.setRequestProperty(
-				// "Content-Length", "" + Integer.toString(
-				// jsonParams.getBytes().length ) );
-				httpUrlConnection.setRequestProperty( "Content-Language", "en-US" );
-				httpUrlConnection.setUseCaches( false );
-				httpUrlConnection.setDoInput( true );
-				httpUrlConnection.setDoOutput( true );
-				outputStream = new DataOutputStream( httpUrlConnection.getOutputStream() );
-				outputStream.writeBytes( "requestParam=" + salesDataBOListJson );
-				outputStream.flush();
-				outputStream.close();
-				// get response
-				responseStream = new BufferedInputStream( httpUrlConnection.getInputStream() );
-				saleUpdateReader = new InputStreamReader( responseStream );
-				updateServerResponse = gson.fromJson( saleUpdateReader, ServerResponseWrapper.class );
-				if( updateServerResponse.getCode() == 1 )
-				{
-					response.status = AppGlobal.RESPONSE_STATUS_SUCCESS;
-					response.message = AppGlobal.RESPONSE_STATUS_SUCCESS_MESSAGE;
-				}
-				else
-				{
-					response.status = AppGlobal.RESPONSE_STATUS_FAIL;
-					response.message = AppGlobal.RESPONSE_STATUS_FAIL_MESSAGE;
-				}*/
 
-				db.close();
+				/*
+				 * Syncing Suspended Bills and Suspended Sales to Server
+				 */
+
+				db = new DatabaseHandler( context, AppGlobal.TABLE_SUSPENDED_SALES );
+				List<SuspendedSalesBO> suspendedSalesBOList = new ArrayList<SuspendedSalesBO>();
+				suspendedSalesBOList = db.getAllSuspendedSales();
+
+				db = new DatabaseHandler( context, AppGlobal.TABLE_SUSPENDED_BILLS );
+				List<SuspendedBillsBO> suspendedBillsBOList = new ArrayList<SuspendedBillsBO>();
+				suspendedBillsBOList = db.getAllSuspendedBills();
+
+				SuspendedSyncResponseWrapper sendPostRequestWrapper = new SuspendedSyncResponseWrapper();
+				sendPostRequestWrapper.setSuspendedBillsBOList( suspendedBillsBOList );
+				sendPostRequestWrapper.setSuspendedSalesBOList( suspendedSalesBOList );
+				if( suspendedBillsBOList.size() > 0 )
+				{
+
+					// StringBuilder suspendedSalesBOListJson = new
+					// StringBuilder( gson.toJson( suspendedSalesBOList ) );
+					// StringBuilder suspendedBillsBOListJson = new
+					// StringBuilder( gson.toJson( suspendedBillsBOList ) );
+					StringBuilder sendRequestParamJson = new StringBuilder( gson.toJson( sendPostRequestWrapper ) );
+
+					String u = AppGlobal.SERVER_URL_UPDATE_SUSPENDED_SALES_WEBSERVICE + "?" + AppGlobal.PARAM_DB_HOST + "=" + host + "&" + AppGlobal.PARAM_DB_NAME + "=" + dbName + "&" + AppGlobal.PARAM_DB_USER + "=" + dbUser + "&" + AppGlobal.PARAM_DB_PASSWPRD + "=" + dbPassword;
+					url = new URL( u );
+					httpUrlConnection = ( HttpURLConnection ) url.openConnection();
+					httpUrlConnection.setRequestMethod( "POST" );
+					httpUrlConnection.setRequestProperty( "Content-Type", "application/x-www-form-urlencoded" );
+					// httpUrlConnection.setRequestProperty(
+					// "Content-Length", "" + Integer.toString(
+					// jsonParams.getBytes().length ) );
+					httpUrlConnection.setRequestProperty( "Content-Language", "en-US" );
+					httpUrlConnection.setUseCaches( false );
+					httpUrlConnection.setDoInput( true );
+					httpUrlConnection.setDoOutput( true );
+					outputStream = new DataOutputStream( httpUrlConnection.getOutputStream() );
+					outputStream.writeBytes( "requestParam=" + sendRequestParamJson );
+					// outputStream.writeBytes( "suspendedBills=" +
+					// suspendedBillsBOListJson );
+					outputStream.flush();
+					outputStream.close();
+					// get response
+					responseStream = new BufferedInputStream( httpUrlConnection.getInputStream() );
+					saleUpdateReader = new InputStreamReader( responseStream );
+					ServerResponseSuspendedSaleWrapper serverResponseWrapper1 = gson.fromJson( saleUpdateReader, ServerResponseSuspendedSaleWrapper.class );
+					List<ResponseSuspendedSaleWrapper> responseList = new ArrayList<ResponseSuspendedSaleWrapper>();
+					responseList = serverResponseWrapper1.getResponse();
+					for( int i = 0 ; i < responseList.size() ; i++ )
+					{
+
+						ResponseSuspendedSaleWrapper suspendedSalesWrapper = responseList.get( i );
+						int suspendedSaleClientId = Integer.parseInt( suspendedSalesWrapper.getClientId() );
+						int suspendedSaleServerId = Integer.parseInt( suspendedSalesWrapper.getServerId() );
+						String status = suspendedSalesWrapper.getStatus();
+
+						if( status.equals( AppGlobal.DELETE_FROM_CLIENT ) )
+						{
+							db = new DatabaseHandler( context, AppGlobal.TABLE_SUSPENDED_BILLS );
+							db.deleteSuspendedBills( suspendedSaleClientId );
+
+							db = new DatabaseHandler( context, AppGlobal.TABLE_SUSPENDED_SALES );
+							db.deleteSuspendedSales( suspendedSaleClientId );
+						}
+						else if( status.equals( AppGlobal.SYNC ) )
+						{
+							db = new DatabaseHandler( context, AppGlobal.TABLE_SUSPENDED_BILLS );
+							db.updateSuspendedBillsStatus( suspendedSaleClientId, status );
+							db.updateSuspendedServerId( suspendedSaleClientId, suspendedSaleServerId );
+						}
+
+					}
+				}
+
 				return response;
 			}
 		}

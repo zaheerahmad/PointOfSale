@@ -1,24 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.fusepos.activity"
-    android:versionCode="1"
-    android:versionName="1.0" >
+    android:versionCode="6"
+    android:versionName="2.0.4" >
 
     <uses-sdk
-        android:minSdkVersion="10"
-        android:targetSdkVersion="18" />
+        android:minSdkVersion="11"
+        android:targetSdkVersion="14" />
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 
+    <supports-screens
+        android:largeScreens="true"
+        android:normalScreens="false"
+        android:requiresSmallestWidthDp="600"
+        android:smallScreens="false"
+        android:xlargeScreens="true" />
+
     <application
         android:allowBackup="true"
-        android:icon="@drawable/ic_launcher"
+        android:icon="@drawable/fuseposlogo"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
+        <activity android:name="com.fusepos.activity.MainActivity" >
+        </activity>
         <activity
-            android:name="com.fusepos.activity.LoginActivity"
+            android:name="com.fusepos.activity.AndroidTabLayoutActivity"
+            android:icon="@drawable/fuseposlogo"
             android:label="@string/app_name"
             android:windowSoftInputMode="adjustPan" >
             <intent-filter>
@@ -27,6 +37,23 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name="com.fusepos.activity.SaleActivity"
+            android:icon="@drawable/fuseposlogo"
+            android:label="@string/app_name"
+            android:screenOrientation="landscape"
+            android:windowSoftInputMode="adjustPan" >
+        </activity>
+        <!-- Songs Activity -->
+        <activity android:name="com.fusepos.activity.SettingActivity" />
+
+        <!-- Videos Activity -->
+        <activity android:name="com.fusepos.activity.VideosActivity" />
+
+        <!-- Photos Activity -->
+        <activity android:name="com.fusepos.activity.LoginActivity" />
+        <activity android:name="com.fusepos.activity.ResultActivity" />
+        <activity android:name="com.fusepos.activity.WebViewActivity" />
 
         <service
             android:name="com.fusepos.service.DataSendService"

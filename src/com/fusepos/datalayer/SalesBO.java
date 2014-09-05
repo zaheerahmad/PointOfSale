@@ -33,8 +33,9 @@ public class SalesBO
 	private String		ccNo;
 	private String		ccHolder;
 	private String		checqueNo;
+	private String		status;
 
-	public SalesBO( int id, String referenceNo, int warehouseId, int billerId, String billerName, int customerId, String customerName, String date, String note, String internalNote, BigDecimal invTotal, BigDecimal totalTax, BigDecimal total, int invoiceType, String inType, BigDecimal totalTax2, int taxRate2Id, BigDecimal invDiscount, int discountId, String user, String updatedBy, String paidBy, int count, BigDecimal shipping, int pos, BigDecimal paid, String ccNo, String ccHolder, String checqueNo )
+	public SalesBO( int id, String referenceNo, int warehouseId, int billerId, String billerName, int customerId, String customerName, String date, String note, String internalNote, BigDecimal invTotal, BigDecimal totalTax, BigDecimal total, int invoiceType, String inType, BigDecimal totalTax2, int taxRate2Id, BigDecimal invDiscount, int discountId, String user, String updatedBy, String paidBy, int count, BigDecimal shipping, int pos, BigDecimal paid, String ccNo, String ccHolder, String checqueNo, String status )
 	{
 
 		super();
@@ -67,356 +68,367 @@ public class SalesBO
 		this.ccNo = ccNo;
 		this.ccHolder = ccHolder;
 		this.checqueNo = checqueNo;
+		this.status = status;
 	}
 
 	public int getId()
 	{
-	
+
 		return id;
 	}
 
 	public void setId( int id )
 	{
-	
+
 		this.id = id;
 	}
 
 	public String getReferenceNo()
 	{
-	
+
 		return referenceNo;
 	}
 
 	public void setReferenceNo( String referenceNo )
 	{
-	
+
 		this.referenceNo = referenceNo;
 	}
 
 	public int getWarehouseId()
 	{
-	
+
 		return warehouseId;
 	}
 
 	public void setWarehouseId( int warehouseId )
 	{
-	
+
 		this.warehouseId = warehouseId;
 	}
 
 	public int getBillerId()
 	{
-	
+
 		return billerId;
 	}
 
 	public void setBillerId( int billerId )
 	{
-	
+
 		this.billerId = billerId;
 	}
 
 	public String getBillerName()
 	{
-	
+
 		return billerName;
 	}
 
 	public void setBillerName( String billerName )
 	{
-	
+
 		this.billerName = billerName;
 	}
 
 	public int getCustomerId()
 	{
-	
+
 		return customerId;
 	}
 
 	public void setCustomerId( int customerId )
 	{
-	
+
 		this.customerId = customerId;
 	}
 
 	public String getCustomerName()
 	{
-	
+
 		return customerName;
 	}
 
 	public void setCustomerName( String customerName )
 	{
-	
+
 		this.customerName = customerName;
 	}
 
 	public String getDate()
 	{
-	
+
 		return date;
 	}
 
 	public void setDate( String date )
 	{
-	
+
 		this.date = date;
 	}
 
 	public String getNote()
 	{
-	
+
 		return note;
 	}
 
 	public void setNote( String note )
 	{
-	
+
 		this.note = note;
 	}
 
 	public String getInternalNote()
 	{
-	
+
 		return internalNote;
 	}
 
 	public void setInternalNote( String internalNote )
 	{
-	
+
 		this.internalNote = internalNote;
 	}
 
 	public BigDecimal getInvTotal()
 	{
-	
+
 		return invTotal;
 	}
 
 	public void setInvTotal( BigDecimal invTotal )
 	{
-	
+
 		this.invTotal = invTotal;
 	}
 
 	public BigDecimal getTotalTax()
 	{
-	
+
 		return totalTax;
 	}
 
 	public void setTotalTax( BigDecimal totalTax )
 	{
-	
+
 		this.totalTax = totalTax;
 	}
 
 	public BigDecimal getTotal()
 	{
-	
+
 		return total;
 	}
 
 	public void setTotal( BigDecimal total )
 	{
-	
+
 		this.total = total;
 	}
 
 	public int getInvoiceType()
 	{
-	
+
 		return invoiceType;
 	}
 
 	public void setInvoiceType( int invoiceType )
 	{
-	
+
 		this.invoiceType = invoiceType;
 	}
 
 	public String getInType()
 	{
-	
+
 		return inType;
 	}
 
 	public void setInType( String inType )
 	{
-	
+
 		this.inType = inType;
 	}
 
 	public BigDecimal getTotalTax2()
 	{
-	
+
 		return totalTax2;
 	}
 
 	public void setTotalTax2( BigDecimal totalTax2 )
 	{
-	
+
 		this.totalTax2 = totalTax2;
 	}
 
 	public int getTaxRate2Id()
 	{
-	
+
 		return taxRate2Id;
 	}
 
 	public void setTaxRate2Id( int taxRate2Id )
 	{
-	
+
 		this.taxRate2Id = taxRate2Id;
 	}
 
 	public BigDecimal getInvDiscount()
 	{
-	
+
 		return invDiscount;
 	}
 
 	public void setInvDiscount( BigDecimal invDiscount )
 	{
-	
+
 		this.invDiscount = invDiscount;
 	}
 
 	public int getDiscountId()
 	{
-	
+
 		return discountId;
 	}
 
 	public void setDiscountId( int discountId )
 	{
-	
+
 		this.discountId = discountId;
 	}
 
 	public String getUser()
 	{
-	
+
 		return user;
 	}
 
 	public void setUser( String user )
 	{
-	
+
 		this.user = user;
 	}
 
 	public String getUpdatedBy()
 	{
-	
+
 		return updatedBy;
 	}
 
 	public void setUpdatedBy( String updatedBy )
 	{
-	
+
 		this.updatedBy = updatedBy;
 	}
 
 	public String getPaidBy()
 	{
-	
+
 		return paidBy;
 	}
 
 	public void setPaidBy( String paidBy )
 	{
-	
+
 		this.paidBy = paidBy;
 	}
 
 	public int getCount()
 	{
-	
+
 		return count;
 	}
 
 	public void setCount( int count )
 	{
-	
+
 		this.count = count;
 	}
 
 	public BigDecimal getShipping()
 	{
-	
+
 		return shipping;
 	}
 
 	public void setShipping( BigDecimal shipping )
 	{
-	
+
 		this.shipping = shipping;
 	}
 
 	public int getPos()
 	{
-	
+
 		return pos;
 	}
 
 	public void setPos( int pos )
 	{
-	
+
 		this.pos = pos;
 	}
 
 	public BigDecimal getPaid()
 	{
-	
+
 		return paid;
 	}
 
 	public void setPaid( BigDecimal paid )
 	{
-	
+
 		this.paid = paid;
 	}
 
 	public String getCcNo()
 	{
-	
+
 		return ccNo;
 	}
 
 	public void setCcNo( String ccNo )
 	{
-	
+
 		this.ccNo = ccNo;
 	}
 
 	public String getCcHolder()
 	{
-	
+
 		return ccHolder;
 	}
 
 	public void setCcHolder( String ccHolder )
 	{
-	
+
 		this.ccHolder = ccHolder;
 	}
 
 	public String getChecqueNo()
 	{
-	
+
 		return checqueNo;
 	}
 
 	public void setChecqueNo( String checqueNo )
 	{
-	
+
 		this.checqueNo = checqueNo;
 	}
-	
-	
+
+	public String getStatus()
+	{
+
+		return status;
+	}
+
+	public void setStatus( String status )
+	{
+
+		this.status = status;
+	}
 
 }

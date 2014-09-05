@@ -11,6 +11,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.fusepos.utils.AppGlobal;
+import com.fusepos.wrapper.ResponseSuspendedSaleWrapper;
 
 /**
  * @author Zaheer Ahmad
@@ -51,22 +52,25 @@ public class DatabaseHandler extends SQLiteOpenHelper
 		String CREATE_CATEGORY_TABLE = "CREATE TABLE " + AppGlobal.TABLE_CATEGORY + "(" + AppGlobal.CATEGORY_ID + " INTEGER," + AppGlobal.CATEGORY_CODE + " TEXT," + AppGlobal.CATEGORY_NAME + " TEXT)";
 		db.execSQL( CREATE_CATEGORY_TABLE );
 
-		String CREATE_SUSPENDED_SALES_TABLE = "CREATE TABLE " + AppGlobal.TABLE_SUSPENDED_SALES + "(" + AppGlobal.SUSPENDED_SALES_ID + " INTEGER," + AppGlobal.SUSPENDED_SALES_JSON + " TEXT," + AppGlobal.SUSPENDED_SALES_DATE + " TEXT)";
+		String CREATE_SUSPENDED_SALES_TABLE = "CREATE TABLE " + AppGlobal.TABLE_SUSPENDED_SALES + "(" + AppGlobal.SUSPENDED_SALES_ID + " INTEGER," + AppGlobal.SUSPENDED_SALES_SUSPENDED_ID + " INTEGER," + AppGlobal.SUSPENDED_SALES_PRODUCT_ID + " INTEGER," + AppGlobal.SUSPENDED_SALES_PRODUCT_CODE + " TEXT," + AppGlobal.SUSPENDED_SALES_PRODUCT_NAME + " TEXT," + AppGlobal.SUSPENDED_SALES_PRODUCT_UNIT + " TEXT," + AppGlobal.SUSPENDED_SALES_TAX_RATE_ID + " INTEGER," + AppGlobal.SUSPENDED_SALES_TAX + " TEXT," + AppGlobal.SUSPENDED_SALES_QUANTITY + " INTEGER," + AppGlobal.SUSPENDED_SALES_UNIT_PRICE + " TEXT," + AppGlobal.SUSPENDED_SALES_GROSS_TOTAL + " TEXT," + AppGlobal.SUSPENDED_SALES_VAL_TAX + " TEXT," + AppGlobal.SUSPENDED_SALES_DISCOUNT + " TEXT," + AppGlobal.SUSPENDED_SALES_DISCOUNT_ID + " INTEGER," + AppGlobal.SUSPENDED_SALES_DISCOUNT_VAL + " TEXT," + AppGlobal.SUSPENDED_SALES_SERIAL_NO + " TEXT," + AppGlobal.SUSPENDED_SALES_STATUS + " TEXT)";
 		db.execSQL( CREATE_SUSPENDED_SALES_TABLE );
+
+		String CREATE_SUSPENDED_BILLS_TABLE = "CREATE TABLE " + AppGlobal.TABLE_SUSPENDED_BILLS + "(" + AppGlobal.SUSPENDED_BILLS_ID + " INTEGER," + AppGlobal.SUSPENDED_BILLS_DATE + " TEXT," + AppGlobal.SUSPENDED_BILLS_CUSTOMER_ID + " INTEGER," + AppGlobal.SUSPENDED_BILLS_COUNT + " INTEGER," + AppGlobal.SUSPENDED_BILLS_TAX_1 + " TEXT," + AppGlobal.SUSPENDED_BILLS_TAX_2 + " TEXT," + AppGlobal.SUSPENDED_BILLS_DISCOUNT + " TEXT," + AppGlobal.SUSPENDED_BILLS_INV_TOTAL + " TEXT," + AppGlobal.SUSPENDED_BILLS_TOTAL + " TEXT," + AppGlobal.SUSPENDED_BILLS_STATUS + " TEXT," + AppGlobal.SUSPENDED_BILLS_SERVER_ID + " TEXT)";
+		db.execSQL( CREATE_SUSPENDED_BILLS_TABLE );
 
 		String CREATE_TAX_RATE_TABLE = "CREATE TABLE " + AppGlobal.TABLE_TAX_RATE + "(" + AppGlobal.TAX_RATE_ID + " INTEGER," + AppGlobal.TAX_RATE_NAME + " TEXT," + AppGlobal.TAX_RATE_RATE + " TEXT," + AppGlobal.TAX_RATE_TYPE + " TEXT)";
 		db.execSQL( CREATE_TAX_RATE_TABLE );
 
-		String CREATE_SALES_TABLE = "CREATE TABLE " + AppGlobal.TABLE_SALES + "(" + AppGlobal.SALES_ID + " INTEGER," + AppGlobal.SALES_REFERENCE_NO + " TEXT," + AppGlobal.SALES_WAREHOUSE_ID + " INTEGER," + AppGlobal.SALES_BILLER_ID + " INTEGER," + AppGlobal.SALES_BILLER_NAME + " TEXT," + AppGlobal.SALES_CUSTOMER_ID + " INTEGER," + AppGlobal.SALES_CUSTOMER_NAME + " TEXT," + AppGlobal.SALES_DATE + " TEXT," + AppGlobal.SALES_NOTE + " TEXT," + AppGlobal.SALES_INTERNAL_NOTE + " TEXT," + AppGlobal.SALES_INV_TOTAL + " TEXT," + AppGlobal.SALES_TOTAL_TAX + " TEXT," + AppGlobal.SALES_TOTAL + " TEXT," + AppGlobal.SALES_INVOICE_TYPE + " INTEGER," + AppGlobal.SALES_IN_TYPE + " TEXT," + AppGlobal.SALES_TOTAL_TAX2 + " TEXT," + AppGlobal.SALES_TAX_RATE2_ID + " INTEGER," + AppGlobal.SALES_INV_DISCOUNT + " TEXT," + AppGlobal.SALES_DISCOUNT_ID + " INTEGER," + AppGlobal.SALES_USER + " TEXT," + AppGlobal.SALES_UPDATED_BY + " TEXT," + AppGlobal.SALES_PAID_BY + " TEXT," + AppGlobal.SALES_COUNT + " INTEGER," + AppGlobal.SALES_SHIPPING + " TEXT," + AppGlobal.SALES_POS + " INTEGER," + AppGlobal.SALES_PAID + " TEXT," + AppGlobal.SALES_CC_NO + " TEXT," + AppGlobal.SALES_CC_HOLDER + " TEXT," + AppGlobal.SALES_CHECQUE_NO + " TEXT)";
+		String CREATE_SALES_TABLE = "CREATE TABLE " + AppGlobal.TABLE_SALES + "(" + AppGlobal.SALES_ID + " INTEGER," + AppGlobal.SALES_REFERENCE_NO + " TEXT," + AppGlobal.SALES_WAREHOUSE_ID + " INTEGER," + AppGlobal.SALES_BILLER_ID + " INTEGER," + AppGlobal.SALES_BILLER_NAME + " TEXT," + AppGlobal.SALES_CUSTOMER_ID + " INTEGER," + AppGlobal.SALES_CUSTOMER_NAME + " TEXT," + AppGlobal.SALES_DATE + " TEXT," + AppGlobal.SALES_NOTE + " TEXT," + AppGlobal.SALES_INTERNAL_NOTE + " TEXT," + AppGlobal.SALES_INV_TOTAL + " TEXT," + AppGlobal.SALES_TOTAL_TAX + " TEXT," + AppGlobal.SALES_TOTAL + " TEXT," + AppGlobal.SALES_INVOICE_TYPE + " INTEGER," + AppGlobal.SALES_IN_TYPE + " TEXT," + AppGlobal.SALES_TOTAL_TAX2 + " TEXT," + AppGlobal.SALES_TAX_RATE2_ID + " INTEGER," + AppGlobal.SALES_INV_DISCOUNT + " TEXT," + AppGlobal.SALES_DISCOUNT_ID + " INTEGER," + AppGlobal.SALES_USER + " TEXT," + AppGlobal.SALES_UPDATED_BY + " TEXT," + AppGlobal.SALES_PAID_BY + " TEXT," + AppGlobal.SALES_COUNT + " INTEGER," + AppGlobal.SALES_SHIPPING + " TEXT," + AppGlobal.SALES_POS + " INTEGER," + AppGlobal.SALES_PAID + " TEXT," + AppGlobal.SALES_CC_NO + " TEXT," + AppGlobal.SALES_CC_HOLDER + " TEXT," + AppGlobal.SALES_CHECQUE_NO + " TEXT," + AppGlobal.SALES_STATUS + " TEXT)";
 		db.execSQL( CREATE_SALES_TABLE );
 
-		String CREATE_SALES_HISTORY_TABLE = "CREATE TABLE " + AppGlobal.TABLE_SALES_HISTORY + "(" + AppGlobal.SALES_HISTORY_ID + " INTEGER," + AppGlobal.SALES_HISTORY_SALES_ID + " INTEGER," + AppGlobal.SALES_HISTORY_REFERENCE_NO + " TEXT," + AppGlobal.SALES_HISTORY_WAREHOUSE_ID + " INTEGER," + AppGlobal.SALES_HISTORY_BILLER_ID + " INTEGER," + AppGlobal.SALES_HISTORY_BILLER_NAME + " TEXT," + AppGlobal.SALES_HISTORY_CUSTOMER_ID + " INTEGER," + AppGlobal.SALES_HISTORY_CUSTOMER_NAME + " TEXT," + AppGlobal.SALES_HISTORY_DATE + " TEXT," + AppGlobal.SALES_HISTORY_NOTE + " TEXT," + AppGlobal.SALES_HISTORY_INTERNAL_NOTE + " TEXT," + AppGlobal.SALES_HISTORY_INV_TOTAL + " TEXT," + AppGlobal.SALES_HISTORY_TOTAL_TAX + " TEXT," + AppGlobal.SALES_HISTORY_TOTAL + " TEXT," + AppGlobal.SALES_HISTORY_INVOICE_TYPE + " INTEGER," + AppGlobal.SALES_HISTORY_IN_TYPE + " TEXT," + AppGlobal.SALES_HISTORY_TOTAL_TAX2 + " TEXT," + AppGlobal.SALES_HISTORY_TAX_RATE2_ID + " INTEGER," + AppGlobal.SALES_HISTORY_INV_DISCOUNT + " TEXT," + AppGlobal.SALES_HISTORY_DISCOUNT_ID + " INTEGER," + AppGlobal.SALES_HISTORY_USER + " TEXT," + AppGlobal.SALES_HISTORY_UPDATED_BY + " TEXT," + AppGlobal.SALES_HISTORY_PAID_BY + " TEXT," + AppGlobal.SALES_HISTORY_COUNT + " INTEGER," + AppGlobal.SALES_HISTORY_SHIPPING + " TEXT," + AppGlobal.SALES_HISTORY_POS + " INTEGER," + AppGlobal.SALES_HISTORY_PAID + " TEXT," + AppGlobal.SALES_HISTORY_CC_NO + " TEXT," + AppGlobal.SALES_HISTORY_CC_HOLDER + " TEXT," + AppGlobal.SALES_HISTORY_CHECQUE_NO + " TEXT," + AppGlobal.SALES_HISTORY_EVENT_TIME + " TEXT," + AppGlobal.SALES_HISTORY_ACTION + " TEXT)";
+		String CREATE_SALES_HISTORY_TABLE = "CREATE TABLE " + AppGlobal.TABLE_SALES_HISTORY + "(" + AppGlobal.SALES_HISTORY_ID + " INTEGER," + AppGlobal.SALES_HISTORY_SALES_ID + " INTEGER," + AppGlobal.SALES_HISTORY_REFERENCE_NO + " TEXT," + AppGlobal.SALES_HISTORY_WAREHOUSE_ID + " INTEGER," + AppGlobal.SALES_HISTORY_BILLER_ID + " INTEGER," + AppGlobal.SALES_HISTORY_BILLER_NAME + " TEXT," + AppGlobal.SALES_HISTORY_CUSTOMER_ID + " INTEGER," + AppGlobal.SALES_HISTORY_CUSTOMER_NAME + " TEXT," + AppGlobal.SALES_HISTORY_DATE + " TEXT," + AppGlobal.SALES_HISTORY_NOTE + " TEXT," + AppGlobal.SALES_HISTORY_INTERNAL_NOTE + " TEXT," + AppGlobal.SALES_HISTORY_INV_TOTAL + " TEXT," + AppGlobal.SALES_HISTORY_TOTAL_TAX + " TEXT," + AppGlobal.SALES_HISTORY_TOTAL + " TEXT," + AppGlobal.SALES_HISTORY_INVOICE_TYPE + " INTEGER," + AppGlobal.SALES_HISTORY_IN_TYPE + " TEXT," + AppGlobal.SALES_HISTORY_TOTAL_TAX2 + " TEXT," + AppGlobal.SALES_HISTORY_TAX_RATE2_ID + " INTEGER," + AppGlobal.SALES_HISTORY_INV_DISCOUNT + " TEXT," + AppGlobal.SALES_HISTORY_DISCOUNT_ID + " INTEGER," + AppGlobal.SALES_HISTORY_USER + " TEXT," + AppGlobal.SALES_HISTORY_UPDATED_BY + " TEXT," + AppGlobal.SALES_HISTORY_PAID_BY + " TEXT," + AppGlobal.SALES_HISTORY_COUNT + " INTEGER," + AppGlobal.SALES_HISTORY_SHIPPING + " TEXT," + AppGlobal.SALES_HISTORY_POS + " INTEGER," + AppGlobal.SALES_HISTORY_PAID + " TEXT," + AppGlobal.SALES_HISTORY_CC_NO + " TEXT," + AppGlobal.SALES_HISTORY_CC_HOLDER + " TEXT," + AppGlobal.SALES_HISTORY_CHECQUE_NO + " TEXT," + AppGlobal.SALES_HISTORY_EVENT_TIME + " TEXT," + AppGlobal.SALES_HISTORY_ACTION + " TEXT," + AppGlobal.SALES_HISTORY_STATUS + " TEXT)";
 		db.execSQL( CREATE_SALES_HISTORY_TABLE );
 
-		String CREATE_SALE_ITEMS_TABLE = "CREATE TABLE " + AppGlobal.TABLE_SALE_ITEMS + "(" + AppGlobal.SALE_ITEMS_ID + " INTEGER," + AppGlobal.SALE_ITEMS_SALE_ID + " INTEGER," + AppGlobal.SALE_ITEMS_PRODUCT_ID + " INTEGER," + AppGlobal.SALE_ITEMS_PRODUCT_CODE + " TEXT," + AppGlobal.SALE_ITEMS_PRODUCT_NAME + " TEXT," + AppGlobal.SALE_ITEMS_PRODUCT_UNIT + " TEXT," + AppGlobal.SALE_ITEMS_TAX_RATE_ID + " INTEGER," + AppGlobal.SALE_ITEMS_TAX + " TEXT," + AppGlobal.SALE_ITEMS_QUANTITY + " INTEGER," + AppGlobal.SALE_ITEMS_UNIT_PRICE + " TEXT," + AppGlobal.SALE_ITEMS_GROSS_TOTAL + " TEXT," + AppGlobal.SALE_ITEMS_VAL_TAX + " TEXT," + AppGlobal.SALE_ITEMS_SERIAL_NO + " TEXT," + AppGlobal.SALE_ITEMS_DISCOUNT_VAL + " TEXT," + AppGlobal.SALE_ITEMS_DISCOUNT + " TEXT," + AppGlobal.SALE_ITEMS_DISCOUNT_ID + " INTEGER)";
+		String CREATE_SALE_ITEMS_TABLE = "CREATE TABLE " + AppGlobal.TABLE_SALE_ITEMS + "(" + AppGlobal.SALE_ITEMS_ID + " INTEGER," + AppGlobal.SALE_ITEMS_SALE_ID + " INTEGER," + AppGlobal.SALE_ITEMS_PRODUCT_ID + " INTEGER," + AppGlobal.SALE_ITEMS_PRODUCT_CODE + " TEXT," + AppGlobal.SALE_ITEMS_PRODUCT_NAME + " TEXT," + AppGlobal.SALE_ITEMS_PRODUCT_UNIT + " TEXT," + AppGlobal.SALE_ITEMS_TAX_RATE_ID + " INTEGER," + AppGlobal.SALE_ITEMS_TAX + " TEXT," + AppGlobal.SALE_ITEMS_QUANTITY + " INTEGER," + AppGlobal.SALE_ITEMS_UNIT_PRICE + " TEXT," + AppGlobal.SALE_ITEMS_GROSS_TOTAL + " TEXT," + AppGlobal.SALE_ITEMS_VAL_TAX + " TEXT," + AppGlobal.SALE_ITEMS_SERIAL_NO + " TEXT," + AppGlobal.SALE_ITEMS_DISCOUNT_VAL + " TEXT," + AppGlobal.SALE_ITEMS_DISCOUNT + " TEXT," + AppGlobal.SALE_ITEMS_DISCOUNT_ID + " INTEGER," + AppGlobal.SALE_ITEMS_STATUS + " TEXT)";
 		db.execSQL( CREATE_SALE_ITEMS_TABLE );
 
-		String CREATE_SALE_ITEMS_HISTORY_TABLE = "CREATE TABLE " + AppGlobal.TABLE_SALE_ITEMS_HISTORY + "(" + AppGlobal.SALE_ITEMS_HISTORY_ID + " INTEGER," + AppGlobal.SALE_ITEMS_HISTORY_SALE_ITEMS_ID + " INTEGER," + AppGlobal.SALE_ITEMS_HISTORY_SALE_ID + " INTEGER," + AppGlobal.SALE_ITEMS_HISTORY_PRODUCT_ID + " INTEGER," + AppGlobal.SALE_ITEMS_HISTORY_PRODUCT_CODE + " TEXT," + AppGlobal.SALE_ITEMS_HISTORY_PRODUCT_NAME + " TEXT," + AppGlobal.SALE_ITEMS_HISTORY_PRODUCT_UNIT + " TEXT," + AppGlobal.SALE_ITEMS_HISTORY_TAX_RATE_ID + " INTEGER," + AppGlobal.SALE_ITEMS_HISTORY_TAX + " TEXT," + AppGlobal.SALE_ITEMS_HISTORY_QUANTITY + " INTEGER," + AppGlobal.SALE_ITEMS_HISTORY_UNIT_PRICE + " TEXT," + AppGlobal.SALE_ITEMS_HISTORY_GROSS_TOTAL + " TEXT," + AppGlobal.SALE_ITEMS_HISTORY_VAL_TAX + " TEXT," + AppGlobal.SALE_ITEMS_HISTORY_SERIAL_NO + " TEXT," + AppGlobal.SALE_ITEMS_HISTORY_DISCOUNT_VAL + " TEXT," + AppGlobal.SALE_ITEMS_HISTORY_DISCOUNT + " TEXT," + AppGlobal.SALE_ITEMS_HISTORY_DISCOUNT_ID + " INTEGER," + AppGlobal.SALE_ITEMS_HISTORY_EVENT_TIME + " TEXT," + AppGlobal.SALE_ITEMS_HISTORY_ACTION + " TEXT)";
+		String CREATE_SALE_ITEMS_HISTORY_TABLE = "CREATE TABLE " + AppGlobal.TABLE_SALE_ITEMS_HISTORY + "(" + AppGlobal.SALE_ITEMS_HISTORY_ID + " INTEGER," + AppGlobal.SALE_ITEMS_HISTORY_SALE_ITEMS_ID + " INTEGER," + AppGlobal.SALE_ITEMS_HISTORY_SALE_ID + " INTEGER," + AppGlobal.SALE_ITEMS_HISTORY_PRODUCT_ID + " INTEGER," + AppGlobal.SALE_ITEMS_HISTORY_PRODUCT_CODE + " TEXT," + AppGlobal.SALE_ITEMS_HISTORY_PRODUCT_NAME + " TEXT," + AppGlobal.SALE_ITEMS_HISTORY_PRODUCT_UNIT + " TEXT," + AppGlobal.SALE_ITEMS_HISTORY_TAX_RATE_ID + " INTEGER," + AppGlobal.SALE_ITEMS_HISTORY_TAX + " TEXT," + AppGlobal.SALE_ITEMS_HISTORY_QUANTITY + " INTEGER," + AppGlobal.SALE_ITEMS_HISTORY_UNIT_PRICE + " TEXT," + AppGlobal.SALE_ITEMS_HISTORY_GROSS_TOTAL + " TEXT," + AppGlobal.SALE_ITEMS_HISTORY_VAL_TAX + " TEXT," + AppGlobal.SALE_ITEMS_HISTORY_SERIAL_NO + " TEXT," + AppGlobal.SALE_ITEMS_HISTORY_DISCOUNT_VAL + " TEXT," + AppGlobal.SALE_ITEMS_HISTORY_DISCOUNT + " TEXT," + AppGlobal.SALE_ITEMS_HISTORY_DISCOUNT_ID + " INTEGER," + AppGlobal.SALE_ITEMS_HISTORY_EVENT_TIME + " TEXT," + AppGlobal.SALE_ITEMS_HISTORY_ACTION + " TEXT," + AppGlobal.SALE_ITEMS_HISTORY_STATUS + " TEXT)";
 		db.execSQL( CREATE_SALE_ITEMS_HISTORY_TABLE );
 	}
 
@@ -88,6 +92,8 @@ public class DatabaseHandler extends SQLiteOpenHelper
 		db.execSQL( "DROP TABLE IF EXISTS " + AppGlobal.TABLE_CATEGORY );
 
 		db.execSQL( "DROP TABLE IF EXISTS " + AppGlobal.TABLE_SUSPENDED_SALES );
+
+		db.execSQL( "DROP TABLE IF EXISTS " + AppGlobal.TABLE_SUSPENDED_BILLS );
 
 		db.execSQL( "DROP TABLE IF EXISTS " + AppGlobal.TABLE_TAX_RATE );
 
@@ -142,6 +148,7 @@ public class DatabaseHandler extends SQLiteOpenHelper
 		values.put( AppGlobal.SALES_CC_NO, salesBO.getCcNo() );
 		values.put( AppGlobal.SALES_CC_HOLDER, salesBO.getCcHolder() );
 		values.put( AppGlobal.SALES_CHECQUE_NO, salesBO.getChecqueNo() );
+		values.put( AppGlobal.SALES_STATUS, salesBO.getStatus() );
 
 		long id = db.insert( AppGlobal.TABLE_SALES, null, values );
 		db.close(); // Closing database connection
@@ -162,12 +169,12 @@ public class DatabaseHandler extends SQLiteOpenHelper
 		return 0;
 	}
 
-	public List<SalesBO> getAllSales()
+	public List<SalesBO> getAllUnsyncSales()
 	{
 
 		List<SalesBO> salesBOList = new ArrayList<SalesBO>();
 		// Select All Query
-		String selectQuery = "SELECT  * FROM " + AppGlobal.TABLE_SALES;
+		String selectQuery = "SELECT  * FROM " + AppGlobal.TABLE_SALES + " WHERE " + AppGlobal.SALES_STATUS + " = '" + AppGlobal.UNSYNC + "'";
 
 		SQLiteDatabase db = this.getWritableDatabase();
 		Cursor cursor = db.rawQuery( selectQuery, null );
@@ -177,7 +184,7 @@ public class DatabaseHandler extends SQLiteOpenHelper
 		{
 			do
 			{
-				SalesBO salesBO = new SalesBO( cursor.getInt( 0 ), cursor.getString( 1 ), cursor.getInt( 2 ), cursor.getInt( 3 ), cursor.getString( 4 ), cursor.getInt( 5 ), cursor.getString( 6 ), cursor.getString( 7 ), cursor.getString( 8 ), cursor.getString( 9 ), new BigDecimal( cursor.getString( 10 ) ), new BigDecimal( cursor.getString( 11 ) ), new BigDecimal( cursor.getString( 12 ) ), cursor.getInt( 13 ), cursor.getString( 14 ), new BigDecimal( cursor.getString( 15 ) ), cursor.getInt( 16 ), new BigDecimal( cursor.getString( 17 ) ), cursor.getInt( 18 ), cursor.getString( 19 ), cursor.getString( 20 ), cursor.getString( 21 ), cursor.getInt( 22 ), new BigDecimal( cursor.getString( 23 ) ), cursor.getInt( 24 ), new BigDecimal( cursor.getString( 25 ) ), cursor.getString( 26 ), cursor.getString( 27 ), cursor.getString( 28 ) );
+				SalesBO salesBO = new SalesBO( cursor.getInt( 0 ), cursor.getString( 1 ), cursor.getInt( 2 ), cursor.getInt( 3 ), cursor.getString( 4 ), cursor.getInt( 5 ), cursor.getString( 6 ), cursor.getString( 7 ), cursor.getString( 8 ), cursor.getString( 9 ), new BigDecimal( cursor.getString( 10 ) ), new BigDecimal( cursor.getString( 11 ) ), new BigDecimal( cursor.getString( 12 ) ), cursor.getInt( 13 ), cursor.getString( 14 ), new BigDecimal( cursor.getString( 15 ) ), cursor.getInt( 16 ), new BigDecimal( cursor.getString( 17 ) ), cursor.getInt( 18 ), cursor.getString( 19 ), cursor.getString( 20 ), cursor.getString( 21 ), cursor.getInt( 22 ), new BigDecimal( cursor.getString( 23 ) ), cursor.getInt( 24 ), new BigDecimal( cursor.getString( 25 ) ), cursor.getString( 26 ), cursor.getString( 27 ), cursor.getString( 28 ), cursor.getString( 29 ) );
 				salesBOList.add( salesBO );
 			}
 			while ( cursor.moveToNext() );
@@ -185,6 +192,24 @@ public class DatabaseHandler extends SQLiteOpenHelper
 		}
 		db.close();
 		return salesBOList;
+	}
+
+	public int updateSalesStatus( List<SalesBO> salesBOList )
+	{
+
+		int effectedRow = 0;
+		SQLiteDatabase db = this.getWritableDatabase();
+
+		for( int i = 0 ; i < salesBOList.size() ; i++ )
+		{
+
+			ContentValues values = new ContentValues();
+
+			values.put( AppGlobal.SALES_STATUS, AppGlobal.SYNC );
+			// updating row
+			effectedRow += db.update( AppGlobal.TABLE_SALES, values, AppGlobal.SALES_ID + "=" + salesBOList.get( i ).getId(), null );
+		}
+		return effectedRow;
 	}
 
 	/*
@@ -243,17 +268,18 @@ public class DatabaseHandler extends SQLiteOpenHelper
 		values.put( AppGlobal.SALES_HISTORY_CHECQUE_NO, salesHistoryBO.getChecqueNo() );
 		values.put( AppGlobal.SALES_HISTORY_EVENT_TIME, salesHistoryBO.getEventTime() );
 		values.put( AppGlobal.SALES_HISTORY_ACTION, salesHistoryBO.getAction() );
+		values.put( AppGlobal.SALES_HISTORY_STATUS, salesHistoryBO.getStatus() );
 
 		long id = db.insert( AppGlobal.TABLE_SALES_HISTORY, null, values );
 		db.close(); // Closing database connection
 	}
 
-	public List<SalesHistoryBO> getAllSalesHistory()
+	public List<SalesHistoryBO> getAllUnsyncSalesHistory()
 	{
 
 		List<SalesHistoryBO> salesHistoryBOList = new ArrayList<SalesHistoryBO>();
 		// Select All Query
-		String selectQuery = "SELECT  * FROM " + AppGlobal.TABLE_SALES_HISTORY;
+		String selectQuery = "SELECT  * FROM " + AppGlobal.TABLE_SALES_HISTORY + " WHERE " + AppGlobal.SALES_HISTORY_STATUS + " = '" + AppGlobal.UNSYNC + "'";
 
 		SQLiteDatabase db = this.getWritableDatabase();
 		Cursor cursor = db.rawQuery( selectQuery, null );
@@ -263,7 +289,7 @@ public class DatabaseHandler extends SQLiteOpenHelper
 		{
 			do
 			{
-				SalesHistoryBO salesHistoryBO = new SalesHistoryBO( cursor.getInt( 0 ), cursor.getInt( 1 ), cursor.getString( 2 ), cursor.getInt( 3 ), cursor.getInt( 4 ), cursor.getString( 5 ), cursor.getInt( 6 ), cursor.getString( 7 ), cursor.getString( 8 ), cursor.getString( 9 ), cursor.getString( 10 ), new BigDecimal( cursor.getString( 11 ) ), new BigDecimal( cursor.getString( 12 ) ), new BigDecimal( cursor.getString( 13 ) ), cursor.getInt( 14 ), cursor.getString( 15 ), new BigDecimal( cursor.getString( 16 ) ), cursor.getInt( 17 ), new BigDecimal( cursor.getString( 18 ) ), cursor.getInt( 19 ), cursor.getString( 20 ), cursor.getString( 21 ), cursor.getString( 22 ), cursor.getInt( 23 ), new BigDecimal( cursor.getString( 24 ) ), cursor.getInt( 25 ), new BigDecimal( cursor.getString( 26 ) ), cursor.getString( 27 ), cursor.getString( 28 ), cursor.getString( 29 ), cursor.getString( 30 ), cursor.getString( 31 ) );
+				SalesHistoryBO salesHistoryBO = new SalesHistoryBO( cursor.getInt( 0 ), cursor.getInt( 1 ), cursor.getString( 2 ), cursor.getInt( 3 ), cursor.getInt( 4 ), cursor.getString( 5 ), cursor.getInt( 6 ), cursor.getString( 7 ), cursor.getString( 8 ), cursor.getString( 9 ), cursor.getString( 10 ), new BigDecimal( cursor.getString( 11 ) ), new BigDecimal( cursor.getString( 12 ) ), new BigDecimal( cursor.getString( 13 ) ), cursor.getInt( 14 ), cursor.getString( 15 ), new BigDecimal( cursor.getString( 16 ) ), cursor.getInt( 17 ), new BigDecimal( cursor.getString( 18 ) ), cursor.getInt( 19 ), cursor.getString( 20 ), cursor.getString( 21 ), cursor.getString( 22 ), cursor.getInt( 23 ), new BigDecimal( cursor.getString( 24 ) ), cursor.getInt( 25 ), new BigDecimal( cursor.getString( 26 ) ), cursor.getString( 27 ), cursor.getString( 28 ), cursor.getString( 29 ), cursor.getString( 30 ), cursor.getString( 31 ), cursor.getString( 32 ) );
 				salesHistoryBOList.add( salesHistoryBO );
 			}
 			while ( cursor.moveToNext() );
@@ -271,6 +297,24 @@ public class DatabaseHandler extends SQLiteOpenHelper
 		}
 		db.close();
 		return salesHistoryBOList;
+	}
+
+	public int updateSalesHistoryStatus( List<SalesHistoryBO> salesHistoryBOList )
+	{
+
+		int effectedRow = 0;
+		SQLiteDatabase db = this.getWritableDatabase();
+
+		for( int i = 0 ; i < salesHistoryBOList.size() ; i++ )
+		{
+
+			ContentValues values = new ContentValues();
+
+			values.put( AppGlobal.SALES_HISTORY_STATUS, AppGlobal.SYNC );
+			// updating row
+			effectedRow += db.update( AppGlobal.TABLE_SALES_HISTORY, values, AppGlobal.SALES_HISTORY_ID + "=" + salesHistoryBOList.get( i ).getId(), null );
+		}
+		return effectedRow;
 	}
 
 	/*
@@ -313,17 +357,18 @@ public class DatabaseHandler extends SQLiteOpenHelper
 		values.put( AppGlobal.SALE_ITEMS_DISCOUNT_VAL, saleItemsBO.getDiscountVal().toPlainString() );
 		values.put( AppGlobal.SALE_ITEMS_DISCOUNT, saleItemsBO.getDiscount() );
 		values.put( AppGlobal.SALE_ITEMS_DISCOUNT_ID, saleItemsBO.getDiscountId() );
+		values.put( AppGlobal.SALE_ITEMS_STATUS, saleItemsBO.getStatus() );
 
 		long id = db.insert( AppGlobal.TABLE_SALE_ITEMS, null, values );
 		db.close();
 	}
 
-	public List<SaleItemsBO> getAllSaleItems()
+	public List<SaleItemsBO> getAllUnsyncSaleItems()
 	{
 
 		List<SaleItemsBO> saleItemsBOList = new ArrayList<SaleItemsBO>();
 		// Select All Query
-		String selectQuery = "SELECT  * FROM " + AppGlobal.TABLE_SALE_ITEMS;
+		String selectQuery = "SELECT  * FROM " + AppGlobal.TABLE_SALE_ITEMS + " WHERE " + AppGlobal.SALE_ITEMS_STATUS + " = '" + AppGlobal.UNSYNC + "'";
 
 		SQLiteDatabase db = this.getWritableDatabase();
 		Cursor cursor = db.rawQuery( selectQuery, null );
@@ -333,7 +378,7 @@ public class DatabaseHandler extends SQLiteOpenHelper
 		{
 			do
 			{
-				SaleItemsBO saleItemsBO = new SaleItemsBO( cursor.getInt( 0 ), cursor.getInt( 1 ), cursor.getInt( 2 ), cursor.getString( 3 ), cursor.getString( 4 ), cursor.getString( 5 ), cursor.getInt( 6 ), cursor.getString( 7 ), cursor.getInt( 8 ), new BigDecimal( cursor.getString( 9 ) ), new BigDecimal( cursor.getString( 10 ) ), new BigDecimal( cursor.getString( 11 ) ), cursor.getString( 12 ), new BigDecimal( cursor.getString( 13 ) ), cursor.getString( 14 ), cursor.getInt( 15 ) );
+				SaleItemsBO saleItemsBO = new SaleItemsBO( cursor.getInt( 0 ), cursor.getInt( 1 ), cursor.getInt( 2 ), cursor.getString( 3 ), cursor.getString( 4 ), cursor.getString( 5 ), cursor.getInt( 6 ), cursor.getString( 7 ), cursor.getInt( 8 ), new BigDecimal( cursor.getString( 9 ) ), new BigDecimal( cursor.getString( 10 ) ), new BigDecimal( cursor.getString( 11 ) ), cursor.getString( 12 ), new BigDecimal( cursor.getString( 13 ) ), cursor.getString( 14 ), cursor.getInt( 15 ), cursor.getString( 16 ) );
 				saleItemsBOList.add( saleItemsBO );
 			}
 			while ( cursor.moveToNext() );
@@ -358,7 +403,7 @@ public class DatabaseHandler extends SQLiteOpenHelper
 		{
 			do
 			{
-				SaleItemsBO saleItemsBO = new SaleItemsBO( cursor.getInt( 0 ), cursor.getInt( 1 ), cursor.getInt( 2 ), cursor.getString( 3 ), cursor.getString( 4 ), cursor.getString( 5 ), cursor.getInt( 6 ), cursor.getString( 7 ), cursor.getInt( 8 ), new BigDecimal( cursor.getString( 9 ) ), new BigDecimal( cursor.getString( 10 ) ), new BigDecimal( cursor.getString( 11 ) ), cursor.getString( 12 ), new BigDecimal( cursor.getString( 13 ) ), cursor.getString( 14 ), cursor.getInt( 15 ) );
+				SaleItemsBO saleItemsBO = new SaleItemsBO( cursor.getInt( 0 ), cursor.getInt( 1 ), cursor.getInt( 2 ), cursor.getString( 3 ), cursor.getString( 4 ), cursor.getString( 5 ), cursor.getInt( 6 ), cursor.getString( 7 ), cursor.getInt( 8 ), new BigDecimal( cursor.getString( 9 ) ), new BigDecimal( cursor.getString( 10 ) ), new BigDecimal( cursor.getString( 11 ) ), cursor.getString( 12 ), new BigDecimal( cursor.getString( 13 ) ), cursor.getString( 14 ), cursor.getInt( 15 ), cursor.getString( 16 ) );
 				saleItemsBOList.add( saleItemsBO );
 			}
 			while ( cursor.moveToNext() );
@@ -366,6 +411,24 @@ public class DatabaseHandler extends SQLiteOpenHelper
 		}
 		db.close();
 		return saleItemsBOList;
+	}
+
+	public int updateSaleItemsStatus( List<SaleItemsBO> saleItemsBOList )
+	{
+
+		int effectedRow = 0;
+		SQLiteDatabase db = this.getWritableDatabase();
+
+		for( int i = 0 ; i < saleItemsBOList.size() ; i++ )
+		{
+
+			ContentValues values = new ContentValues();
+
+			values.put( AppGlobal.SALE_ITEMS_STATUS, AppGlobal.SYNC );
+			// updating row
+			effectedRow += db.update( AppGlobal.TABLE_SALE_ITEMS, values, AppGlobal.SALE_ITEMS_ID + "=" + saleItemsBOList.get( i ).getId(), null );
+		}
+		return effectedRow;
 	}
 
 	/*
@@ -411,17 +474,18 @@ public class DatabaseHandler extends SQLiteOpenHelper
 		values.put( AppGlobal.SALE_ITEMS_HISTORY_DISCOUNT_ID, saleItemsHistoryBO.getDiscountId() );
 		values.put( AppGlobal.SALE_ITEMS_HISTORY_EVENT_TIME, saleItemsHistoryBO.getEventTime() );
 		values.put( AppGlobal.SALE_ITEMS_HISTORY_ACTION, saleItemsHistoryBO.getAction() );
+		values.put( AppGlobal.SALE_ITEMS_HISTORY_STATUS, saleItemsHistoryBO.getStatus() );
 
 		long id = db.insert( AppGlobal.TABLE_SALE_ITEMS_HISTORY, null, values );
 		db.close();
 	}
 
-	public List<SaleItemsHistoryBO> getAllSaleItemsHistory()
+	public List<SaleItemsHistoryBO> getAllUnsyncSaleItemsHistory()
 	{
 
 		List<SaleItemsHistoryBO> saleItemsHistoryBOList = new ArrayList<SaleItemsHistoryBO>();
 		// Select All Query
-		String selectQuery = "SELECT  * FROM " + AppGlobal.TABLE_SALE_ITEMS_HISTORY;
+		String selectQuery = "SELECT  * FROM " + AppGlobal.TABLE_SALE_ITEMS_HISTORY + " WHERE " + AppGlobal.SALE_ITEMS_HISTORY_STATUS + " = '" + AppGlobal.UNSYNC + "'";
 
 		SQLiteDatabase db = this.getWritableDatabase();
 		Cursor cursor = db.rawQuery( selectQuery, null );
@@ -431,7 +495,7 @@ public class DatabaseHandler extends SQLiteOpenHelper
 		{
 			do
 			{
-				SaleItemsHistoryBO saleItemsHistoryBO = new SaleItemsHistoryBO( cursor.getInt( 0 ), cursor.getInt( 1 ), cursor.getInt( 2 ), cursor.getInt( 3 ), cursor.getString( 4 ), cursor.getString( 5 ), cursor.getString( 6 ), cursor.getInt( 7 ), cursor.getString( 8 ), cursor.getInt( 9 ), new BigDecimal( cursor.getString( 10 ) ), new BigDecimal( cursor.getString( 11 ) ), new BigDecimal( cursor.getString( 12 ) ), cursor.getString( 13 ), new BigDecimal( cursor.getString( 14 ) ), cursor.getString( 15 ), cursor.getInt( 16 ), cursor.getString( 17 ), cursor.getString( 18 ) );
+				SaleItemsHistoryBO saleItemsHistoryBO = new SaleItemsHistoryBO( cursor.getInt( 0 ), cursor.getInt( 1 ), cursor.getInt( 2 ), cursor.getInt( 3 ), cursor.getString( 4 ), cursor.getString( 5 ), cursor.getString( 6 ), cursor.getInt( 7 ), cursor.getString( 8 ), cursor.getInt( 9 ), new BigDecimal( cursor.getString( 10 ) ), new BigDecimal( cursor.getString( 11 ) ), new BigDecimal( cursor.getString( 12 ) ), cursor.getString( 13 ), new BigDecimal( cursor.getString( 14 ) ), cursor.getString( 15 ), cursor.getInt( 16 ), cursor.getString( 17 ), cursor.getString( 18 ), cursor.getString( 19 ) );
 				saleItemsHistoryBOList.add( saleItemsHistoryBO );
 			}
 			while ( cursor.moveToNext() );
@@ -456,7 +520,7 @@ public class DatabaseHandler extends SQLiteOpenHelper
 		{
 			do
 			{
-				SaleItemsHistoryBO saleItemsHistoryBO = new SaleItemsHistoryBO( cursor.getInt( 0 ), cursor.getInt( 1 ), cursor.getInt( 2 ), cursor.getInt( 3 ), cursor.getString( 4 ), cursor.getString( 5 ), cursor.getString( 6 ), cursor.getInt( 7 ), cursor.getString( 8 ), cursor.getInt( 9 ), new BigDecimal( cursor.getString( 10 ) ), new BigDecimal( cursor.getString( 11 ) ), new BigDecimal( cursor.getString( 12 ) ), cursor.getString( 13 ), new BigDecimal( cursor.getString( 14 ) ), cursor.getString( 15 ), cursor.getInt( 16 ), cursor.getString( 17 ), cursor.getString( 18 ) );
+				SaleItemsHistoryBO saleItemsHistoryBO = new SaleItemsHistoryBO( cursor.getInt( 0 ), cursor.getInt( 1 ), cursor.getInt( 2 ), cursor.getInt( 3 ), cursor.getString( 4 ), cursor.getString( 5 ), cursor.getString( 6 ), cursor.getInt( 7 ), cursor.getString( 8 ), cursor.getInt( 9 ), new BigDecimal( cursor.getString( 10 ) ), new BigDecimal( cursor.getString( 11 ) ), new BigDecimal( cursor.getString( 12 ) ), cursor.getString( 13 ), new BigDecimal( cursor.getString( 14 ) ), cursor.getString( 15 ), cursor.getInt( 16 ), cursor.getString( 17 ), cursor.getString( 18 ), cursor.getString( 19 ) );
 				saleItemsHistoryBOList.add( saleItemsHistoryBO );
 			}
 			while ( cursor.moveToNext() );
@@ -464,6 +528,24 @@ public class DatabaseHandler extends SQLiteOpenHelper
 		}
 		db.close();
 		return saleItemsHistoryBOList;
+	}
+
+	public int updateSaleItemsHistoryStatus( List<SaleItemsHistoryBO> saleItemsHistoryBOList )
+	{
+
+		int effectedRow = 0;
+		SQLiteDatabase db = this.getWritableDatabase();
+
+		for( int i = 0 ; i < saleItemsHistoryBOList.size() ; i++ )
+		{
+
+			ContentValues values = new ContentValues();
+
+			values.put( AppGlobal.SALE_ITEMS_HISTORY_STATUS, AppGlobal.SYNC );
+			// updating row
+			effectedRow += db.update( AppGlobal.TABLE_SALE_ITEMS_HISTORY, values, AppGlobal.SALE_ITEMS_HISTORY_ID + "=" + saleItemsHistoryBOList.get( i ).getId(), null );
+		}
+		return effectedRow;
 	}
 
 	/*
@@ -575,8 +657,22 @@ public class DatabaseHandler extends SQLiteOpenHelper
 		ContentValues values = new ContentValues();
 
 		values.put( AppGlobal.SUSPENDED_SALES_ID, suspendedSalesBO.getId() );
-		values.put( AppGlobal.SUSPENDED_SALES_DATE, suspendedSalesBO.getSuspendProductDate() );
-		values.put( AppGlobal.SUSPENDED_SALES_JSON, suspendedSalesBO.getSuspendProductJson() );
+		values.put( AppGlobal.SUSPENDED_SALES_SUSPENDED_ID, suspendedSalesBO.getSuspendedId() );
+		values.put( AppGlobal.SUSPENDED_SALES_PRODUCT_ID, suspendedSalesBO.getProductId() );
+		values.put( AppGlobal.SUSPENDED_SALES_PRODUCT_CODE, suspendedSalesBO.getProductCode() );
+		values.put( AppGlobal.SUSPENDED_SALES_PRODUCT_NAME, suspendedSalesBO.getProductName() );
+		values.put( AppGlobal.SUSPENDED_SALES_PRODUCT_UNIT, suspendedSalesBO.getProductUnit() );
+		values.put( AppGlobal.SUSPENDED_SALES_TAX_RATE_ID, suspendedSalesBO.getTaxRateId() );
+		values.put( AppGlobal.SUSPENDED_SALES_TAX, suspendedSalesBO.getTax() );
+		values.put( AppGlobal.SUSPENDED_SALES_QUANTITY, suspendedSalesBO.getQuantity() );
+		values.put( AppGlobal.SUSPENDED_SALES_UNIT_PRICE, suspendedSalesBO.getUnitPrice().toPlainString() );
+		values.put( AppGlobal.SUSPENDED_SALES_GROSS_TOTAL, suspendedSalesBO.getGrossTotal().toPlainString() );
+		values.put( AppGlobal.SUSPENDED_SALES_VAL_TAX, suspendedSalesBO.getValTax().toPlainString() );
+		values.put( AppGlobal.SUSPENDED_SALES_DISCOUNT, suspendedSalesBO.getDiscount() );
+		values.put( AppGlobal.SUSPENDED_SALES_DISCOUNT_ID, suspendedSalesBO.getDiscountId() );
+		values.put( AppGlobal.SUSPENDED_SALES_DISCOUNT_VAL, suspendedSalesBO.getDiscountVal().toPlainString() );
+		values.put( AppGlobal.SUSPENDED_SALES_SERIAL_NO, suspendedSalesBO.getSerialNo() );
+		values.put( AppGlobal.SUSPENDED_SALES_STATUS, suspendedSalesBO.getStatus() );
 
 		long id = db.insert( AppGlobal.TABLE_SUSPENDED_SALES, null, values );
 		db.close(); // Closing database connection
@@ -597,7 +693,7 @@ public class DatabaseHandler extends SQLiteOpenHelper
 		{
 			do
 			{
-				SuspendedSalesBO sP = new SuspendedSalesBO( cursor.getInt( 0 ), cursor.getString( 1 ), cursor.getString( 2 ) );
+				SuspendedSalesBO sP = new SuspendedSalesBO( cursor.getInt( 0 ), cursor.getInt( 1 ), cursor.getInt( 2 ), cursor.getString( 3 ), cursor.getString( 4 ), cursor.getString( 5 ), cursor.getInt( 6 ), cursor.getString( 7 ), cursor.getInt( 8 ), new BigDecimal( cursor.getString( 9 ) ), new BigDecimal( cursor.getString( 10 ) ), new BigDecimal( cursor.getString( 11 ) ), cursor.getString( 12 ), cursor.getInt( 13 ), new BigDecimal( cursor.getString( 14 ) ), cursor.getString( 15 ), cursor.getString( 16 ) );
 				suspendedSalesList.add( sP );
 			}
 			while ( cursor.moveToNext() );
@@ -606,13 +702,28 @@ public class DatabaseHandler extends SQLiteOpenHelper
 		return suspendedSalesList;
 	}
 
-	public void deletesuspendedSales( int id )
+	public List<SuspendedSalesBO> getSuspendedSalesFromSuspendId( int id )
 	{
 
-		SQLiteDatabase db = this.getWritableDatabase();
+		List<SuspendedSalesBO> suspendedSalesList = new ArrayList<SuspendedSalesBO>();
+		// Select All Query
+		String selectQuery = "SELECT  * FROM " + AppGlobal.TABLE_SUSPENDED_SALES + " WHERE " + AppGlobal.SUSPENDED_SALES_SUSPENDED_ID + " = " + id;
 
-		db.delete( AppGlobal.TABLE_SUSPENDED_SALES, AppGlobal.SUSPENDED_SALES_ID + " = ?", new String[] { String.valueOf( id ) } );
+		SQLiteDatabase db = this.getWritableDatabase();
+		Cursor cursor = db.rawQuery( selectQuery, null );
+
+		// looping through all rows and adding to list
+		if( cursor.moveToFirst() )
+		{
+			do
+			{
+				SuspendedSalesBO sP = new SuspendedSalesBO( cursor.getInt( 0 ), cursor.getInt( 1 ), cursor.getInt( 2 ), cursor.getString( 3 ), cursor.getString( 4 ), cursor.getString( 5 ), cursor.getInt( 6 ), cursor.getString( 7 ), cursor.getInt( 8 ), new BigDecimal( cursor.getString( 9 ) ), new BigDecimal( cursor.getString( 10 ) ), new BigDecimal( cursor.getString( 11 ) ), cursor.getString( 12 ), cursor.getInt( 13 ), new BigDecimal( cursor.getString( 14 ) ), cursor.getString( 15 ), cursor.getString( 16 ) );
+				suspendedSalesList.add( sP );
+			}
+			while ( cursor.moveToNext() );
+		}
 		db.close();
+		return suspendedSalesList;
 	}
 
 	public int getLastInsertedSuspendedSalesId()
@@ -629,6 +740,261 @@ public class DatabaseHandler extends SQLiteOpenHelper
 		}
 		db.close();
 		return 0;
+	}
+
+	public void deleteSuspendedSales( int id )
+	{
+
+		SQLiteDatabase db = this.getWritableDatabase();
+
+		db.delete( AppGlobal.TABLE_SUSPENDED_SALES, AppGlobal.SUSPENDED_SALES_SUSPENDED_ID + " = ?", new String[] { String.valueOf( id ) } );
+		db.close();
+	}
+
+	public List<SuspendedSalesBO> getAllUnsyncSuspendedSales()
+	{
+
+		List<SuspendedSalesBO> suspendedSalesBOList = new ArrayList<SuspendedSalesBO>();
+		// Select All Query
+		String selectQuery = "SELECT  * FROM " + AppGlobal.TABLE_SUSPENDED_SALES + " WHERE " + AppGlobal.SUSPENDED_SALES_STATUS + " = '" + AppGlobal.UNSYNC + "'";
+
+		SQLiteDatabase db = this.getWritableDatabase();
+		Cursor cursor = db.rawQuery( selectQuery, null );
+
+		// looping through all rows and adding to list
+		if( cursor.moveToFirst() )
+		{
+			do
+			{
+				SuspendedSalesBO sP = new SuspendedSalesBO( cursor.getInt( 0 ), cursor.getInt( 1 ), cursor.getInt( 2 ), cursor.getString( 3 ), cursor.getString( 4 ), cursor.getString( 5 ), cursor.getInt( 6 ), cursor.getString( 7 ), cursor.getInt( 8 ), new BigDecimal( cursor.getString( 9 ) ), new BigDecimal( cursor.getString( 10 ) ), new BigDecimal( cursor.getString( 11 ) ), cursor.getString( 12 ), cursor.getInt( 13 ), new BigDecimal( cursor.getString( 14 ) ), cursor.getString( 15 ), cursor.getString( 16 ) );
+				suspendedSalesBOList.add( sP );
+			}
+			while ( cursor.moveToNext() );
+
+		}
+		db.close();
+		return suspendedSalesBOList;
+	}
+
+	public int updateSuspendedSalesStatus( List<SuspendedSalesBO> suspendedSalesBOList )
+	{
+
+		int effectedRow = 0;
+		SQLiteDatabase db = this.getWritableDatabase();
+
+		for( int i = 0 ; i < suspendedSalesBOList.size() ; i++ )
+		{
+
+			ContentValues values = new ContentValues();
+
+			values.put( AppGlobal.SUSPENDED_SALES_STATUS, AppGlobal.SYNC );
+			// updating row
+			effectedRow += db.update( AppGlobal.TABLE_SUSPENDED_SALES, values, AppGlobal.SUSPENDED_SALES_ID + "=" + suspendedSalesBOList.get( i ).getId(), null );
+		}
+		return effectedRow;
+	}
+
+	/*
+	 * suspended bills table methods
+	 */
+
+	public void addSuspendedBills( SuspendedBillsBO suspendedBillsBO )
+	{
+
+		SQLiteDatabase db = this.getWritableDatabase();
+		ContentValues values = new ContentValues();
+
+		values.put( AppGlobal.SUSPENDED_BILLS_ID, suspendedBillsBO.getId() );
+		values.put( AppGlobal.SUSPENDED_BILLS_DATE, suspendedBillsBO.getDate() );
+		values.put( AppGlobal.SUSPENDED_BILLS_CUSTOMER_ID, suspendedBillsBO.getCustomerId() );
+		values.put( AppGlobal.SUSPENDED_BILLS_COUNT, suspendedBillsBO.getCount() );
+		values.put( AppGlobal.SUSPENDED_BILLS_TAX_1, suspendedBillsBO.getTax1() );
+		values.put( AppGlobal.SUSPENDED_BILLS_TAX_2, suspendedBillsBO.getTax2() );
+		values.put( AppGlobal.SUSPENDED_BILLS_DISCOUNT, suspendedBillsBO.getDiscount().toPlainString() );
+		values.put( AppGlobal.SUSPENDED_BILLS_INV_TOTAL, suspendedBillsBO.getInvTotal().toPlainString() );
+		values.put( AppGlobal.SUSPENDED_BILLS_TOTAL, suspendedBillsBO.getTotal() );
+		values.put( AppGlobal.SUSPENDED_BILLS_STATUS, suspendedBillsBO.getStatus() );
+		values.put( AppGlobal.SUSPENDED_BILLS_SERVER_ID, suspendedBillsBO.getServerId() );
+
+		long id = db.insert( AppGlobal.TABLE_SUSPENDED_BILLS, null, values );
+		db.close(); // Closing database connection
+	}
+
+	public List<SuspendedBillsBO> getAllSuspendedSalesForAdapter()
+	{
+
+		List<SuspendedBillsBO> suspendedBillsList = new ArrayList<SuspendedBillsBO>();
+		// Select All Query
+		String selectQuery = "SELECT  * FROM " + AppGlobal.TABLE_SUSPENDED_BILLS + " WHERE " + AppGlobal.SUSPENDED_BILLS_STATUS + " <> '" + AppGlobal.DELETE_FROM_SERVER + "'";
+
+		SQLiteDatabase db = this.getWritableDatabase();
+		Cursor cursor = db.rawQuery( selectQuery, null );
+
+		// looping through all rows and adding to list
+		if( cursor.moveToFirst() )
+		{
+			do
+			{
+				SuspendedBillsBO sB = new SuspendedBillsBO( cursor.getInt( 0 ), cursor.getString( 1 ), cursor.getInt( 2 ), cursor.getInt( 3 ), Float.parseFloat( cursor.getString( 4 ) ), Float.parseFloat( cursor.getString( 5 ) ), new BigDecimal( cursor.getString( 6 ) ), new BigDecimal( cursor.getString( 7 ) ), Float.parseFloat( cursor.getString( 8 ) ), cursor.getString( 9 ), cursor.getString( 10 ) );
+				suspendedBillsList.add( sB );
+			}
+			while ( cursor.moveToNext() );
+		}
+		db.close();
+		return suspendedBillsList;
+	}
+
+	public List<SuspendedBillsBO> getAllSuspendedBills()
+	{
+
+		List<SuspendedBillsBO> suspendedBillsList = new ArrayList<SuspendedBillsBO>();
+		// Select All Query
+		String selectQuery = "SELECT  * FROM " + AppGlobal.TABLE_SUSPENDED_BILLS;
+
+		SQLiteDatabase db = this.getWritableDatabase();
+		Cursor cursor = db.rawQuery( selectQuery, null );
+
+		// looping through all rows and adding to list
+		if( cursor.moveToFirst() )
+		{
+			do
+			{
+				SuspendedBillsBO sB = new SuspendedBillsBO( cursor.getInt( 0 ), cursor.getString( 1 ), cursor.getInt( 2 ), cursor.getInt( 3 ), Float.parseFloat( cursor.getString( 4 ) ), Float.parseFloat( cursor.getString( 5 ) ), new BigDecimal( cursor.getString( 6 ) ), new BigDecimal( cursor.getString( 7 ) ), Float.parseFloat( cursor.getString( 8 ) ), cursor.getString( 9 ), cursor.getString( 10 ) );
+				suspendedBillsList.add( sB );
+			}
+			while ( cursor.moveToNext() );
+		}
+		db.close();
+		return suspendedBillsList;
+	}
+
+	public int getLastInsertedSuspendedBillsId()
+	{
+
+		String countQuery = "SELECT * FROM " + AppGlobal.TABLE_SUSPENDED_BILLS + " ORDER BY " + AppGlobal.SUSPENDED_BILLS_ID + " DESC LIMIT 1";
+		SQLiteDatabase db = this.getWritableDatabase();
+		Cursor cursor = db.rawQuery( countQuery, null );
+		if( cursor != null && cursor.getCount() > 0 )
+		{
+			cursor.moveToFirst();
+
+			return Integer.parseInt( cursor.getString( 0 ) );
+		}
+		db.close();
+		return 0;
+	}
+
+	public void deleteSuspendedBills( int id )
+	{
+
+		SQLiteDatabase db = this.getWritableDatabase();
+
+		db.delete( AppGlobal.TABLE_SUSPENDED_BILLS, AppGlobal.SUSPENDED_BILLS_ID + " = ?", new String[] { String.valueOf( id ) } );
+		db.close();
+	}
+
+	public SuspendedBillsBO getSuspendedBillsFromSuspendId( int id )
+	{
+
+		String selectQuery = "SELECT  * FROM " + AppGlobal.TABLE_SUSPENDED_BILLS + " WHERE " + AppGlobal.SUSPENDED_BILLS_ID + " = " + id;
+
+		SQLiteDatabase db = this.getWritableDatabase();
+		Cursor cursor = db.rawQuery( selectQuery, null );
+		SuspendedBillsBO sP = null;
+		// looping through all rows and adding to list
+		if( cursor.moveToFirst() )
+		{
+
+			sP = new SuspendedBillsBO( cursor.getInt( 0 ), cursor.getString( 1 ), cursor.getInt( 2 ), cursor.getInt( 3 ), Float.parseFloat( cursor.getString( 4 ) ), Float.parseFloat( cursor.getString( 5 ) ), new BigDecimal( cursor.getString( 6 ) ), new BigDecimal( cursor.getString( 7 ) ), Float.parseFloat( cursor.getString( 8 ) ), cursor.getString( 9 ), cursor.getString( 10 ) );
+		}
+		db.close();
+		return sP;
+	}
+
+	public List<SuspendedBillsBO> getAllUnsyncSuspendedBills()
+	{
+
+		List<SuspendedBillsBO> suspendedBillsBOList = new ArrayList<SuspendedBillsBO>();
+		// Select All Query
+		String selectQuery = "SELECT  * FROM " + AppGlobal.TABLE_SUSPENDED_BILLS + " WHERE " + AppGlobal.SUSPENDED_BILLS_STATUS + " = '" + AppGlobal.UNSYNC + "'";
+
+		SQLiteDatabase db = this.getWritableDatabase();
+		Cursor cursor = db.rawQuery( selectQuery, null );
+
+		// looping through all rows and adding to list
+		if( cursor.moveToFirst() )
+		{
+			do
+			{
+				SuspendedBillsBO sB = new SuspendedBillsBO( cursor.getInt( 0 ), cursor.getString( 1 ), cursor.getInt( 2 ), cursor.getInt( 3 ), Float.parseFloat( cursor.getString( 4 ) ), Float.parseFloat( cursor.getString( 5 ) ), new BigDecimal( cursor.getString( 6 ) ), new BigDecimal( cursor.getString( 7 ) ), Float.parseFloat( cursor.getString( 8 ) ), cursor.getString( 9 ), cursor.getString( 10 ) );
+				suspendedBillsBOList.add( sB );
+			}
+			while ( cursor.moveToNext() );
+
+		}
+		db.close();
+		return suspendedBillsBOList;
+	}
+
+	public int updateSuspendedBillsStatus( List<ResponseSuspendedSaleWrapper> responseSuspendedList )
+	{
+
+		int effectedRow = 0;
+		SQLiteDatabase db = this.getWritableDatabase();
+
+		for( int i = 0 ; i < responseSuspendedList.size() ; i++ )
+		{
+
+			ContentValues values = new ContentValues();
+
+			values.put( AppGlobal.SUSPENDED_BILLS_STATUS, AppGlobal.SYNC );
+			values.put( AppGlobal.SUSPENDED_BILLS_SERVER_ID, Integer.parseInt( responseSuspendedList.get( i ).getServerId() ) );
+			// updating row
+			effectedRow += db.update( AppGlobal.TABLE_SUSPENDED_BILLS, values, AppGlobal.SUSPENDED_BILLS_ID + "=" + responseSuspendedList.get( i ).getClientId(), null );
+		}
+		return effectedRow;
+	}
+
+	public int updateSuspendedBillsStatus( SuspendedBillsBO suspendedBillsBO )
+	{
+
+		int effectedRow = 0;
+		SQLiteDatabase db = this.getWritableDatabase();
+
+		ContentValues values = new ContentValues();
+
+		values.put( AppGlobal.SUSPENDED_BILLS_STATUS, AppGlobal.DELETE_FROM_SERVER );
+		// updating row
+		effectedRow += db.update( AppGlobal.TABLE_SUSPENDED_BILLS, values, AppGlobal.SUSPENDED_BILLS_ID + "=" + suspendedBillsBO.getId(), null );
+		return effectedRow;
+	}
+
+	public int updateSuspendedBillsStatus( int id, String status )
+	{
+
+		int effectedRow = 0;
+		SQLiteDatabase db = this.getWritableDatabase();
+
+		ContentValues values = new ContentValues();
+
+		values.put( AppGlobal.SUSPENDED_BILLS_STATUS, status );
+		// updating row
+		effectedRow += db.update( AppGlobal.TABLE_SUSPENDED_BILLS, values, AppGlobal.SUSPENDED_BILLS_ID + "=" + id, null );
+		return effectedRow;
+	}
+
+	public int updateSuspendedServerId( int id, int serverId )
+	{
+
+		int effectedRow = 0;
+		SQLiteDatabase db = this.getWritableDatabase();
+
+		ContentValues values = new ContentValues();
+
+		values.put( AppGlobal.SUSPENDED_BILLS_SERVER_ID, String.valueOf( serverId ) );
+		// updating row
+		effectedRow += db.update( AppGlobal.TABLE_SUSPENDED_BILLS, values, AppGlobal.SUSPENDED_BILLS_ID + "=" + id, null );
+		return effectedRow;
 	}
 
 	/*
@@ -794,7 +1160,7 @@ public class DatabaseHandler extends SQLiteOpenHelper
 		return false;
 	}
 
-	public LoginBO getLoginDetailsAfterLogin(String email, String password)
+	public LoginBO getLoginDetailsAfterLogin( String email, String password )
 	{
 
 		String countQuery = "SELECT * FROM " + AppGlobal.TABLE_LOGIN + " WHERE " + AppGlobal.EMAIL + " = '" + email + "' AND " + AppGlobal.PASSWORD + " = '" + password + "'";

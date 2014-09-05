@@ -10,7 +10,6 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -31,7 +30,7 @@ public class LoginActivity extends Activity
 	EditText		txtPassword		= null;
 	ProgressDialog	loadingDialog	= null;
 	DatabaseHandler	dbHandler		= null;
-	String			validUntil		= "15/05/2014";
+	String			validUntil		= "30/06/2014";
 
 	public void onCreate( Bundle savedInstanceState )
 	{
@@ -103,8 +102,8 @@ public class LoginActivity extends Activity
 
 							LoginBO loginBO = dbHandler.getLoginDetailsAfterLogin( txtUsername.getText().toString(), txtPassword.getText().toString() );
 
-							pref.edit().putString( AppGlobal.APP_PREF_FIRST_NAME, loginBO.getFname() );
-							pref.edit().putString( AppGlobal.APP_PREF_LAST_NAME, loginBO.getLname() );
+							pref.edit().putString( AppGlobal.APP_PREF_FIRST_NAME, loginBO.getFname() ).commit();
+							pref.edit().putString( AppGlobal.APP_PREF_LAST_NAME, loginBO.getLname() ).commit();
 
 							// Loading Products First Time.. Manually
 							// Internet should be available here.

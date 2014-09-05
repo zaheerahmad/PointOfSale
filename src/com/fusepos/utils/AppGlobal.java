@@ -10,7 +10,7 @@ public class AppGlobal
 {
 	public static final boolean	isDebugMode											= false;
 	public static final boolean	shouldMaintainLogOfFeeds							= false;
-	public static final boolean	isPaymentDone										= false;
+	public static final boolean	isPaymentDone										= true;
 	public static final String	BROADCAST_CLOUD										= "_broadcast_cloud";
 
 	// Response Statuses
@@ -39,6 +39,12 @@ public class AppGlobal
 	public static final String	DATABASE_NAME										= "POS_DB";
 	public static final int		DATABASE_VERSION									= 1;
 
+	public static final String	SYNC												= "sync";
+	public static final String	UNSYNC												= "unsync";
+	public static final String	DELETE_FROM_CLIENT									= "deleteFromClient";
+	public static final String	DELETE_FROM_SERVER									= "deleteFromServer";
+
+	// for login table
 	public static final String	TABLE_LOGIN											= "tbl_login";
 	public static final String	LOGIN_ID											= "loginId";
 	public static final String	USER_NAME											= "username";
@@ -73,11 +79,40 @@ public class AppGlobal
 	public static final String	CATEGORY_CODE										= "code";
 	public static final String	CATEGORY_NAME										= "name";
 
-	// for suspend table
+	// for suspended sales table
 	public static final String	TABLE_SUSPENDED_SALES								= "tbl_suspendSales";
-	public static final String	SUSPENDED_SALES_ID									= "suspendId";
+	public static final String	SUSPENDED_SALES_ID									= "suspendedSalesId";
+	public static final String	SUSPENDED_SALES_SUSPENDED_ID						= "suspendedId";
+	public static final String	SUSPENDED_SALES_PRODUCT_ID							= "productId";
+	public static final String	SUSPENDED_SALES_PRODUCT_CODE						= "productCode";
+	public static final String	SUSPENDED_SALES_PRODUCT_NAME						= "productName";
+	public static final String	SUSPENDED_SALES_PRODUCT_UNIT						= "productUnit";
+	public static final String	SUSPENDED_SALES_TAX_RATE_ID							= "taxRateId";
+	public static final String	SUSPENDED_SALES_TAX									= "tax";
+	public static final String	SUSPENDED_SALES_QUANTITY							= "quantity";
+	public static final String	SUSPENDED_SALES_UNIT_PRICE							= "unitPrice";
+	public static final String	SUSPENDED_SALES_GROSS_TOTAL							= "grossTotal";
+	public static final String	SUSPENDED_SALES_VAL_TAX								= "valTax";
+	public static final String	SUSPENDED_SALES_DISCOUNT							= "discount";
+	public static final String	SUSPENDED_SALES_DISCOUNT_ID							= "discountId";
+	public static final String	SUSPENDED_SALES_DISCOUNT_VAL						= "discountVal";
+	public static final String	SUSPENDED_SALES_SERIAL_NO							= "serialNo";
 	public static final String	SUSPENDED_SALES_DATE								= "date";
-	public static final String	SUSPENDED_SALES_JSON								= "json";
+	public static final String	SUSPENDED_SALES_STATUS								= "status";
+
+	// for suspended bills table
+	public static final String	TABLE_SUSPENDED_BILLS								= "tbl_suspendedBills";
+	public static final String	SUSPENDED_BILLS_ID									= "suspendedBillsId";
+	public static final String	SUSPENDED_BILLS_DATE								= "date";
+	public static final String	SUSPENDED_BILLS_CUSTOMER_ID							= "customerId";
+	public static final String	SUSPENDED_BILLS_COUNT								= "count";
+	public static final String	SUSPENDED_BILLS_TAX_1								= "tax1";
+	public static final String	SUSPENDED_BILLS_TAX_2								= "tax2";
+	public static final String	SUSPENDED_BILLS_DISCOUNT							= "discount";
+	public static final String	SUSPENDED_BILLS_INV_TOTAL							= "invTotal";
+	public static final String	SUSPENDED_BILLS_TOTAL								= "total";
+	public static final String	SUSPENDED_BILLS_STATUS								= "status";
+	public static final String	SUSPENDED_BILLS_SERVER_ID							= "server_Id";
 
 	// for tax table
 	public static final String	TABLE_TAX_RATE										= "tbl_taxRate";
@@ -117,6 +152,7 @@ public class AppGlobal
 	public static final String	SALES_CC_NO											= "ccNo";
 	public static final String	SALES_CC_HOLDER										= "ccHolder";
 	public static final String	SALES_CHECQUE_NO									= "checqueNo";
+	public static final String	SALES_STATUS										= "status";
 
 	// for sales history table
 	public static final String	TABLE_SALES_HISTORY									= "tbl_salesHistory";
@@ -152,7 +188,7 @@ public class AppGlobal
 	public static final String	SALES_HISTORY_CHECQUE_NO							= "checqueNo";
 	public static final String	SALES_HISTORY_EVENT_TIME							= "eventTime";
 	public static final String	SALES_HISTORY_ACTION								= "action";
-
+	public static final String	SALES_HISTORY_STATUS								= "status";
 	// for sale_items
 	public static final String	TABLE_SALE_ITEMS									= "tbl_saleItems";
 	public static final String	SALE_ITEMS_ID										= "saleItemsId";
@@ -171,7 +207,7 @@ public class AppGlobal
 	public static final String	SALE_ITEMS_DISCOUNT_VAL								= "discountVal";
 	public static final String	SALE_ITEMS_DISCOUNT									= "discount";
 	public static final String	SALE_ITEMS_DISCOUNT_ID								= "discountId";
-
+	public static final String	SALE_ITEMS_STATUS									= "status";
 	// for sale_items_history
 	public static final String	TABLE_SALE_ITEMS_HISTORY							= "tbl_saleItemsHistory";
 	public static final String	SALE_ITEMS_HISTORY_ID								= "saleItemsHistoryId";
@@ -193,7 +229,7 @@ public class AppGlobal
 	public static final String	SALE_ITEMS_HISTORY_DISCOUNT_ID						= "discountId";
 	public static final String	SALE_ITEMS_HISTORY_EVENT_TIME						= "eventTime";
 	public static final String	SALE_ITEMS_HISTORY_ACTION							= "action";
-
+	public static final String	SALE_ITEMS_HISTORY_STATUS							= "status";
 	/**
 	 * Databases constants ended
 	 */
@@ -233,7 +269,8 @@ public class AppGlobal
 	public static final String	APP_PREF_LAST_NAME									= "_last_name_";
 
 	// Web Service links
-	public static final String	SERVER_URL_UPDATE_SALES_DATA_WEBSERVICE				= "updateSalesWebService";
+	public static final String	SERVER_URL_UPDATE_SALES_DATA_WEBSERVICE				= "http://fusepos.com/zaheer/AndroidAppWebservices/SyncSalesWebService.php";
+	public static final String	SERVER_URL_UPDATE_SUSPENDED_SALES_WEBSERVICE		= "http://fusepos.com/zaheer/AndroidAppWebservices/SyncSuspendedSalesWebService.php";
 	public static final String	SERVER_URL_LOGIN_WEBSERVICE							= "http://fusepos.com/zaheer/AndroidAppWebservices/LoginWebService.php";
 	public static final String	SERVER_URL_GET_ALL_PRODUCT_WEBSERVICE				= "http://fusepos.com/zaheer/AndroidAppWebservices/GetAllProductsAfterIdWebService.php";
 	public static final String	SERVER_URL_GET_TAX_RATE_WEBSERVICE					= "http://fusepos.com/zaheer/AndroidAppWebservices/GetTaxRateWebService.php";

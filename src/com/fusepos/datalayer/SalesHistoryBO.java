@@ -36,8 +36,9 @@ public class SalesHistoryBO
 	private String		checqueNo;
 	private String		eventTime;
 	private String		action;
+	private String		status;
 
-	public SalesHistoryBO( int id, int saleId, String referenceNo, int warehouseId, int billerId, String billerName, int customerId, String customerName, String date, String note, String internalNote, BigDecimal invTotal, BigDecimal totalTax, BigDecimal total, int invoiceType, String inType, BigDecimal totalTax2, int taxRate2Id, BigDecimal invDiscount, int discountId, String user, String updatedBy, String paidBy, int count, BigDecimal shipping, int pos, BigDecimal paid, String ccNo, String ccHolder, String checqueNo, String eventTime, String action )
+	public SalesHistoryBO( int id, int saleId, String referenceNo, int warehouseId, int billerId, String billerName, int customerId, String customerName, String date, String note, String internalNote, BigDecimal invTotal, BigDecimal totalTax, BigDecimal total, int invoiceType, String inType, BigDecimal totalTax2, int taxRate2Id, BigDecimal invDiscount, int discountId, String user, String updatedBy, String paidBy, int count, BigDecimal shipping, int pos, BigDecimal paid, String ccNo, String ccHolder, String checqueNo, String eventTime, String action, String status )
 	{
 
 		super();
@@ -73,6 +74,7 @@ public class SalesHistoryBO
 		this.checqueNo = checqueNo;
 		this.eventTime = eventTime;
 		this.action = action;
+		this.status = status;
 	}
 
 	public int getId()
@@ -457,6 +459,18 @@ public class SalesHistoryBO
 	{
 
 		this.action = action;
+	}
+
+	public String getStatus()
+	{
+
+		return status;
+	}
+
+	public void setStatus( String status )
+	{
+
+		this.status = status;
 	}
 
 }
